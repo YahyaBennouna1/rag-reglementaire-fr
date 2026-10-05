@@ -1,0 +1,47 @@
+from pathlib import Path
+from typing import Literal
+
+import yaml
+from pydantic import BaseModel, ConfigDict, Field, model_validator
+
+
+class StrictModel(BaseModel):
+    # Refuse les clés inconnues : une faute de frappe dans le YAML fait planter.
+    model_config = ConfigDict(extra="forbid")
+
+
+class ChunkingConfig(StrictModel):
+    method: Literal["fixed", "semantic", "contextual"] = "fixed"
+    size: int = Field(512, gt=0)
+    overlap: int = Field(64, ge=0)
+
+    @model_validator(mode="after")
+    def check_overlap(self) -> "ChunkingConfig":
+        if self.overlap >= self.size:
+            raise ValueError("overlap doit être strictement plus petit que size")
+        return self
+
+
+class RetrievalConfig(StrictModel):
+    mode: Literal["dense", "bm25", "hybrid"] = "dense"
+    top_k: int = Field(10, gt=0)
+    reranker: bool = False
+
+
+class LLMConfig(StrictModel):
+    model: str = "gemini/gemini-2.5-flash"
+    temperature: float = Field(0.0, ge=0.0, le=2.0)
+
+
+class Config(StrictModel):
+    name: str
+    chunking: ChunkingConfig = Field(default_factory=ChunkingConfig)
+    retrieval: RetrievalConfig = Field(default_factory=RetrievalConfig)
+    llm: LLMConfig = Field(default_factory=LLMConfig)
+
+
+def load_config(path: str | Path) -> Config:
+    """Lit un fichier YAML et renvoie une Config validée."""
+    with open(path, encoding="utf-8") as f:
+        data = yaml.safe_load(f)
+    return Config.model_validate(data)

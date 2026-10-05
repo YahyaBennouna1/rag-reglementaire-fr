@@ -1,0 +1,16 @@
+# RAG naïf : le point de départ de l'ablation
+name: baseline
+
+chunking:
+  method: fixed # fixed | semantic | contextual
+  size: 512 # en tokens
+  overlap: 64
+
+retrieval:
+  mode: dense # dense | bm25 | hybrid
+  top_k: 10
+  reranker: false
+
+llm:
+  model: gemini/gemini-2.5-flash
+  temperature: 0.0
