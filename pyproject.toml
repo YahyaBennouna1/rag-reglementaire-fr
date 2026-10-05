@@ -1,7 +1,7 @@
 [project]
 name = "ragfr"
 version = "0.1.0"
-description = "Add your description here"
+description = "RAG agentique sur les guides de cybersécurité de l'ANSSI, avec citations vérifiées et évaluation chiffrée"
 readme = "README.md"
 authors = [
     { name = "yahya bennouna", email = "yahyabennouna63@gmail.com" }

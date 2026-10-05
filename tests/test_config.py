@@ -1,8 +1,9 @@
+from pathlib import Path
+
 import pytest
 from pydantic import ValidationError
 
 from ragfr.config import Config, load_config
-from pathlib import Path
 
 CONFIGS = Path(__file__).parent.parent / "configs"
 
@@ -18,3 +19,9 @@ def test_faute_de_frappe_refusee():
     with pytest.raises(ValidationError):
         Config.model_validate({"name": "x", "retrieval": {"rerankr": True}})
 
+
+def test_rerank_candidates_trop_petit_refuse():
+    with pytest.raises(ValidationError):
+        Config.model_validate(
+            {"name": "x", "retrieval": {"top_k": 10, "rerank_candidates": 5}}
+        )
