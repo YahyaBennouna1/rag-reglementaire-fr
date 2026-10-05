@@ -2,10 +2,13 @@ import pytest
 from pydantic import ValidationError
 
 from ragfr.config import Config, load_config
+from pathlib import Path
+
+CONFIGS = Path(__file__).parent.parent / "configs"
 
 
 def test_baseline_se_charge():
-    cfg = load_config("configs/baseline.yaml")
+    cfg = load_config(CONFIGS / "baseline.yaml")
     assert cfg.name == "baseline"
     assert cfg.retrieval.mode == "dense"
     assert cfg.retrieval.reranker is False
@@ -14,3 +17,4 @@ def test_baseline_se_charge():
 def test_faute_de_frappe_refusee():
     with pytest.raises(ValidationError):
         Config.model_validate({"name": "x", "retrieval": {"rerankr": True}})
+

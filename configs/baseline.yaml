@@ -10,6 +10,7 @@ retrieval:
   mode: dense # dense | bm25 | hybrid
   top_k: 10
   reranker: false
+  rerank_candidates: 30
 
 llm:
   model: gemini/gemini-2.5-flash

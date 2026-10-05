@@ -26,6 +26,13 @@ class RetrievalConfig(StrictModel):
     mode: Literal["dense", "bm25", "hybrid"] = "dense"
     top_k: int = Field(10, gt=0)
     reranker: bool = False
+    rerank_candidates: int = Field(30, gt=0)           # ← nouveau champ
+
+    @model_validator(mode="after")                     # ← même décorateur
+    def check_rerank_candidates(self) -> "RetrievalConfig":
+        if self.rerank_candidates < self.top_k:
+            raise ValueError("rerank_candidates doit être >= top_k")
+        return self
 
 
 class LLMConfig(StrictModel):
