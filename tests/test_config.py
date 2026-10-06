@@ -25,3 +25,4 @@ def test_rerank_candidates_trop_petit_refuse():
         Config.model_validate(
             {"name": "x", "retrieval": {"top_k": 10, "rerank_candidates": 5}}
         )
+
