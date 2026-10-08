@@ -8,6 +8,7 @@ authors = [
 ]
 requires-python = ">=3.12"
 dependencies = [
+    "beautifulsoup4>=4.15.0",
     "docling>=2.135.0",
     "httpx>=0.28.1",
     "pydantic>=2.13.5",
@@ -25,4 +26,20 @@ build-backend = "uv_build"
 [dependency-groups]
 dev = [
     "pytest>=9.1.1",
+    "ruff>=0.16.10",
 ]
+
+[tool.pytest.ini_options]
+markers = ["slow: tests lents (Docling, modèles) : uv run pytest -m slow"]
+addopts = "-m 'not slow'"
+
+[tool.ruff]
+line-length = 110
+
+[tool.ruff.lint]
+# E/F : erreurs de base, I : ordre des imports, UP : syntaxe Python moderne, B : bugs fréquents
+select = ["E", "F", "I", "UP", "B"]
+
+[tool.ruff.lint.per-file-ignores]
+# La table de sélection garde une ligne par guide.
+"scripts/build_corpus.py" = ["E501"]

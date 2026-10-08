@@ -22,7 +22,4 @@ def test_faute_de_frappe_refusee():
 
 def test_rerank_candidates_trop_petit_refuse():
     with pytest.raises(ValidationError):
-        Config.model_validate(
-            {"name": "x", "retrieval": {"top_k": 10, "rerank_candidates": 5}}
-        )
-
+        Config.model_validate({"name": "x", "retrieval": {"top_k": 10, "rerank_candidates": 5}})

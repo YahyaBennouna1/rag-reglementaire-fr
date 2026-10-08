@@ -14,8 +14,6 @@ print(doc[PAGE - 1].get_text())
 
 print("=" * 30, "Docling", "=" * 30)
 options = PdfPipelineOptions(do_ocr=False)
-converter = DocumentConverter(
-    format_options={InputFormat.PDF: PdfFormatOption(pipeline_options=options)}
-)
+converter = DocumentConverter(format_options={InputFormat.PDF: PdfFormatOption(pipeline_options=options)})
 result = converter.convert(PDF, page_range=(PAGE, PAGE))
 print(result.document.export_to_markdown())
