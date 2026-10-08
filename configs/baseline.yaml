@@ -16,4 +16,4 @@ llm:
   model: gemini/gemini-3.5-flash-lite
   temperature: 0.0
   judge_model: groq/openai/gpt-oss-120b
-  fast_model: groq/qwen/qwen3.8-27b
+  fast_model: gemini/gemini-3.5-flash-lite

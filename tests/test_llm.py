@@ -80,3 +80,16 @@ def test_quota_journalier_pas_reessaye(isolated_cache, monkeypatch):
     with pytest.raises(litellm.RateLimitError):
         llm.complete([{"role": "user", "content": "x"}], model="fake/model")
     assert len(attempts) == 1  # un quota du jour ne se libère pas en quelques secondes
+
+
+def test_credits_epuises_pas_reessayes(isolated_cache, monkeypatch):
+    attempts = []
+
+    def no_credits(**kw):
+        attempts.append(1)
+        raise litellm.RateLimitError("You have no credits remaining", llm_provider="openai", model="x")
+
+    monkeypatch.setattr(litellm, "completion", no_credits)
+    with pytest.raises(litellm.RateLimitError):
+        llm.complete([{"role": "user", "content": "x"}], model="fake/model")
+    assert len(attempts) == 1  # sans crédit, réessayer ne sert à rien

@@ -22,8 +22,8 @@ def get_embedder(model_name: str) -> Embedder:
 
 
 @cache
-def get_reranker() -> Reranker:
-    return Reranker()
+def get_reranker(model_name: str) -> Reranker:
+    return Reranker(model_name)
 
 
 def make_retriever(cfg: Config) -> Retriever:
@@ -43,7 +43,8 @@ def make_retriever(cfg: Config) -> Retriever:
         )
 
     if r.reranker:
-        retriever = RerankingRetriever(retriever, get_reranker(), candidates=r.rerank_candidates)
+        reranker = get_reranker(r.reranker_model)
+        retriever = RerankingRetriever(retriever, reranker, candidates=r.rerank_candidates)
     return retriever
 
 

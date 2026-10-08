@@ -31,6 +31,8 @@ class RetrievalConfig(StrictModel):
     candidates: int = Field(50, gt=0)
     rrf_k: int = Field(60, gt=0)
     reranker: bool = False
+    # Reranker léger par défaut : bge-reranker-v2-m3 (2,2 Go) ferait swapper un PC à 8 Go de RAM.
+    reranker_model: str = "cross-encoder/mmarco-mMiniLMv2-L12-H384-v1"
     # Le reranker renote N candidats pour en garder top_k : il en faut au moins top_k.
     rerank_candidates: int = Field(30, gt=0)
 
@@ -47,8 +49,9 @@ class LLMConfig(StrictModel):
     temperature: float = Field(0.0, ge=0.0, le=2.0)
     # Note les réponses : une autre famille que le générateur, pour qu'un modèle ne se juge pas lui-même.
     judge_model: str = "groq/openai/gpt-oss-120b"
-    # Petites tâches rapides et fréquentes (routeur, reformulation).
-    fast_model: str = "groq/qwen/qwen3.8-27b"
+    # Petites tâches rapides et fréquentes (routeur, juge de l'agent, reformulation).
+    # Gratuit : Qwen sur Groq épuisait son quota de 200 000 tokens par jour.
+    fast_model: str = "gemini/gemini-3.5-flash-lite"
 
 
 class QueryConfig(StrictModel):
