@@ -1,10 +1,12 @@
 """Assemble les briques décrites dans la config (le YAML décide, le code exécute)."""
 
+import os
 from functools import cache
+from pathlib import Path
 
 from ragfr.agent.graph import build_agent
 from ragfr.citations.verify import verify_answer
-from ragfr.config import Config
+from ragfr.config import Config, load_config
 from ragfr.embeddings import Embedder
 from ragfr.generation import Answer, generate_answer
 from ragfr.index import collection_name, get_client
@@ -14,6 +16,14 @@ from ragfr.retrieval.bm25 import BM25Retriever
 from ragfr.retrieval.dense import DenseRetriever
 from ragfr.retrieval.hybrid import HybridRetriever
 from ragfr.retrieval.reranker import Reranker, RerankingRetriever
+
+ROOT = Path(__file__).resolve().parents[2]
+
+
+@cache
+def production_config() -> Config:
+    """La config utilisée en service (API, serveur MCP) : RAGFR_CONFIG, sinon configs/production.yaml."""
+    return load_config(os.environ.get("RAGFR_CONFIG", ROOT / "configs" / "production.yaml"))
 
 
 @cache

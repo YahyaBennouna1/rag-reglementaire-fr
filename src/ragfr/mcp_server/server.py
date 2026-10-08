@@ -1,28 +1,25 @@
 """Serveur MCP : le RAG utilisable depuis n'importe quel client MCP (Claude Desktop, Claude Code, un IDE).
 
 Il appelle exactement le même code que l'évaluation (ragfr.pipeline) : aucune logique en double.
-La configuration utilisée se choisit avec la variable d'environnement RAGFR_CONFIG.
+La configuration se choisit avec la variable d'environnement RAGFR_CONFIG (pipeline.production_config).
 
     uv run python -m ragfr.mcp_server.server            # transport stdio (Claude Desktop)
 """
 
 import json
-import os
 from functools import cache
 from pathlib import Path
 
 from mcp.server.mcpserver import MCPServer
 
-from ragfr.config import Config, load_config
 from ragfr.ingestion.corpus import load_corpus
 from ragfr.ingestion.models import CorpusEntry, ParsedDocument
 from ragfr.ingestion.sections import ANNEX, heading_depth
-from ragfr.pipeline import answer_question, make_search
+from ragfr.pipeline import answer_question, make_search, production_config
 
 ROOT = Path(__file__).resolve().parents[3]
 CORPUS_CSV = ROOT / "data" / "corpus.csv"
 PARSED_DIR = ROOT / "data" / "parsed"
-DEFAULT_CONFIG = ROOT / "configs" / "production.yaml"
 
 # Les descriptions sont courtes et précises : c'est ce que lit le modèle client pour choisir l'outil.
 server = MCPServer(
@@ -32,11 +29,6 @@ server = MCPServer(
         "(administration, authentification, cloud et conteneurs, journalisation)."
     ),
 )
-
-
-@cache
-def config() -> Config:
-    return load_config(os.environ.get("RAGFR_CONFIG", DEFAULT_CONFIG))
 
 
 @cache
@@ -51,7 +43,7 @@ def search_regulations(question: str, k: int = 5, theme: str | None = None) -> l
     theme (optionnel) : administration, authentification, conteneurs ou journalisation.
     """
     k = max(1, min(k, 20))
-    passages = make_search(config()).search(question, 50 if theme else k)
+    passages = make_search(production_config()).search(question, 50 if theme else k)
     if theme:
         passages = [p for p in passages if corpus()[p.doc_ref].theme == theme]
     return [
@@ -66,7 +58,7 @@ def ask_regulations(question: str) -> dict:
 
     Répond « je ne sais pas » si les guides ne contiennent pas la réponse.
     """
-    answer = answer_question(config(), question)
+    answer = answer_question(production_config(), question)
     return {
         "reponse": answer.text,
         "abstention": answer.abstained,
