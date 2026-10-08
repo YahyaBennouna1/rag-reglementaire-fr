@@ -1,8 +1,9 @@
 """Agent correctif : il ne génère une réponse qu'avec des passages jugés suffisants.
 
-route -> retrieve -> grade --suffisant------------------------------> generate -> FIN
+route -> retrieve -> grade --suffisant------------------------------> generate -> verify -> FIN
                        |---partiel/insuffisant (essais restants)--> rewrite -> retrieve
                        |---partiel/insuffisant (plus d'essais)----> abstain -> FIN
+verify : si plus d'un tiers des phrases ne sont pas soutenues -> rewrite (ou abstain).
 """
 
 from typing import Literal, TypedDict
@@ -10,6 +11,7 @@ from typing import Literal, TypedDict
 from langgraph.graph import END, START, StateGraph
 from pydantic import BaseModel, Field
 
+from ragfr.citations.verify import verify_answer
 from ragfr.config import Config
 from ragfr.generation import Answer, format_passages, generate_answer
 from ragfr.llm import complete_json
@@ -28,6 +30,7 @@ class RagState(TypedDict, total=False):
     missing: str  # ce qui manque, selon le juge : guide la reformulation
     rewrites: int
     answer: Answer
+    reliable: bool  # la vérification des citations a-t-elle validé la réponse ?
 
 
 class Grade(BaseModel):
@@ -91,6 +94,12 @@ def build_agent(cfg: Config, retriever):
         answer = generate_answer(state["question"], state["passages"], cfg.llm.model, cfg.llm.temperature)
         return {"answer": answer}
 
+    def verify(state: RagState) -> RagState:
+        if not cfg.citations.verify:
+            return {"reliable": True}
+        answer, reliable = verify_answer(state["answer"], cfg.llm.judge_model)
+        return {"answer": answer, "reliable": reliable, "missing": "des passages qui prouvent la réponse"}
+
     def abstain(state: RagState) -> RagState:
         guides = list(dict.fromkeys(p.titre for p in state["passages"]))[:3]  # sans doublons, dans l'ordre
         text = "Je ne sais pas : les guides ne contiennent pas de réponse suffisante à cette question."
@@ -106,6 +115,13 @@ def build_agent(cfg: Config, retriever):
             return "rewrite"
         return "abstain"
 
+    def after_verify(state: RagState) -> str:
+        if state["reliable"]:
+            return END
+        if state["rewrites"] < cfg.agent.max_rewrites:
+            return "rewrite"
+        return "abstain"
+
     graph = StateGraph(RagState)
     for name, node in [
         ("route", route),
@@ -113,6 +129,7 @@ def build_agent(cfg: Config, retriever):
         ("grade", grade),
         ("rewrite", rewrite),
         ("generate", generate),
+        ("verify", verify),
         ("abstain", abstain),
     ]:
         graph.add_node(name, node)
@@ -121,6 +138,7 @@ def build_agent(cfg: Config, retriever):
     graph.add_edge("retrieve", "grade")
     graph.add_conditional_edges("grade", after_grade, ["generate", "rewrite", "abstain"])
     graph.add_edge("rewrite", "retrieve")
-    graph.add_edge("generate", END)
+    graph.add_edge("generate", "verify")
+    graph.add_conditional_edges("verify", after_verify, [END, "rewrite", "abstain"])
     graph.add_edge("abstain", END)
     return graph.compile()
