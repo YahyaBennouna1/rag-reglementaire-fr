@@ -124,7 +124,9 @@ def _call_with_retries(payload: dict, api_key: str | None, max_retries: int):
             _throttle(payload["model"])
             return litellm.completion(**payload, api_key=api_key, timeout=120)
         except RETRYABLE as error:
-            if attempt == max_retries or is_quota_exhausted(error):
+            # Une requête plus grosse que la limite par minute ne passera jamais : inutile d'attendre.
+            too_large = "request too large" in str(error).lower()
+            if attempt == max_retries or is_quota_exhausted(error) or too_large:
                 raise
             # Attente exponentielle avec gigue : 2 s, 4 s, 8 s… (+ hasard pour désynchroniser les clients)
             time.sleep(min(2 ** (attempt + 1), 60) + random.uniform(0, 1))
