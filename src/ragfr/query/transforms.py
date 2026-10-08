@@ -15,6 +15,7 @@ from ragfr.models import Passage
 from ragfr.retrieval.rrf import reciprocal_rank_fusion
 
 RouteName = Literal["simple", "vague", "multi_documents"]
+Fusion = Literal["rrf", "alternance"]
 
 
 class Route(BaseModel):
@@ -73,24 +74,60 @@ def hypothetical_answer(question: str, model: str) -> str:
     return ask(HYDE_PROMPT.format(question=question), model, Hypothetical).reponse
 
 
-def multi_search(retriever, queries: list[str], k: int, hyde_text: str | None = None) -> list[Passage]:
-    """Lance une recherche par requête et fusionne les listes par RRF.
+def interleave(result_lists: list[list[Passage]]) -> list[Passage]:
+    """Fusion par alternance : le 1er de chaque liste, puis le 2e de chaque liste, etc. (sans doublon).
 
-    HyDE ne remplace la recherche dense que pour la question d'origine (la première de la liste).
+    Pour une question décomposée, chaque sous-question vise un guide différent : on veut le meilleur
+    passage de CHAQUE sous-question en tête. La RRF, elle, favorise les passages présents dans
+    toutes les listes, c'est-à-dire souvent des passages voisins mais génériques.
+    """
+    merged: dict[str, Passage] = {}
+    for rank in range(max(len(results) for results in result_lists)):
+        for results in result_lists:
+            if rank < len(results) and results[rank].id not in merged:
+                merged[results[rank].id] = results[rank]
+    return list(merged.values())
+
+
+def multi_search(
+    retriever,
+    queries: list[str],
+    k: int,
+    hyde_text: str | None = None,
+    original_weight: float = 1.0,
+    fusion: Fusion = "rrf",
+) -> list[Passage]:
+    """Lance une recherche par requête et fusionne les listes (RRF ou alternance).
+
+    La question d'origine est la première de la liste : HyDE ne remplace que sa recherche dense,
+    et elle peut peser plus que les reformulations dans la RRF (original_weight).
     """
     results = [
         retriever.search(q, k, dense_query=hyde_text if i == 0 else None) for i, q in enumerate(queries)
     ]
     if len(results) == 1:
         return results[0]
-    return reciprocal_rank_fusion(results)[:k]
+    if fusion == "alternance":
+        return interleave(results)[:k]
+    weights = [original_weight] + [1.0] * (len(results) - 1)
+    return reciprocal_rank_fusion(results, weights=weights)[:k]
 
 
 class TransformingRetriever:
     """Enveloppe un moteur de recherche : routeur, puis multi-query / décomposition / HyDE."""
 
-    def __init__(self, base, router: bool, hyde: bool, model: str):
+    def __init__(
+        self,
+        base,
+        router: bool,
+        hyde: bool,
+        model: str,
+        original_weight: float = 1.0,
+        decomposition_fusion: Fusion = "rrf",
+    ):
         self.base = base
+        self.original_weight = original_weight
+        self.decomposition_fusion = decomposition_fusion
         self.router = router
         self.hyde = hyde
         self.model = model
@@ -100,4 +137,5 @@ class TransformingRetriever:
         self.last_route = classify(query, self.model) if self.router else "simple"
         queries = expand_queries(query, self.last_route, self.model)
         hyde_text = hypothetical_answer(query, self.model) if self.hyde else dense_query
-        return multi_search(self.base, queries, k, hyde_text)
+        fusion = self.decomposition_fusion if self.last_route == "multi_documents" else "rrf"
+        return multi_search(self.base, queries, k, hyde_text, self.original_weight, fusion)

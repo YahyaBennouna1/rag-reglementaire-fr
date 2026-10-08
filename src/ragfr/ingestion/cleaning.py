@@ -41,6 +41,15 @@ def clean_text(text: str, kind: str = "paragraph") -> str:
     return text.strip()
 
 
+# Points de conduite d'un sommaire : « Gestion des comptes . . . . . . . 27 »
+DOT_LEADERS = re.compile(r"(?:\.\s){4,}")
+
+
+def is_table_of_contents(text: str) -> bool:
+    """Vrai pour un sommaire que Docling a pris pour un tableau (mesure du parsing, tableaux 17 à 19)."""
+    return len(DOT_LEADERS.findall(text)) >= 3
+
+
 def is_noise(text: str) -> bool:
     """Vrai si le bloc est à jeter : rien de lisible (« . ») ou étiquette orpheline (« R2 »)."""
     return not any(ch.isalnum() for ch in text) or bool(ORPHAN_RECO_LABEL.match(text))

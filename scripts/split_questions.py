@@ -11,14 +11,13 @@ import hashlib
 import random
 from pathlib import Path
 
-from ragfr.eval.dataset import load_questions, save_questions
+from ragfr.eval.dataset import QUOTAS, load_questions, save_questions
 
 ROOT = Path(__file__).resolve().parent.parent
 CANDIDATES = ROOT / "data" / "eval" / "candidates.jsonl"
 QUESTIONS = ROOT / "data" / "eval" / "questions.jsonl"
 TEST_FILE = ROOT / "data" / "eval" / "questions_test.jsonl"
 
-QUOTAS = {"factuelle": 80, "tableau": 40, "multi_documents": 40, "vague": 20, "sans_reponse": 20}
 TEST_SHARE = 0.25
 SEED = 42
 

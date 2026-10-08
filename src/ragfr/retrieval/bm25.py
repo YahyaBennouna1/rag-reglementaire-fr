@@ -50,7 +50,8 @@ class BM25Retriever:
         self.client = client
         self.collection = collection
 
-    def search(self, query: str, k: int) -> list[Passage]:
+    def search(self, query: str, k: int, dense_query: str | None = None) -> list[Passage]:
+        # BM25 cherche toujours avec la vraie question : `dense_query` est ignoré.
         vector = query_vector(query)
         if not vector.indices:  # question faite uniquement de mots vides
             return []

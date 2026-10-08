@@ -69,3 +69,33 @@ def test_abstention_apres_deux_reformulations(run):
     assert "Je ne sais pas" in state["answer"].text
     assert "Guide test" in state["answer"].text  # propose les documents les plus proches
     assert len(queries) == 3  # 1 recherche + 2 relances, pas plus
+
+
+def test_agent_utilise_la_fusion_par_alternance(monkeypatch):
+    # c:1 est 2e dans toutes les listes : la RRF le mettrait en tête, l'alternance garde a:1.
+    class ListsRetriever:
+        def search(self, query, k, dense_query=None):
+            first = "b:1" if query == "sous-question 1" else "a:1"
+            return [passage(first), passage("c:1")]
+
+    monkeypatch.setattr(agent_module, "classify", lambda question, model: "multi_documents")
+    monkeypatch.setattr(
+        agent_module, "expand_queries", lambda q, route, model: [q, "sous-question 1", "sous-question 2"]
+    )
+    monkeypatch.setattr(
+        agent_module, "complete_json", lambda *args, **kwargs: Grade(grade="suffisant", useful=[])
+    )
+    monkeypatch.setattr(
+        agent_module,
+        "generate_answer",
+        lambda question, passages, model, temperature: Answer(
+            text="réponse", sentences=[], citations=[], abstained=False, passages=passages
+        ),
+    )
+    cfg = Config(
+        name="test",
+        agent={"enabled": True},
+        query={"router": True, "decomposition_fusion": "alternance"},
+    )
+    state = build_agent(cfg, ListsRetriever()).invoke({"question": "Kerberos et cartes à puce ?"})
+    assert [p.id for p in state["passages"]] == ["a:1", "b:1", "c:1"]

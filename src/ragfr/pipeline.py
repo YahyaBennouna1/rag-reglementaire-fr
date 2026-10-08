@@ -1,10 +1,12 @@
 """Assemble les briques décrites dans la config (le YAML décide, le code exécute)."""
 
+import os
 from functools import cache
+from pathlib import Path
 
 from ragfr.agent.graph import build_agent
 from ragfr.citations.verify import verify_answer
-from ragfr.config import Config
+from ragfr.config import Config, load_config
 from ragfr.embeddings import Embedder
 from ragfr.generation import Answer, generate_answer
 from ragfr.index import collection_name, get_client
@@ -15,35 +17,45 @@ from ragfr.retrieval.dense import DenseRetriever
 from ragfr.retrieval.hybrid import HybridRetriever
 from ragfr.retrieval.reranker import Reranker, RerankingRetriever
 
-
-@cache
-def get_embedder() -> Embedder:
-    return Embedder()
+ROOT = Path(__file__).resolve().parents[2]
 
 
 @cache
-def get_reranker() -> Reranker:
-    return Reranker()
+def production_config() -> Config:
+    """La config utilisée en service (API, serveur MCP) : RAGFR_CONFIG, sinon configs/production.yaml."""
+    return load_config(os.environ.get("RAGFR_CONFIG", ROOT / "configs" / "production.yaml"))
+
+
+@cache
+def get_embedder(model_name: str) -> Embedder:
+    return Embedder(model_name)
+
+
+@cache
+def get_reranker(model_name: str) -> Reranker:
+    return Reranker(model_name)
 
 
 def make_retriever(cfg: Config) -> Retriever:
-    client, collection = get_client(), collection_name(cfg.chunking)
+    client, collection = get_client(), collection_name(cfg)
     r = cfg.retrieval
 
     if r.mode == "dense":
-        retriever = DenseRetriever(client, collection, get_embedder())
+        retriever = DenseRetriever(client, collection, get_embedder(r.embedding_model))
     elif r.mode == "bm25":
         retriever = BM25Retriever(client, collection)
     else:
         retriever = HybridRetriever(
             BM25Retriever(client, collection),
-            DenseRetriever(client, collection, get_embedder()),
+            DenseRetriever(client, collection, get_embedder(r.embedding_model)),
             candidates=r.candidates,
             rrf_k=r.rrf_k,
+            bm25_weight=r.bm25_weight,
         )
 
     if r.reranker:
-        retriever = RerankingRetriever(retriever, get_reranker(), candidates=r.rerank_candidates)
+        reranker = get_reranker(r.reranker_model)
+        retriever = RerankingRetriever(retriever, reranker, candidates=r.rerank_candidates)
     return retriever
 
 
@@ -51,7 +63,14 @@ def make_search(cfg: Config) -> Retriever:
     """La recherche complète hors agent : moteur + (option) routeur et HyDE."""
     retriever = make_retriever(cfg)
     if cfg.query.router or cfg.query.hyde:
-        retriever = TransformingRetriever(retriever, cfg.query.router, cfg.query.hyde, cfg.llm.fast_model)
+        retriever = TransformingRetriever(
+            retriever,
+            cfg.query.router,
+            cfg.query.hyde,
+            cfg.llm.fast_model,
+            cfg.query.original_weight,
+            cfg.query.decomposition_fusion,
+        )
     return retriever
 
 

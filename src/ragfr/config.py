@@ -24,11 +24,17 @@ class ChunkingConfig(StrictModel):
 
 class RetrievalConfig(StrictModel):
     mode: Literal["dense", "bm25", "hybrid"] = "dense"
+    # Modèle d'embedding. bge-m3 (meilleur, 2,2 Go) ne tient pas dans 8 Go de RAM avec le reste du système.
+    embedding_model: str = "intfloat/multilingual-e5-base"
     top_k: int = Field(10, gt=0)
     # Hybride : nombre de résultats demandés à BM25 et au dense avant la fusion RRF.
     candidates: int = Field(50, gt=0)
     rrf_k: int = Field(60, gt=0)
+    # Poids de BM25 dans la fusion (le dense garde 1) : > 1 = plus de confiance aux mots exacts.
+    bm25_weight: float = Field(1.0, gt=0)
     reranker: bool = False
+    # Reranker léger par défaut : bge-reranker-v2-m3 (2,2 Go) ferait swapper un PC à 8 Go de RAM.
+    reranker_model: str = "cross-encoder/mmarco-mMiniLMv2-L12-H384-v1"
     # Le reranker renote N candidats pour en garder top_k : il en faut au moins top_k.
     rerank_candidates: int = Field(30, gt=0)
 
@@ -45,8 +51,9 @@ class LLMConfig(StrictModel):
     temperature: float = Field(0.0, ge=0.0, le=2.0)
     # Note les réponses : une autre famille que le générateur, pour qu'un modèle ne se juge pas lui-même.
     judge_model: str = "groq/openai/gpt-oss-120b"
-    # Petites tâches rapides et fréquentes (routeur, reformulation).
-    fast_model: str = "groq/qwen/qwen3.8-27b"
+    # Petites tâches rapides et fréquentes (routeur, juge de l'agent, reformulation).
+    # Gratuit : Qwen sur Groq épuisait son quota de 200 000 tokens par jour.
+    fast_model: str = "gemini/gemini-3.5-flash-lite"
 
 
 class QueryConfig(StrictModel):
@@ -54,6 +61,12 @@ class QueryConfig(StrictModel):
     router: bool = False
     # HyDE : chercher avec une réponse hypothétique (recherche dense seulement).
     hyde: bool = False
+    # Poids de la question d'origine dans la fusion (les reformulations et sous-questions pèsent 1).
+    # À 1, la question d'origine n'est qu'une voix parmi 3 à 5 : ses termes précis sont dilués.
+    original_weight: float = Field(1.0, gt=0)
+    # Fusion des sous-questions d'une question multi-documents : la RRF favorise les passages présents
+    # dans toutes les listes ; l'alternance met en tête le meilleur passage de chaque sous-question.
+    decomposition_fusion: Literal["rrf", "alternance"] = "rrf"
 
 
 class AgentConfig(StrictModel):

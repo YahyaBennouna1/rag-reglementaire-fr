@@ -1,0 +1,28 @@
+# Ablation requêtes : le routeur, avec une fusion par alternance pour les questions décomposées
+# (requetes_2 : pondérer la question d'origine ne suffit pas, la RRF favorise le consensus)
+name: requetes_3_routeur_alternance
+
+chunking:
+  method: fixed # fixed | semantic | contextual
+  size: 512 # en tokens
+  overlap: 64
+
+retrieval:
+  mode: hybrid # dense | bm25 | hybrid
+  top_k: 10
+  candidates: 50 # hybride : résultats de chaque moteur avant fusion
+  rrf_k: 60
+  bm25_weight: 2.0 # BM25 est nettement plus fort sur ce corpus (voir l'analyse d'erreurs)
+  reranker: false
+  rerank_candidates: 30
+
+query:
+  router: true
+  hyde: false
+  decomposition_fusion: alternance
+
+llm:
+  model: gemini/gemini-3.5-flash-lite
+  temperature: 0.0
+  judge_model: groq/openai/gpt-oss-120b
+  fast_model: gemini/gemini-3.5-flash-lite

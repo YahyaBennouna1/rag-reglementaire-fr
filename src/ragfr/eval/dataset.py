@@ -14,6 +14,9 @@ QuestionType = Literal["factuelle", "tableau", "multi_documents", "vague", "sans
 Status = Literal["genere", "valide", "corrige", "rejete"]
 Split = Literal["dev", "test"]
 
+# Nombre de questions du jeu final, par type (guide du projet).
+QUOTAS = {"factuelle": 80, "tableau": 40, "multi_documents": 40, "vague": 20, "sans_reponse": 20}
+
 
 class Reference(BaseModel):
     doc_ref: str

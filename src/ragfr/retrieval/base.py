@@ -9,4 +9,6 @@ class Retriever(Protocol):
     On peut donc les échanger dans le YAML sans toucher au reste du code.
     """
 
-    def search(self, query: str, k: int) -> list[Passage]: ...
+    def search(self, query: str, k: int, dense_query: str | None = None) -> list[Passage]:
+        """`dense_query` : texte différent pour la recherche dense (HyDE). BM25 garde `query`."""
+        ...

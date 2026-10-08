@@ -7,7 +7,7 @@ from docling.datamodel.pipeline_options import PdfPipelineOptions, TableFormerMo
 from docling.document_converter import DocumentConverter, PdfFormatOption
 from docling_core.types.doc import DoclingDocument, TableItem
 
-from ragfr.ingestion.cleaning import clean_text, is_noise
+from ragfr.ingestion.cleaning import clean_text, is_noise, is_table_of_contents
 from ragfr.ingestion.models import Element, ElementKind
 from ragfr.ingestion.sections import assign_sections
 
@@ -42,6 +42,13 @@ def _is_table_caption(item) -> bool:
     return item.parent is not None and item.parent.cref.startswith("#/tables/")
 
 
+def table_text(caption: str, table_md: str) -> str:
+    """Légende au-dessus du tableau, une seule fois (certaines versions de Docling l'incluent déjà)."""
+    if caption and not table_md.lstrip().startswith(caption):
+        return f"{caption}\n\n{table_md}"
+    return table_md
+
+
 def to_elements(doc: DoclingDocument) -> list[Element]:
     elements = []
     for item, _level in doc.iterate_items():
@@ -52,14 +59,12 @@ def to_elements(doc: DoclingDocument) -> list[Element]:
             continue
 
         if isinstance(item, TableItem):
-            caption = item.caption_text(doc)
-            table_md = item.export_to_markdown(doc=doc)
-            raw = f"{caption}\n\n{table_md}" if caption else table_md
+            raw = table_text(item.caption_text(doc), item.export_to_markdown(doc=doc))
         else:
             raw = item.text
 
         text = clean_text(raw, kind)
-        if is_noise(text):
+        if is_noise(text) or (kind == "table" and is_table_of_contents(text)):
             continue
         pages = [p.page_no for p in item.prov]
         elements.append(Element(kind=kind, text=text, page=min(pages), page_end=max(pages)))

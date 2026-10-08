@@ -17,7 +17,7 @@ CACHE_DB = ROOT / "data" / "cache" / "rerank.sqlite"
 
 
 class Reranker:
-    def __init__(self, model_name: str = "BAAI/bge-reranker-v2-m3", batch_size: int = 8):
+    def __init__(self, model_name: str = "cross-encoder/mmarco-mMiniLMv2-L12-H384-v1", batch_size: int = 8):
         self.model_name = model_name
         self.batch_size = batch_size
         CACHE_DB.parent.mkdir(parents=True, exist_ok=True)
@@ -28,7 +28,7 @@ class Reranker:
     def model(self):
         from sentence_transformers import CrossEncoder
 
-        return CrossEncoder(self.model_name, device="cpu", max_length=1024)
+        return CrossEncoder(self.model_name, device="cpu", max_length=512)
 
     def _key(self, query: str, text: str) -> str:
         return hashlib.sha256(f"{self.model_name}\n{query}\n{text}".encode()).hexdigest()
@@ -65,5 +65,6 @@ class RerankingRetriever:
         self.reranker = reranker
         self.candidates = candidates
 
-    def search(self, query: str, k: int) -> list[Passage]:
-        return self.reranker.rerank(query, self.base.search(query, self.candidates), top_n=k)
+    def search(self, query: str, k: int, dense_query: str | None = None) -> list[Passage]:
+        candidates = self.base.search(query, self.candidates, dense_query=dense_query)
+        return self.reranker.rerank(query, candidates, top_n=k)  # toujours jugé avec la vraie question

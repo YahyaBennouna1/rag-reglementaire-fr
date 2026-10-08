@@ -73,7 +73,10 @@ def build_agent(cfg: Config, retriever):
     def retrieve(state: RagState) -> RagState:
         queries = expand_queries(state["search_query"], state["route"], fast)
         hyde_text = hypothetical_answer(state["search_query"], fast) if cfg.query.hyde else None
-        return {"passages": multi_search(retriever, queries, k, hyde_text)}
+        # Mêmes réglages de fusion que TransformingRetriever (query/transforms.py).
+        fusion = cfg.query.decomposition_fusion if state["route"] == "multi_documents" else "rrf"
+        passages = multi_search(retriever, queries, k, hyde_text, cfg.query.original_weight, fusion)
+        return {"passages": passages}
 
     def grade(state: RagState) -> RagState:
         prompt = GRADE_PROMPT.format(passages=format_passages(state["passages"]), question=state["question"])

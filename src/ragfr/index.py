@@ -9,7 +9,7 @@ from pathlib import Path
 from qdrant_client import QdrantClient, models
 
 from ragfr.chunking.fixed import chunk_fixed
-from ragfr.config import ChunkingConfig
+from ragfr.config import ChunkingConfig, Config
 from ragfr.embeddings import Embedder
 from ragfr.ingestion.models import ParsedDocument
 from ragfr.models import Passage
@@ -20,8 +20,11 @@ PARSED_DIR = ROOT / "data" / "parsed"
 QDRANT_DIR = ROOT / "data" / "qdrant"
 
 
-def collection_name(chunking: ChunkingConfig) -> str:
-    return f"{chunking.method}-{chunking.size}-{chunking.overlap}"
+def collection_name(cfg: Config) -> str:
+    """Une collection par (découpage, modèle d'embedding) : deux modèles n'ont pas les mêmes vecteurs."""
+    c = cfg.chunking
+    model = cfg.retrieval.embedding_model.split("/")[-1]
+    return f"{c.method}-{c.size}-{c.overlap}-{model}"
 
 
 def load_parsed_documents() -> list[ParsedDocument]:

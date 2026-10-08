@@ -18,10 +18,10 @@ def main() -> None:
 
     start = time.perf_counter()
     passages = chunk_corpus(cfg.chunking)
-    name = collection_name(cfg.chunking)
+    name = collection_name(cfg)
     print(f"{len(passages)} passages ({sum(p.is_table for p in passages)} tableaux) -> collection {name}")
 
-    build_index(get_client(), name, passages, get_embedder())
+    build_index(get_client(), name, passages, get_embedder(cfg.retrieval.embedding_model))
     print(f"Index construit en {time.perf_counter() - start:.0f} s")
 
 

@@ -8,6 +8,7 @@
 
 import hashlib
 import json
+import os
 import random
 import time
 from dataclasses import dataclass
@@ -31,6 +32,18 @@ RETRYABLE = (
     litellm.ServiceUnavailableError,
     litellm.InternalServerError,
 )
+
+
+def is_quota_exhausted(error: Exception) -> bool:
+    """Vrai pour un quota qui ne se libère pas en quelques secondes : réessayer ne servirait à rien.
+
+    - quota JOURNALIER épuisé (Groq : « tokens per day (TPD) ») ;
+    - plus de CRÉDITS sur le compte (OpenAI : « insufficient_quota », « no credits remaining »).
+    Une limite par MINUTE, elle, se libère vite : on réessaie.
+    """
+    message = str(error).lower()
+    markers = ("per day", "(tpd)", "(rpd)", "insufficient_quota", "no credits", "exceeded your current quota")
+    return any(marker in message for marker in markers)
 
 
 @dataclass
@@ -76,6 +89,47 @@ def estimated_cost_usd() -> tuple[float, list[str]]:
     return total, unknown
 
 
+# Plusieurs clés possibles par fournisseur, essayées dans l'ordre quand un quota est épuisé.
+# Les clés absentes du fichier .env sont ignorées.
+KEY_NAMES = {"groq/": ["GROQ_API_KEY", "GROQ_API_KEY1"]}
+
+
+def api_keys_for(model: str) -> list[str | None]:
+    """Les clés à essayer pour ce modèle. [None] = LiteLLM prend la clé par défaut dans l'environnement."""
+    for prefix, names in KEY_NAMES.items():
+        if model.startswith(prefix):
+            return [os.environ[name] for name in names if os.environ.get(name)] or [None]
+    return [None]
+
+
+# Intervalle minimal entre deux appels à un même fournisseur (offres gratuites).
+# Ralentir AVANT d'être bloqué vaut mieux que réessayer APRÈS : Gemini gratuit ≈ 15 appels par minute.
+MIN_INTERVAL_S = {"gemini/": 4.5, "groq/": 2.0}
+_last_call: dict[str, float] = {}
+
+
+def _throttle(model: str) -> None:
+    for prefix, interval in MIN_INTERVAL_S.items():
+        if model.startswith(prefix):
+            wait = _last_call.get(prefix, 0.0) + interval - time.monotonic()
+            if wait > 0:
+                time.sleep(wait)
+            _last_call[prefix] = time.monotonic()
+            return
+
+
+def _call_with_retries(payload: dict, api_key: str | None, max_retries: int):
+    for attempt in range(max_retries + 1):
+        try:
+            _throttle(payload["model"])
+            return litellm.completion(**payload, api_key=api_key, timeout=120)
+        except RETRYABLE as error:
+            if attempt == max_retries or is_quota_exhausted(error):
+                raise
+            # Attente exponentielle avec gigue : 2 s, 4 s, 8 s… (+ hasard pour désynchroniser les clients)
+            time.sleep(min(2 ** (attempt + 1), 60) + random.uniform(0, 1))
+
+
 def _cache_key(payload: dict) -> str:
     # sort_keys : le même contenu donne toujours la même chaîne, donc la même clé.
     return hashlib.sha256(json.dumps(payload, sort_keys=True, ensure_ascii=False).encode()).hexdigest()
@@ -111,15 +165,17 @@ def complete(
         )
 
     start = time.perf_counter()
-    for attempt in range(max_retries + 1):
+    keys = api_keys_for(model)
+    for i, api_key in enumerate(keys):
         try:
-            response = litellm.completion(**payload, timeout=120)
+            response = _call_with_retries(payload, api_key, max_retries)
             break
-        except RETRYABLE:
-            if attempt == max_retries:
+        except litellm.RateLimitError as error:
+            # Quota épuisé sur cette clé : on passe à la suivante, s'il y en a une.
+            if i == len(keys) - 1 or not is_quota_exhausted(error):
                 raise
-            # Attente exponentielle avec gigue : 2 s, 4 s, 8 s… (+ hasard pour désynchroniser les clients)
-            time.sleep(min(2 ** (attempt + 1), 60) + random.uniform(0, 1))
+            # On le signale : sinon, impossible de savoir après coup si la clé de secours a servi.
+            print(f"[llm] quota épuisé, clé {i + 1}/{len(keys)} de {model} : clé suivante", flush=True)
 
     result = LLMResponse(
         text=response.choices[0].message.content or "",
