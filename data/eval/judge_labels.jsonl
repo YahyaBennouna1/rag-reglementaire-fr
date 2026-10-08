@@ -1,0 +1,65 @@
+{"id": "q0001-s1", "etiquette": "soutenu", "raison": "le passage dit la même chose", "relu": false}
+{"id": "q0003-s1", "etiquette": "soutenu", "raison": "le passage dit la même chose", "relu": false}
+{"id": "q0006-s1", "etiquette": "soutenu", "raison": "le passage dit la même chose", "relu": false}
+{"id": "q0007-s1", "etiquette": "soutenu", "raison": "le passage dit la même chose", "relu": false}
+{"id": "q0007-s2", "etiquette": "soutenu", "raison": "le passage dit la même chose", "relu": false}
+{"id": "q0008-s1", "etiquette": "soutenu", "raison": "le passage dit la même chose", "relu": false}
+{"id": "q0012-s1", "etiquette": "soutenu", "raison": "le passage dit la même chose", "relu": false}
+{"id": "q0014-s1", "etiquette": "soutenu", "raison": "le passage dit la même chose", "relu": false}
+{"id": "q0018-s1", "etiquette": "soutenu", "raison": "le passage dit la même chose", "relu": false}
+{"id": "q0018-s2", "etiquette": "soutenu", "raison": "le passage dit la même chose", "relu": false}
+{"id": "q0123-s1", "etiquette": "soutenu", "raison": "le passage dit la même chose", "relu": false}
+{"id": "q0124-s1", "etiquette": "soutenu", "raison": "le passage dit la même chose", "relu": false}
+{"id": "q0127-s1", "etiquette": "soutenu", "raison": "le passage dit la même chose", "relu": false}
+{"id": "q0128-s1", "etiquette": "soutenu", "raison": "le passage dit la même chose", "relu": false}
+{"id": "q0129-s1", "etiquette": "soutenu", "raison": "le passage dit la même chose", "relu": false}
+{"id": "q0129-s2", "etiquette": "soutenu", "raison": "le passage dit la même chose", "relu": false}
+{"id": "q0137-s1", "etiquette": "soutenu", "raison": "le passage dit la même chose", "relu": false}
+{"id": "q0182-s1", "etiquette": "soutenu", "raison": "le passage dit la même chose", "relu": false}
+{"id": "q0182-s2", "etiquette": "soutenu", "raison": "le passage dit la même chose", "relu": false}
+{"id": "q0182-s3", "etiquette": "soutenu", "raison": "le passage dit la même chose", "relu": false}
+{"id": "q0182-s4", "etiquette": "soutenu", "raison": "le passage dit la même chose", "relu": false}
+{"id": "q0182-s5", "etiquette": "soutenu", "raison": "le passage dit la même chose", "relu": false}
+{"id": "q0183-s1", "etiquette": "soutenu", "raison": "le passage dit la même chose", "relu": false}
+{"id": "q0183-s2", "etiquette": "soutenu", "raison": "le passage dit la même chose", "relu": false}
+{"id": "q0184-s1", "etiquette": "soutenu", "raison": "le passage dit la même chose", "relu": false}
+{"id": "q0184-s2", "etiquette": "soutenu", "raison": "le passage dit la même chose", "relu": false}
+{"id": "q0184-s3", "etiquette": "soutenu", "raison": "le passage dit la même chose", "relu": false}
+{"id": "q0184-s4", "etiquette": "soutenu", "raison": "le passage dit la même chose", "relu": false}
+{"id": "q0185-s1", "etiquette": "soutenu", "raison": "le passage dit la même chose", "relu": false}
+{"id": "q0187-s1", "etiquette": "soutenu", "raison": "le passage dit la même chose", "relu": false}
+{"id": "q0187-s2", "etiquette": "soutenu", "raison": "le passage dit la même chose", "relu": false}
+{"id": "q0187-s3", "etiquette": "soutenu", "raison": "le passage dit la même chose", "relu": false}
+{"id": "q0187-s4", "etiquette": "soutenu", "raison": "le passage dit la même chose", "relu": false}
+{"id": "q0187-s5", "etiquette": "partiel", "raison": "mélange deux sortes de postes de rebond : navigation Web (détruits après usage) et administration dans le cloud (supprimés et réinstanciés régulièrement)", "relu": false}
+{"id": "q0192-s1", "etiquette": "partiel", "raison": "« en continu » n'est pas dans le passage, et le passage dit que la remédiation peut « par exemple » être menée par des prestataires qualifiés, pas qu'elle l'est", "relu": false}
+{"id": "q0192-s2", "etiquette": "soutenu", "raison": "le passage dit la même chose", "relu": false}
+{"id": "q0243-s1", "etiquette": "soutenu", "raison": "le passage dit la même chose", "relu": false}
+{"id": "q0243-s2", "etiquette": "soutenu", "raison": "le passage dit la même chose", "relu": false}
+{"id": "q0243-s3", "etiquette": "soutenu", "raison": "le passage dit la même chose", "relu": false}
+{"id": "q0244-s1", "etiquette": "soutenu", "raison": "le passage dit la même chose", "relu": false}
+{"id": "q0251-s1", "etiquette": "soutenu", "raison": "le passage dit la même chose", "relu": false}
+{"id": "q0251-s2", "etiquette": "soutenu", "raison": "le passage dit la même chose", "relu": false}
+{"id": "q0252-s1", "etiquette": "soutenu", "raison": "le passage dit la même chose", "relu": false}
+{"id": "q0256-s1", "etiquette": "soutenu", "raison": "le passage dit la même chose", "relu": false}
+{"id": "q0256-s2", "etiquette": "soutenu", "raison": "le passage dit la même chose", "relu": false}
+{"id": "piege-01", "etiquette": "non_soutenu", "raison": "piège : chiffre", "relu": false}
+{"id": "piege-02", "etiquette": "non_soutenu", "raison": "piège : chiffre", "relu": false}
+{"id": "piege-03", "etiquette": "non_soutenu", "raison": "piège : chiffre", "relu": false}
+{"id": "piege-04", "etiquette": "non_soutenu", "raison": "piège : négation", "relu": false}
+{"id": "piege-05", "etiquette": "non_soutenu", "raison": "piège : négation", "relu": false}
+{"id": "piege-06", "etiquette": "non_soutenu", "raison": "piège : mauvaise référence", "relu": false}
+{"id": "piege-07", "etiquette": "non_soutenu", "raison": "piège : négation", "relu": false}
+{"id": "piege-08", "etiquette": "non_soutenu", "raison": "piège : mauvaise référence", "relu": false}
+{"id": "piege-09", "etiquette": "non_soutenu", "raison": "piège : négation", "relu": false}
+{"id": "piege-10", "etiquette": "non_soutenu", "raison": "piège : inversion", "relu": false}
+{"id": "piege-11", "etiquette": "non_soutenu", "raison": "piège : inversion", "relu": false}
+{"id": "piege-12", "etiquette": "non_soutenu", "raison": "piège : mauvais terme", "relu": false}
+{"id": "piege-13", "etiquette": "non_soutenu", "raison": "piège : inversion", "relu": false}
+{"id": "piege-14", "etiquette": "non_soutenu", "raison": "piège : généralisation", "relu": false}
+{"id": "piege-15", "etiquette": "non_soutenu", "raison": "piège : mauvaise condition", "relu": false}
+{"id": "piege-16", "etiquette": "non_soutenu", "raison": "piège : mauvaise référence", "relu": false}
+{"id": "piege-17", "etiquette": "non_soutenu", "raison": "piège : mauvais terme", "relu": false}
+{"id": "piege-18", "etiquette": "non_soutenu", "raison": "piège : inversion", "relu": false}
+{"id": "piege-19", "etiquette": "partiel", "raison": "piège : ajout inventé", "relu": false}
+{"id": "piege-20", "etiquette": "partiel", "raison": "piège : ajout inventé", "relu": false}
