@@ -17,7 +17,7 @@ import re
 import textwrap
 from pathlib import Path
 
-from ragfr.eval.dataset import EvalQuestion, load_questions, save_questions
+from ragfr.eval.dataset import QUOTAS, EvalQuestion, load_questions, save_questions
 from ragfr.eval.retrieval_metrics import normalize
 from ragfr.ingestion.models import ParsedDocument
 
@@ -74,11 +74,21 @@ def show(q: EvalQuestion, index: int, total: int) -> None:
         print("   " + label)
 
 
+def accepted_count(questions: list[EvalQuestion], kind: str) -> int:
+    return sum(q.type == kind and q.statut in ("valide", "corrige") for q in questions)
+
+
 def review(questions: list[EvalQuestion]) -> None:
+    """Relecture ciblée : ordre aléatoire, et on passe les types qui ont déjà atteint leur quota."""
     todo = [q for q in questions if q.statut == "genere"]
-    print(f"{len(todo)} questions à relire sur {len(questions)}.")
+    random.Random(11).shuffle(todo)  # au hasard : chaque type avance en même temps
+    print(f"{len(todo)} questions à relire. Objectif : {QUOTAS}")
     print("Règle : on juge la FIDÉLITÉ AU GUIDE, pas la vérité absolue. Dans le doute, on rejette.")
     for i, q in enumerate(todo, start=1):
+        if accepted_count(questions, q.type) >= QUOTAS[q.type]:
+            continue  # quota atteint pour ce type : inutile de relire plus
+        progress = {k: f"{accepted_count(questions, k)}/{v}" for k, v in QUOTAS.items()}
+        print(f"\nAvancement : {progress}")
         show(q, i, len(todo))
         choice = input("[v]alider [c]orriger [r]ejeter [s]auter [q]uitter > ").strip().lower()
         if choice == "q":
@@ -97,6 +107,21 @@ def review(questions: list[EvalQuestion]) -> None:
 
     counts = {s: sum(q.statut == s for q in questions) for s in ("valide", "corrige", "rejete", "genere")}
     print(f"\nBilan : {counts}")
+
+
+def reset(questions: list[EvalQuestion]) -> None:
+    """Remet à relire les questions validées trop vite. Celles qui ont réussi l'audit restent validées."""
+    audited_ok = set()
+    if AUDIT_FILE.exists():
+        rows = [json.loads(line) for line in AUDIT_FILE.read_text(encoding="utf-8").splitlines() if line]
+        audited_ok = {r["id"] for r in rows if r["ok"]}
+    n = 0
+    for q in questions:
+        if q.statut == "valide" and q.id not in audited_ok:
+            q.statut = "genere"
+            n += 1
+    save_questions(questions, CANDIDATES)
+    print(f"{n} questions remises à relire ; {len(audited_ok)} gardées (réussies à l'audit).")
 
 
 def audit(questions: list[EvalQuestion], n: int, seed: int = 7) -> None:
@@ -147,9 +172,12 @@ def report_audit() -> None:
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     parser.add_argument("--audit", type=int, metavar="N", help="auditer N questions déjà validées")
+    parser.add_argument("--reset", action="store_true", help="remettre à relire les validées trop vite")
     args = parser.parse_args()
     questions = load_questions(CANDIDATES)
-    if args.audit:
+    if args.reset:
+        reset(questions)
+    elif args.audit:
         audit(questions, args.audit)
     else:
         review(questions)

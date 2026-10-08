@@ -5,3 +5,14 @@
 {"id": "q0038", "type": "factuelle", "ok": false, "extrait_prouve": true, "reponse_complete": false, "question_claire": false, "une_seule_reponse": false}
 {"id": "q0276", "type": "sans_reponse", "ok": false, "hors_corpus": true, "question_claire": false}
 {"id": "q0049", "type": "factuelle", "ok": true, "extrait_prouve": true, "reponse_complete": true, "question_claire": true, "une_seule_reponse": true}
+{"id": "q0170", "type": "tableau", "ok": true, "extrait_prouve": true, "reponse_complete": true, "question_claire": true, "une_seule_reponse": true}
+{"id": "q0081", "type": "factuelle", "ok": true, "extrait_prouve": true, "reponse_complete": true, "question_claire": true, "une_seule_reponse": true}
+{"id": "q0207", "type": "multi_documents", "ok": true, "extrait_prouve": true, "reponse_complete": true, "question_claire": true, "une_seule_reponse": true}
+{"id": "q0026", "type": "factuelle", "ok": true, "extrait_prouve": true, "reponse_complete": true, "question_claire": true, "une_seule_reponse": true}
+{"id": "q0040", "type": "factuelle", "ok": true, "extrait_prouve": true, "reponse_complete": true, "question_claire": true, "une_seule_reponse": true}
+{"id": "q0280", "type": "sans_reponse", "ok": false, "hors_corpus": true, "question_claire": false}
+{"id": "q0051", "type": "factuelle", "ok": true, "extrait_prouve": true, "reponse_complete": true, "question_claire": true, "une_seule_reponse": true}
+{"id": "q0192", "type": "multi_documents", "ok": true, "extrait_prouve": true, "reponse_complete": true, "question_claire": true, "une_seule_reponse": true}
+{"id": "q0031", "type": "factuelle", "ok": true, "extrait_prouve": true, "reponse_complete": true, "question_claire": true, "une_seule_reponse": true}
+{"id": "q0264", "type": "vague", "ok": false, "extrait_prouve": true, "reponse_complete": false, "question_claire": false, "une_seule_reponse": false}
+{"id": "q0113", "type": "factuelle", "ok": false, "extrait_prouve": true, "reponse_complete": false, "question_claire": true, "une_seule_reponse": false}
