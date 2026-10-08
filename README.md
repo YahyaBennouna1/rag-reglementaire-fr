@@ -50,7 +50,7 @@ corpus.csv → PDF → Docling → éléments nettoyés         question → gar
 | Jeu d'évaluation : 194 questions validées (145 dev, 49 test figé) | ✅ |
 | RAG de référence : découpage fixe, embeddings, Qdrant | ✅ |
 | Recherche hybride BM25 français + dense, RRF (pondéré), reranker | ✅ mesuré |
-| Routeur, multi-query, décomposition, HyDE | ✅ (à mesurer) |
+| Routeur, multi-query, décomposition, HyDE | ✅ routeur mesuré (multi-query utile sur les questions vagues, décomposition à corriger) |
 | Agent correctif LangGraph, citations vérifiées par un juge | ✅ (à mesurer) |
 | Chunking sémantique et contextual retrieval | ⬜ |
 | Serveur MCP (recherche, réponse citée, description d'un guide) | ✅ |
