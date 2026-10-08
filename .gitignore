@@ -19,3 +19,6 @@ data/qdrant/
 .env
 # Journaux d'ex�cution
 logs/
+
+# Modèles d'IA téléchargés (Hugging Face)
+.cache/

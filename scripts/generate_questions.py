@@ -12,6 +12,7 @@ import random
 import re
 from pathlib import Path
 
+import litellm
 from pydantic import BaseModel
 
 from ragfr.eval.dataset import EvalQuestion, Reference, save_questions
@@ -23,9 +24,10 @@ from ragfr.llm import complete_json
 ROOT = Path(__file__).resolve().parent.parent
 OUT = ROOT / "data" / "eval" / "candidates.jsonl"
 
-# Une autre famille que le générateur des réponses (Gemini) : un modèle qui répondrait à ses propres
-# questions serait avantagé. (gemini-3.5-flash, essayé d'abord, atteignait vite son quota gratuit : 429.)
-MODEL = "groq/qwen/qwen3.8-27b"
+# Modèles essayés dans l'ordre : si le premier a épuisé son quota du jour, on passe au suivant.
+# Tous d'une autre famille que le générateur des réponses (Gemini) : un modèle qui répondrait à ses
+# propres questions serait avantagé. (gemini-3.5-flash, essayé d'abord, atteignait vite son quota.)
+MODELS = ["groq/qwen/qwen3.8-27b", "groq/openai/gpt-oss-20b"]
 SEED = 42
 TARGETS = {"factuelle": 120, "tableau": 60, "multi_documents": 60, "vague": 30, "sans_reponse": 30}
 
@@ -34,6 +36,16 @@ STOPWORDS = set(
     "qui que quoi dont où est sont être doit doivent il elle ils elles on se sa son ses leur leurs "
     "ne pas plus peut peuvent tout tous toute toutes afin ainsi comme si lors entre".split()
 )
+
+
+def ask_llm(messages: list[dict], schema):
+    """Demande au premier modèle qui a encore du quota."""
+    for model in MODELS[:-1]:
+        try:
+            return complete_json(messages, model=model, schema=schema)
+        except litellm.RateLimitError:
+            continue  # quota épuisé : modèle suivant
+    return complete_json(messages, model=MODELS[-1], schema=schema)
 
 
 class Generated(BaseModel):
@@ -158,7 +170,7 @@ def ask_single(doc: ParsedDocument, block: list[Element], consigne: str) -> tupl
     )
     messages = [{"role": "system", "content": SYSTEM}, {"role": "user", "content": prompt}]
     try:
-        out = complete_json(messages, model=MODEL, schema=Generated)
+        out = ask_llm(messages, schema=Generated)
     except Exception as e:  # une réponse inexploitable ne doit pas arrêter la génération
         print(f"  [rejet] réponse LLM inexploitable : {type(e).__name__}")
         return None
@@ -175,10 +187,10 @@ def ask_single(doc: ParsedDocument, block: list[Element], consigne: str) -> tupl
 
 
 def main() -> None:
-    global MODEL
+    global MODELS
     parser = argparse.ArgumentParser(description=__doc__.splitlines()[0])
-    parser.add_argument("--model", default=MODEL, help="modèle LiteLLM utilisé pour générer les questions")
-    MODEL = parser.parse_args().model
+    parser.add_argument("--models", nargs="+", default=MODELS, help="modèles LiteLLM, essayés dans l'ordre")
+    MODELS = parser.parse_args().models
 
     rng = random.Random(SEED)
     docs = load_parsed_documents()
@@ -220,6 +232,7 @@ def main() -> None:
                 )
             )
     print(f"factuelle : {count('factuelle')}")
+    save_questions(questions, OUT)  # sauvegarde après chaque type : un arrêt ne perd rien
 
     # 2. Questions dont la réponse est dans un tableau.
     for doc, table in tables:
@@ -238,6 +251,7 @@ def main() -> None:
                 )
             )
     print(f"tableau : {count('tableau')}")
+    save_questions(questions, OUT)  # sauvegarde après chaque type : un arrêt ne perd rien
 
     # 3. Questions multi-documents : deux blocs de guides différents du même thème, au vocabulaire proche.
     for i, (doc1, block1) in enumerate(blocks):
@@ -255,7 +269,7 @@ def main() -> None:
         )
         messages = [{"role": "system", "content": SYSTEM}, {"role": "user", "content": prompt}]
         try:
-            out = complete_json(messages, model=MODEL, schema=GeneratedMulti)
+            out = ask_llm(messages, schema=GeneratedMulti)
         except Exception as e:
             print(f"  [rejet] réponse LLM inexploitable : {type(e).__name__}")
             continue
@@ -278,13 +292,14 @@ def main() -> None:
             )
         )
     print(f"multi_documents : {count('multi_documents')}")
+    save_questions(questions, OUT)  # sauvegarde après chaque type : un arrêt ne perd rien
 
     # 4. Questions vagues : réécriture de questions factuelles, mêmes références.
     factual = [q for q in questions if q.type == "factuelle"]
     for source in rng.sample(factual, min(TARGETS["vague"], len(factual))):
         messages = [{"role": "user", "content": PROMPT_VAGUE.format(question=source.question)}]
         try:
-            out = complete_json(messages, model=MODEL, schema=Rewritten)
+            out = ask_llm(messages, schema=Rewritten)
         except Exception:
             continue
         keep(
@@ -297,10 +312,11 @@ def main() -> None:
             )
         )
     print(f"vague : {count('vague')}")
+    save_questions(questions, OUT)  # sauvegarde après chaque type : un arrêt ne perd rien
 
     # 5. Questions sans réponse dans le corpus (à vérifier avec soin à la relecture).
     messages = [{"role": "user", "content": PROMPT_UNANSWERABLE.format(n=TARGETS["sans_reponse"])}]
-    for text in complete_json(messages, model=MODEL, schema=Unanswerable).questions:
+    for text in ask_llm(messages, schema=Unanswerable).questions:
         keep(
             EvalQuestion(
                 id="",

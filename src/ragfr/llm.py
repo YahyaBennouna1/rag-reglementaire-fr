@@ -33,6 +33,15 @@ RETRYABLE = (
 )
 
 
+def is_daily_quota(error: Exception) -> bool:
+    """Vrai pour un quota JOURNALIER épuisé : réessayer dans quelques secondes ne servirait à rien.
+
+    (Une limite par minute, elle, se libère vite : on réessaie.)
+    """
+    message = str(error).lower()
+    return "per day" in message or "(tpd)" in message or "(rpd)" in message
+
+
 @dataclass
 class LLMResponse:
     text: str
@@ -115,8 +124,8 @@ def complete(
         try:
             response = litellm.completion(**payload, timeout=120)
             break
-        except RETRYABLE:
-            if attempt == max_retries:
+        except RETRYABLE as error:
+            if attempt == max_retries or is_daily_quota(error):
                 raise
             # Attente exponentielle avec gigue : 2 s, 4 s, 8 s… (+ hasard pour désynchroniser les clients)
             time.sleep(min(2 ** (attempt + 1), 60) + random.uniform(0, 1))

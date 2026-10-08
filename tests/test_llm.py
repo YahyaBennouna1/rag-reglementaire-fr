@@ -65,3 +65,18 @@ def test_json_entre_balises_accepte(isolated_cache, monkeypatch):
     )
     out = llm.complete_json([{"role": "user", "content": "x"}], model="fake/model", schema=Route)
     assert out.route == "simple"
+
+
+def test_quota_journalier_pas_reessaye(isolated_cache, monkeypatch):
+    attempts = []
+
+    def daily_limit(**kw):
+        attempts.append(1)
+        raise litellm.RateLimitError(
+            "Rate limit reached on tokens per day (TPD)", llm_provider="fake", model="fake/model"
+        )
+
+    monkeypatch.setattr(litellm, "completion", daily_limit)
+    with pytest.raises(litellm.RateLimitError):
+        llm.complete([{"role": "user", "content": "x"}], model="fake/model")
+    assert len(attempts) == 1  # un quota du jour ne se libère pas en quelques secondes
