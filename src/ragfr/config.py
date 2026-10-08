@@ -49,10 +49,31 @@ class LLMConfig(StrictModel):
     fast_model: str = "groq/qwen/qwen3.8-27b"
 
 
+class QueryConfig(StrictModel):
+    # Le routeur classe la question (simple / vague / multi_documents) et choisit la transformation.
+    router: bool = False
+    # HyDE : chercher avec une réponse hypothétique (recherche dense seulement).
+    hyde: bool = False
+
+
+class AgentConfig(StrictModel):
+    # Agent correctif : juge les passages, reformule et recherche à nouveau, ou s'abstient.
+    enabled: bool = False
+    max_rewrites: int = Field(2, ge=0)
+
+
+class CitationsConfig(StrictModel):
+    # Un juge vérifie chaque phrase ; les phrases non soutenues sont retirées.
+    verify: bool = False
+
+
 class Config(StrictModel):
     name: str
     chunking: ChunkingConfig = Field(default_factory=ChunkingConfig)
     retrieval: RetrievalConfig = Field(default_factory=RetrievalConfig)
+    query: QueryConfig = Field(default_factory=QueryConfig)
+    agent: AgentConfig = Field(default_factory=AgentConfig)
+    citations: CitationsConfig = Field(default_factory=CitationsConfig)
     llm: LLMConfig = Field(default_factory=LLMConfig)
 
 

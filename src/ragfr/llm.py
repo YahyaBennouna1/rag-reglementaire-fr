@@ -43,6 +43,39 @@ class LLMResponse:
     cached: bool
 
 
+# Tokens consommés par modèle, réponses en cache comprises : on mesure le coût du système
+# tel qu'il tournerait en production, pas seulement ce qu'on a payé pendant le développement.
+usage: dict[str, dict[str, int]] = {}
+
+
+def _track(result: LLMResponse) -> LLMResponse:
+    counts = usage.setdefault(result.model, {"calls": 0, "input_tokens": 0, "output_tokens": 0})
+    counts["calls"] += 1
+    counts["input_tokens"] += result.input_tokens
+    counts["output_tokens"] += result.output_tokens
+    return result
+
+
+def reset_usage() -> None:
+    usage.clear()
+
+
+def estimated_cost_usd() -> tuple[float, list[str]]:
+    """Coût au tarif public payant (prix connus de LiteLLM). Renvoie aussi les modèles sans prix connu."""
+    total, unknown = 0.0, []
+    for model, counts in usage.items():
+        try:
+            cost_in, cost_out = litellm.cost_per_token(
+                model=model,
+                prompt_tokens=counts["input_tokens"],
+                completion_tokens=counts["output_tokens"],
+            )
+            total += cost_in + cost_out
+        except Exception:  # modèle trop récent pour la table de prix de LiteLLM
+            unknown.append(model)
+    return total, unknown
+
+
 def _cache_key(payload: dict) -> str:
     # sort_keys : le même contenu donne toujours la même chaîne, donc la même clé.
     return hashlib.sha256(json.dumps(payload, sort_keys=True, ensure_ascii=False).encode()).hexdigest()
@@ -66,13 +99,15 @@ def complete(
     path = _cache_path(_cache_key(payload))
     if use_cache and path.exists():
         saved = json.loads(path.read_text(encoding="utf-8"))
-        return LLMResponse(
-            text=saved["text"],
-            model=saved["model"],
-            input_tokens=saved["input_tokens"],
-            output_tokens=saved["output_tokens"],
-            latency_s=0.0,
-            cached=True,
+        return _track(
+            LLMResponse(
+                text=saved["text"],
+                model=saved["model"],
+                input_tokens=saved["input_tokens"],
+                output_tokens=saved["output_tokens"],
+                latency_s=0.0,
+                cached=True,
+            )
         )
 
     start = time.perf_counter()
@@ -103,7 +138,7 @@ def complete(
             "output_tokens": result.output_tokens,
         }
         path.write_text(json.dumps(saved, ensure_ascii=False), encoding="utf-8")
-    return result
+    return _track(result)
 
 
 def _extract_json(text: str) -> str:
