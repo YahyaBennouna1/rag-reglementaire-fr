@@ -12,6 +12,7 @@ wheels/
 #Données générées 
 data/raw/
 data/parsed/
+data/cache/
 
 #Secrets 
 .env
