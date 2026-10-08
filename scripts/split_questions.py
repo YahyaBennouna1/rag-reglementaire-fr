@@ -1,6 +1,7 @@
 """Construit le jeu final de 200 questions et le découpe en développement (150) et test (50).
 
-- Quotas par type (guide du projet) : 80 factuelles, 40 tableau, 40 multi-documents, 20 vagues, 20 sans réponse.
+- Quotas par type (guide du projet) : 80 factuelles, 40 tableau, 40 multi-documents,
+  20 vagues, 20 sans réponse.
 - Découpage stratifié : chaque type est réparti 75 % / 25 % entre dev et test.
 - Le fichier de test est ensuite GELÉ : son empreinte SHA-256 est affichée pour le README.
   On règle tous les paramètres sur dev ; test ne sert qu'aux résultats finaux.
