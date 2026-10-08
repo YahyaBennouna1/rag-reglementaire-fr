@@ -174,6 +174,8 @@ def complete(
             # Quota épuisé sur cette clé : on passe à la suivante, s'il y en a une.
             if i == len(keys) - 1 or not is_quota_exhausted(error):
                 raise
+            # On le signale : sinon, impossible de savoir après coup si la clé de secours a servi.
+            print(f"[llm] quota épuisé, clé {i + 1}/{len(keys)} de {model} : clé suivante", flush=True)
 
     result = LLMResponse(
         text=response.choices[0].message.content or "",

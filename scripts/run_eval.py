@@ -148,6 +148,7 @@ def main() -> None:
     parser.add_argument("--questions", default=str(ROOT / "data" / "eval" / "questions.jsonl"))
     parser.add_argument("--answers", action="store_true", help="évaluer aussi les réponses (appels de LLM)")
     parser.add_argument("--limit", type=int, help="seulement les N premières questions (essais rapides)")
+    parser.add_argument("--per-type", type=int, help="N questions de chaque type (échantillon équilibré)")
     args = parser.parse_args()
 
     cfg = load_config(args.config)
@@ -156,6 +157,15 @@ def main() -> None:
         questions = [q for q in questions if q.split == args.split]
     if args.limit:
         questions = questions[: args.limit]
+    if args.per_type:
+        # Les questions sont rangées par type : --limit ne prendrait que des factuelles.
+        counts: dict[str, int] = {}
+        sample = []
+        for q in questions:
+            counts[q.type] = counts.get(q.type, 0) + 1
+            if counts[q.type] <= args.per_type:
+                sample.append(q)
+        questions = sample
 
     result = {
         "date": datetime.now().isoformat(timespec="seconds"),

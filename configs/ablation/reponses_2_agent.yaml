@@ -1,0 +1,23 @@
+# Ablation réponses : + agent correctif (juge les passages, reformule ou s'abstient)
+name: reponses_2_agent
+
+chunking:
+  method: fixed # fixed | semantic | contextual
+  size: 512 # en tokens
+  overlap: 64
+
+retrieval:
+  mode: bm25 # meilleur résultat mesuré (leçon 13, section 7)
+  top_k: 10
+  reranker: false
+  rerank_candidates: 30
+
+agent:
+  enabled: true
+  max_rewrites: 2
+
+llm:
+  model: gemini/gemini-3.5-flash-lite
+  temperature: 0.0
+  judge_model: groq/openai/gpt-oss-120b
+  fast_model: gemini/gemini-3.5-flash-lite
