@@ -1,0 +1,477 @@
+{
+  "date": "2026-10-09T01:15:14",
+  "config": {
+    "name": "reponses_2_agent",
+    "chunking": {
+      "method": "fixed",
+      "size": 512,
+      "overlap": 64
+    },
+    "retrieval": {
+      "mode": "bm25",
+      "embedding_model": "intfloat/multilingual-e5-base",
+      "top_k": 10,
+      "candidates": 50,
+      "rrf_k": 60,
+      "bm25_weight": 1.0,
+      "reranker": false,
+      "reranker_model": "cross-encoder/mmarco-mMiniLMv2-L12-H384-v1",
+      "rerank_candidates": 30
+    },
+    "query": {
+      "router": false,
+      "hyde": false,
+      "original_weight": 1.0,
+      "decomposition_fusion": "rrf"
+    },
+    "agent": {
+      "enabled": true,
+      "max_rewrites": 2
+    },
+    "citations": {
+      "verify": false
+    },
+    "llm": {
+      "model": "gemini/gemini-3.5-flash-lite",
+      "temperature": 0.0,
+      "judge_model": "groq/qwen/qwen3.8-27b",
+      "fast_model": "gemini/gemini-3.5-flash-lite"
+    }
+  },
+  "commit": "b2f34f5",
+  "questions": "questions.jsonl",
+  "split": "dev",
+  "n_questions": 20,
+  "recherche": {
+    "resume": {
+      "recall@5": 0.7812,
+      "recall@10": 0.8125,
+      "mrr": 0.7173,
+      "ndcg@10": 0.7144,
+      "latence_p50_ms": 340.9,
+      "latence_p95_ms": 642.6
+    },
+    "par_type": {
+      "factuelle": {
+        "recall@5": 1.0,
+        "recall@10": 1.0,
+        "mrr": 0.875,
+        "ndcg@10": 0.9077,
+        "n": 4
+      },
+      "multi_documents": {
+        "recall@5": 0.625,
+        "recall@10": 0.75,
+        "mrr": 0.7857,
+        "ndcg@10": 0.667,
+        "n": 4
+      },
+      "tableau": {
+        "recall@5": 1.0,
+        "recall@10": 1.0,
+        "mrr": 0.8333,
+        "ndcg@10": 0.875,
+        "n": 4
+      },
+      "vague": {
+        "recall@5": 0.5,
+        "recall@10": 0.5,
+        "mrr": 0.375,
+        "ndcg@10": 0.4077,
+        "n": 4
+      }
+    },
+    "details": [
+      {
+        "id": "q0001",
+        "type": "factuelle",
+        "recall@5": 1.0,
+        "recall@10": 1.0,
+        "mrr": 1.0,
+        "ndcg@10": 1.0
+      },
+      {
+        "id": "q0003",
+        "type": "factuelle",
+        "recall@5": 1.0,
+        "recall@10": 1.0,
+        "mrr": 0.5,
+        "ndcg@10": 0.6309297535714575
+      },
+      {
+        "id": "q0006",
+        "type": "factuelle",
+        "recall@5": 1.0,
+        "recall@10": 1.0,
+        "mrr": 1.0,
+        "ndcg@10": 1.0
+      },
+      {
+        "id": "q0007",
+        "type": "factuelle",
+        "recall@5": 1.0,
+        "recall@10": 1.0,
+        "mrr": 1.0,
+        "ndcg@10": 1.0
+      },
+      {
+        "id": "q0123",
+        "type": "tableau",
+        "recall@5": 1.0,
+        "recall@10": 1.0,
+        "mrr": 1.0,
+        "ndcg@10": 1.0
+      },
+      {
+        "id": "q0124",
+        "type": "tableau",
+        "recall@5": 1.0,
+        "recall@10": 1.0,
+        "mrr": 1.0,
+        "ndcg@10": 1.0
+      },
+      {
+        "id": "q0127",
+        "type": "tableau",
+        "recall@5": 1.0,
+        "recall@10": 1.0,
+        "mrr": 1.0,
+        "ndcg@10": 1.0
+      },
+      {
+        "id": "q0128",
+        "type": "tableau",
+        "recall@5": 1.0,
+        "recall@10": 1.0,
+        "mrr": 0.3333333333333333,
+        "ndcg@10": 0.5
+      },
+      {
+        "id": "q0182",
+        "type": "multi_documents",
+        "recall@5": 1.0,
+        "recall@10": 1.0,
+        "mrr": 1.0,
+        "ndcg@10": 0.8503449055347546
+      },
+      {
+        "id": "q0183",
+        "type": "multi_documents",
+        "recall@5": 0.5,
+        "recall@10": 0.5,
+        "mrr": 1.0,
+        "ndcg@10": 0.6131471927654584
+      },
+      {
+        "id": "q0184",
+        "type": "multi_documents",
+        "recall@5": 1.0,
+        "recall@10": 1.0,
+        "mrr": 1.0,
+        "ndcg@10": 1.0
+      },
+      {
+        "id": "q0185",
+        "type": "multi_documents",
+        "recall@5": 0.0,
+        "recall@10": 0.5,
+        "mrr": 0.14285714285714285,
+        "ndcg@10": 0.20438239758848611
+      },
+      {
+        "id": "q0243",
+        "type": "vague",
+        "recall@5": 1.0,
+        "recall@10": 1.0,
+        "mrr": 0.5,
+        "ndcg@10": 0.6309297535714575
+      },
+      {
+        "id": "q0244",
+        "type": "vague",
+        "recall@5": 1.0,
+        "recall@10": 1.0,
+        "mrr": 1.0,
+        "ndcg@10": 1.0
+      },
+      {
+        "id": "q0246",
+        "type": "vague",
+        "recall@5": 0.0,
+        "recall@10": 0.0,
+        "mrr": 0.0,
+        "ndcg@10": 0.0
+      },
+      {
+        "id": "q0248",
+        "type": "vague",
+        "recall@5": 0.0,
+        "recall@10": 0.0,
+        "mrr": 0.0,
+        "ndcg@10": 0.0
+      }
+    ]
+  },
+  "reponses": {
+    "resume": {
+      "fidelite": 1.0,
+      "exactitude": 0.9286,
+      "pertinence": 1.0,
+      "precision_citations": null,
+      "couverture_citations": 1.0,
+      "abstention_correcte": 1.0,
+      "fausses_abstentions": 0.125,
+      "latence_p50_s": 7.78,
+      "latence_p95_s": 22.75,
+      "cout_1000_requetes_usd": 3.568,
+      "modeles_sans_prix_connu": [],
+      "tokens_par_modele": {
+        "gemini/gemini-3.5-flash-lite": {
+          "calls": 60,
+          "input_tokens": 203355,
+          "output_tokens": 4145
+        }
+      }
+    },
+    "par_type": {
+      "factuelle": {
+        "fidelite": 1.0,
+        "exactitude": 1.0,
+        "pertinence": 1.0,
+        "fausse_abstention": 0.0,
+        "abstention_correcte": null,
+        "n": 4
+      },
+      "multi_documents": {
+        "fidelite": 1.0,
+        "exactitude": 0.75,
+        "pertinence": 1.0,
+        "fausse_abstention": 0.0,
+        "abstention_correcte": null,
+        "n": 4
+      },
+      "sans_reponse": {
+        "fidelite": null,
+        "exactitude": null,
+        "pertinence": null,
+        "fausse_abstention": null,
+        "abstention_correcte": 1.0,
+        "n": 4
+      },
+      "tableau": {
+        "fidelite": 1.0,
+        "exactitude": 1.0,
+        "pertinence": 1.0,
+        "fausse_abstention": 0.0,
+        "abstention_correcte": null,
+        "n": 4
+      },
+      "vague": {
+        "fidelite": 1.0,
+        "exactitude": 1.0,
+        "pertinence": 1.0,
+        "fausse_abstention": 0.5,
+        "abstention_correcte": null,
+        "n": 4
+      }
+    },
+    "details": [
+      {
+        "id": "q0001",
+        "type": "factuelle",
+        "abstention": false,
+        "reponse": "En cas de centralisation partielle ou inexistante d'un journal, sa taille idéale dépend du volume d'évènements inscrits dans ce dernier et de la réglementation en termes de durée de conservation. [P1]",
+        "fausse_abstention": 0.0,
+        "fidelite": 1.0,
+        "exactitude": 1.0,
+        "pertinence": 1.0,
+        "couverture_citations": 1.0
+      },
+      {
+        "id": "q0003",
+        "type": "factuelle",
+        "abstention": false,
+        "reponse": "L'authentification 3 peut être réalisée au moyen d'un serveur Active Directory, en installant un royaume Kerberos sur Linux, ou encore avec un serveur OpenLDAP. [P1]",
+        "fausse_abstention": 0.0,
+        "fidelite": 1.0,
+        "exactitude": 1.0,
+        "pertinence": 1.0,
+        "couverture_citations": 1.0
+      },
+      {
+        "id": "q0006",
+        "type": "factuelle",
+        "abstention": false,
+        "reponse": "L'utilisation de WDRCG n'est pas nécessairement recommandée, même dans une démarche de défense en profondeur. [P1]",
+        "fausse_abstention": 0.0,
+        "fidelite": 1.0,
+        "exactitude": 1.0,
+        "pertinence": 1.0,
+        "couverture_citations": 1.0
+      },
+      {
+        "id": "q0007",
+        "type": "factuelle",
+        "abstention": false,
+        "reponse": "Les ressources du Tier 0 doivent toujours exiger la signature SMB. [P1] Les ressources du Tier 0 doivent accepter la validation du nom de la cible de serveur SPN (Server SPN target name validation) lorsqu'elle est fournie par le client. [P1]",
+        "fausse_abstention": 0.0,
+        "fidelite": 1.0,
+        "exactitude": 1.0,
+        "pertinence": 1.0,
+        "couverture_citations": 1.0
+      },
+      {
+        "id": "q0123",
+        "type": "tableau",
+        "abstention": false,
+        "reponse": "Si le protocole TLS est mis en œuvre, le prestataire doit appliquer les recommandations de [NT_TLS] [4]. [P1]",
+        "fausse_abstention": 0.0,
+        "fidelite": 1.0,
+        "exactitude": 1.0,
+        "pertinence": 1.0,
+        "couverture_citations": 1.0
+      },
+      {
+        "id": "q0124",
+        "type": "tableau",
+        "abstention": false,
+        "reponse": "La référence de l'exigence SecNumCloud qui impose au prestataire de fournir la liste de tous les droits d'accès d'un utilisateur donné sur les différents éléments du système d'information du service est la 9.3e. [P1, P2]",
+        "fausse_abstention": 0.0,
+        "fidelite": 1.0,
+        "exactitude": 1.0,
+        "pertinence": 1.0,
+        "couverture_citations": 1.0
+      },
+      {
+        "id": "q0127",
+        "type": "tableau",
+        "abstention": false,
+        "reponse": "Pour les opérations de ticket de service Kerberos, il est recommandé d'auditer la réussite et l'échec. [P1, P2]",
+        "fausse_abstention": 0.0,
+        "fidelite": 1.0,
+        "exactitude": 1.0,
+        "pertinence": 1.0,
+        "couverture_citations": 1.0
+      },
+      {
+        "id": "q0128",
+        "type": "tableau",
+        "abstention": false,
+        "reponse": "Le code hexadécimal associé au groupe secp384r1 est 0x0018. [P1]",
+        "fausse_abstention": 0.0,
+        "fidelite": 1.0,
+        "exactitude": 1.0,
+        "pertinence": 1.0,
+        "couverture_citations": 1.0
+      },
+      {
+        "id": "q0182",
+        "type": "multi_documents",
+        "abstention": false,
+        "reponse": "Le nombre de groupes dont un utilisateur est membre est directement proportionnel à la taille de son ticket Kerberos, et ce nombre ne peut pas excéder 1015 sous peine d'empêcher l'ouverture de session Windows. [P4] La taille maximale du ticket Kerberos était de 8000 octets par défaut à la sortie de Windows 2000, avant de passer à 12000 octets depuis Windows 2000 SP2, puis à 48000 octets avec Windows Server 2012. [P4] L'authentification par carte à puce ne protège pas des attaques de type pass-the-hash et pass-the-ticket car elle ne supprime pas le mot de passe AD, qui est au contraire généré automatiquement de manière aléatoire, complexe et sans expiration. [P1, P5] Après chaque authentification réussie par carte à puce, les secrets correspondants sont stockés en mémoire vive sur le poste client, d'où ils peuvent être extraits et réutilisés sans disposer de la carte à puce. [P1, P5] De plus, le changement de secret effectué par l'utilisateur via l'interface graphique modifie uniquement le code PIN de la carte à puce mais laisse inchangés le mot de passe AD et ses secrets associés, qui continuent donc de pouvoir être exploités. [P2, P5]",
+        "fausse_abstention": 0.0,
+        "fidelite": 1.0,
+        "exactitude": 1.0,
+        "pertinence": 1.0,
+        "couverture_citations": 1.0
+      },
+      {
+        "id": "q0183",
+        "type": "multi_documents",
+        "abstention": false,
+        "reponse": "Dans le modèle d'authentification D sous Linux, l'utilisateur s'authentifie d'abord sur son poste nomade au moyen d'un compte local (authentification 1), puis sur un annuaire du SI interne après l'établissement du tunnel VPN (authentification 3). [P1] Le moyen d'authentification est un élément généralement connu ou possédé uniquement par l'utilisateur, constituant une preuve utilisée pour démontrer son identité de manière unique. [P2]",
+        "fausse_abstention": 0.0,
+        "fidelite": 1.0,
+        "exactitude": 1.0,
+        "pertinence": 1.0,
+        "couverture_citations": 1.0
+      },
+      {
+        "id": "q0184",
+        "type": "multi_documents",
+        "abstention": false,
+        "reponse": "Lors de l'installation d'un serveur Windows, s'il est prévu d'utiliser RDP, il est recommandé de ne pas désactiver l'authentification au niveau réseau (NLA). [P2] Il est également conseillé d'activer uniquement les règles de pare-feu nécessaires pour la production sur le pare-feu Windows Defender et, le cas échéant, pour l'administration distante via console MMC. [P2] Le mécanisme Windows Defender Remote Credential Guard (WDRCG) n'est pas nécessairement recommandé, car il s'utilise en remplacement d'autres pratiques de connexion distante par RDP qui offrent un meilleur niveau de sécurité pour respecter le cloisonnement des zones de confiance. [P1] Son utilisation est notamment déconseillée entre hôtes de différentes zones de confiance. [P1]",
+        "fausse_abstention": 0.0,
+        "fidelite": 1.0,
+        "exactitude": 1.0,
+        "pertinence": 1.0,
+        "couverture_citations": 1.0
+      },
+      {
+        "id": "q0185",
+        "type": "multi_documents",
+        "abstention": false,
+        "reponse": "Il n'y a pas de différence de version ni de date de publication pour le guide des recommandations relatives à l'administration sécurisée des systèmes d'information (ANSSI-PA-022), qui est dans les deux cas la version 3.0 publiée en mai 2021. [P1, P2]",
+        "fausse_abstention": 0.0,
+        "fidelite": 1.0,
+        "exactitude": 0.0,
+        "pertinence": 1.0,
+        "couverture_citations": 1.0
+      },
+      {
+        "id": "q0243",
+        "type": "vague",
+        "abstention": false,
+        "reponse": "Le client logiciel permettant l'établissement du tunnel VPN peut être lancé automatiquement au démarrage du poste nomade avant l'ouverture de session utilisateur (mode appelé parfois device tunnel). [P1] Il peut être lancé automatiquement au démarrage du poste nomade après l'ouverture de session utilisateur (mode appelé parfois user tunnel). [P1, P2] Il peut être lancé manuellement par une action de l'utilisateur lui-même, après qu'il a ouvert une session. [P1, P2]",
+        "fausse_abstention": 0.0,
+        "fidelite": 1.0,
+        "exactitude": 1.0,
+        "pertinence": 1.0,
+        "couverture_citations": 1.0
+      },
+      {
+        "id": "q0244",
+        "type": "vague",
+        "abstention": false,
+        "reponse": "L'utilisation d'un boîtier matériel d'acquisition vidéo unidirectionnelle entre les deux postes garantit une rupture protocolaire. [P1, P2]",
+        "fausse_abstention": 0.0,
+        "fidelite": 1.0,
+        "exactitude": 1.0,
+        "pertinence": 1.0,
+        "couverture_citations": 1.0
+      },
+      {
+        "id": "q0246",
+        "type": "vague",
+        "abstention": true,
+        "reponse": "Je ne sais pas : les guides ne contiennent pas de réponse suffisante à cette question. Documents les plus proches : Sécuriser un site web.",
+        "fausse_abstention": 1.0
+      },
+      {
+        "id": "q0248",
+        "type": "vague",
+        "abstention": true,
+        "reponse": "Je ne sais pas : les guides ne contiennent pas de réponse suffisante à cette question. Documents les plus proches : Recommandations de configuration d'un système GNU/Linux.",
+        "fausse_abstention": 1.0
+      },
+      {
+        "id": "q0272",
+        "type": "sans_reponse",
+        "abstention": true,
+        "reponse": "Je ne sais pas : les guides ne contiennent pas de réponse suffisante à cette question. Documents les plus proches : Recommandations pour l’administration sécurisée des SI reposant sur AD ; Recommandations de sécurité relatives à TLS ; Sécuriser la journalisation dans un environnement Microsoft Active Directory.",
+        "abstention_correcte": 1.0
+      },
+      {
+        "id": "q0273",
+        "type": "sans_reponse",
+        "abstention": true,
+        "reponse": "Je ne sais pas : les guides ne contiennent pas de réponse suffisante à cette question. Documents les plus proches : Sécurisation d’une infrastructure VMware ; Recommandations de déploiement d’un service IAAS OpenStack SecNumCloud ; Recommandations sur le nomadisme numérique.",
+        "abstention_correcte": 1.0
+      },
+      {
+        "id": "q0277",
+        "type": "sans_reponse",
+        "abstention": true,
+        "reponse": "Je ne sais pas : les guides ne contiennent pas de réponse suffisante à cette question. Documents les plus proches : Recommandations de déploiement d’un service IAAS OpenStack SecNumCloud ; Recommandations de sécurité relatives à Active Directory ; Recommandations de configuration d'un système GNU/Linux.",
+        "abstention_correcte": 1.0
+      },
+      {
+        "id": "q0278",
+        "type": "sans_reponse",
+        "abstention": true,
+        "reponse": "Je ne sais pas : les guides ne contiennent pas de réponse suffisante à cette question. Documents les plus proches : Automatisation de la gestion des certificats avec ACME ; Attaques par rançongiciels, tous concernés. ; Piloter un projet de supervision.",
+        "abstention_correcte": 1.0
+      }
+    ]
+  }
+}
