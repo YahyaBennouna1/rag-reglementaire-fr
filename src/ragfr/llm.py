@@ -65,8 +65,15 @@ def complete(
     payload = {"model": model, "messages": messages, "temperature": temperature, "max_tokens": max_tokens}
     path = _cache_path(_cache_key(payload))
     if use_cache and path.exists():
-        data = json.loads(path.read_text(encoding="utf-8"))
-        return LLMResponse(**data | {"latency_s": 0.0, "cached": True})
+        saved = json.loads(path.read_text(encoding="utf-8"))
+        return LLMResponse(
+            text=saved["text"],
+            model=saved["model"],
+            input_tokens=saved["input_tokens"],
+            output_tokens=saved["output_tokens"],
+            latency_s=0.0,
+            cached=True,
+        )
 
     start = time.perf_counter()
     for attempt in range(max_retries + 1):
@@ -89,8 +96,13 @@ def complete(
     )
     if use_cache:
         path.parent.mkdir(parents=True, exist_ok=True)
-        fields = {k: v for k, v in result.__dict__.items() if k not in ("latency_s", "cached")}
-        path.write_text(json.dumps(fields, ensure_ascii=False), encoding="utf-8")
+        saved = {
+            "text": result.text,
+            "model": result.model,
+            "input_tokens": result.input_tokens,
+            "output_tokens": result.output_tokens,
+        }
+        path.write_text(json.dumps(saved, ensure_ascii=False), encoding="utf-8")
     return result
 
 
