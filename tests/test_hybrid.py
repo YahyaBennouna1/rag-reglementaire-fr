@@ -4,6 +4,7 @@ from qdrant_client import QdrantClient
 
 from ragfr.index import build_index
 from ragfr.models import Passage
+from ragfr.query.transforms import interleave, multi_search
 from ragfr.retrieval.bm25 import BM25Retriever
 from ragfr.retrieval.dense import DenseRetriever
 from ragfr.retrieval.french_analyzer import analyze
@@ -121,3 +122,28 @@ def test_integration_hyde_sur_les_vrais_moteurs(corpus, monkeypatch):
     )
     results = search.search("longueur minimale d'un mot de passe", k=2)
     assert results[0].id == "auth:1"
+
+
+def test_poids_de_la_question_d_origine():
+    # La question d'origine met A en tête ; les deux sous-questions mettent B en tête.
+    class FakeRetriever:
+        def search(self, query, k, dense_query=None):
+            ids = ["a:1", "b:1"] if query == "origine" else ["b:1", "a:1"]
+            return [passage(i) for i in ids]
+
+    queries = ["origine", "sous-question 1", "sous-question 2"]
+    # Poids 1 : deux voix contre une, B gagne.
+    assert multi_search(FakeRetriever(), queries, k=2)[0].id == "b:1"
+    # Poids 3 : la question d'origine pèse plus que les deux autres réunies : A gagne.
+    assert multi_search(FakeRetriever(), queries, k=2, original_weight=3.0)[0].id == "a:1"
+
+
+def test_alternance_met_en_tete_le_meilleur_de_chaque_liste():
+    # c:1 est 2e partout : la RRF le met en tête ; l'alternance garde les deux premiers de chaque liste.
+    listes = [
+        [passage("a:1"), passage("c:1")],
+        [passage("b:1"), passage("c:1")],
+        [passage("a:1"), passage("c:1")],
+    ]
+    assert reciprocal_rank_fusion(listes)[0].id == "c:1"  # 3 × 1/62 = 0,048 > a:1 : 2 × 1/61 = 0,033
+    assert [p.id for p in interleave(listes)] == ["a:1", "b:1", "c:1"]

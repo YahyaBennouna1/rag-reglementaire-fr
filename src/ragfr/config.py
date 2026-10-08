@@ -61,6 +61,12 @@ class QueryConfig(StrictModel):
     router: bool = False
     # HyDE : chercher avec une réponse hypothétique (recherche dense seulement).
     hyde: bool = False
+    # Poids de la question d'origine dans la fusion (les reformulations et sous-questions pèsent 1).
+    # À 1, la question d'origine n'est qu'une voix parmi 3 à 5 : ses termes précis sont dilués.
+    original_weight: float = Field(1.0, gt=0)
+    # Fusion des sous-questions d'une question multi-documents : la RRF favorise les passages présents
+    # dans toutes les listes ; l'alternance met en tête le meilleur passage de chaque sous-question.
+    decomposition_fusion: Literal["rrf", "alternance"] = "rrf"
 
 
 class AgentConfig(StrictModel):

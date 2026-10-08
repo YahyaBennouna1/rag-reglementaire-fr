@@ -1,0 +1,28 @@
+# Ablation requêtes : le routeur, avec la question d'origine pondérée x2 dans la fusion
+# (requetes_1 : les sous-questions diluaient la question d'origine, MRR multi-documents en baisse)
+name: requetes_2_routeur_poids
+
+chunking:
+  method: fixed # fixed | semantic | contextual
+  size: 512 # en tokens
+  overlap: 64
+
+retrieval:
+  mode: hybrid # dense | bm25 | hybrid
+  top_k: 10
+  candidates: 50 # hybride : résultats de chaque moteur avant fusion
+  rrf_k: 60
+  bm25_weight: 2.0 # BM25 est nettement plus fort sur ce corpus (voir l'analyse d'erreurs)
+  reranker: false
+  rerank_candidates: 30
+
+query:
+  router: true
+  hyde: false
+  original_weight: 2.0
+
+llm:
+  model: gemini/gemini-3.5-flash-lite
+  temperature: 0.0
+  judge_model: groq/openai/gpt-oss-120b
+  fast_model: gemini/gemini-3.5-flash-lite

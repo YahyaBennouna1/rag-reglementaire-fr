@@ -63,7 +63,14 @@ def make_search(cfg: Config) -> Retriever:
     """La recherche complète hors agent : moteur + (option) routeur et HyDE."""
     retriever = make_retriever(cfg)
     if cfg.query.router or cfg.query.hyde:
-        retriever = TransformingRetriever(retriever, cfg.query.router, cfg.query.hyde, cfg.llm.fast_model)
+        retriever = TransformingRetriever(
+            retriever,
+            cfg.query.router,
+            cfg.query.hyde,
+            cfg.llm.fast_model,
+            cfg.query.original_weight,
+            cfg.query.decomposition_fusion,
+        )
     return retriever
 
 
