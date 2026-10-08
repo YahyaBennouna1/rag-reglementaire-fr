@@ -25,9 +25,10 @@ Un RAG naïf se code en 50 lignes. Ce projet s'intéresse à ce qui fait la diff
 | Évaluation | **LLM-as-a-judge**, jeu d'évaluation synthétique validé, **recall@k, MRR, nDCG**, fidélité / exactitude / pertinence, **kappa de Cohen**, intervalles de confiance, **ablation**, découpage dev / test figé, coût pour 1 000 requêtes |
 | Données | **Docling** (parsing PDF, tableaux), PyMuPDF, web scraping (httpx, BeautifulSoup), nettoyage par regex, normalisation Unicode, hiérarchie des sections |
 | Stockage | **Qdrant** (vecteurs denses et creux), SQLite (cache d'embeddings et de reranking), empreintes SHA-256 |
+| Service | **FastAPI** (validation Pydantic, sondes health / ready, clé d'API, limite de débit), serveur **MCP** (Model Context Protocol : outils et ressource pour Claude Desktop ou un IDE) |
 | Ingénierie | **Python 3.12**, **uv**, **Pydantic**, **pytest** (tests unitaires, d'intégration, mocks), **ruff**, configuration YAML, Git (Conventional Commits, pull requests) |
 
-**Prévu** : GraphRAG (Neo4j), contextual retrieval, serveur **MCP**, garde-fous (injection de prompt, **Presidio**), **FastAPI**, **Docker**, **Kubernetes** (kind), **Terraform**, **GitHub Actions** (CI avec seuil de régression), **Langfuse**, démo Hugging Face Spaces.
+**Prévu** : GraphRAG (Neo4j), contextual retrieval, garde-fous (injection de prompt, **Presidio**), **Docker**, **Kubernetes** (kind), **Terraform**, **GitHub Actions** (CI avec seuil de régression), **Langfuse**, démo Hugging Face Spaces.
 
 ## Architecture
 
@@ -46,14 +47,16 @@ corpus.csv → PDF → Docling → éléments nettoyés         question → gar
 | Collecte du corpus (scraping du catalogue ANSSI, 45 guides sur 4 thèmes) | ✅ |
 | Ingestion : parsing Docling, nettoyage, hiérarchie des sections, cache | ✅ |
 | Mesure du parsing des tableaux (Docling contre PyMuPDF) | ✅ |
-| Jeu d'évaluation (questions générées, filtrées et validées) | ⏳ |
+| Jeu d'évaluation : 194 questions validées (145 dev, 49 test figé) | ✅ |
 | RAG de référence : découpage fixe, embeddings, Qdrant | ✅ |
-| Recherche hybride BM25 français + dense, RRF, reranker | ✅ (mesures en cours) |
+| Recherche hybride BM25 français + dense, RRF (pondéré), reranker | ✅ mesuré |
 | Routeur, multi-query, décomposition, HyDE | ✅ (à mesurer) |
 | Agent correctif LangGraph, citations vérifiées par un juge | ✅ (à mesurer) |
 | Chunking sémantique et contextual retrieval | ⬜ |
-| GraphRAG, serveur MCP, garde-fous | ⬜ |
-| API FastAPI, Docker, Kubernetes (kind) + Terraform, CI qui bloque les régressions | ⬜ |
+| Serveur MCP (recherche, réponse citée, description d'un guide) | ✅ |
+| GraphRAG, garde-fous | ⬜ |
+| API FastAPI (ask, search, health, ready) | ✅ |
+| Docker, Kubernetes (kind) + Terraform, CI qui bloque les régressions | ⬜ |
 
 ## Évaluation
 
