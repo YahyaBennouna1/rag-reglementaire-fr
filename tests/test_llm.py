@@ -93,3 +93,19 @@ def test_credits_epuises_pas_reessayes(isolated_cache, monkeypatch):
     with pytest.raises(litellm.RateLimitError):
         llm.complete([{"role": "user", "content": "x"}], model="fake/model")
     assert len(attempts) == 1  # sans crédit, réessayer ne sert à rien
+
+
+def test_cle_de_secours_quand_le_quota_est_epuise(isolated_cache, monkeypatch):
+    monkeypatch.setenv("GROQ_API_KEY", "cle-1")
+    monkeypatch.setenv("GROQ_API_KEY1", "cle-2")
+    used = []
+
+    def by_key(**kw):
+        used.append(kw["api_key"])
+        if kw["api_key"] == "cle-1":
+            raise litellm.RateLimitError("tokens per day (TPD)", llm_provider="groq", model="x")
+        return fake_response("ok")
+
+    monkeypatch.setattr(litellm, "completion", by_key)
+    assert llm.complete([{"role": "user", "content": "x"}], model="groq/qwen").text == "ok"
+    assert used == ["cle-1", "cle-2"]  # une seule tentative sur la clé épuisée, puis la suivante
