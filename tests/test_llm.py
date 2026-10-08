@@ -109,3 +109,16 @@ def test_cle_de_secours_quand_le_quota_est_epuise(isolated_cache, monkeypatch):
     monkeypatch.setattr(litellm, "completion", by_key)
     assert llm.complete([{"role": "user", "content": "x"}], model="groq/qwen").text == "ok"
     assert used == ["cle-1", "cle-2"]  # une seule tentative sur la clé épuisée, puis la suivante
+
+
+def test_les_appels_sont_espaces(isolated_cache, monkeypatch):
+    clock = {"t": 100.0}
+    sleeps = []
+    monkeypatch.setattr(llm.time, "monotonic", lambda: clock["t"])
+    monkeypatch.setattr(llm.time, "sleep", lambda s: sleeps.append(s) or clock.update(t=clock["t"] + s))
+    monkeypatch.setattr(llm, "_last_call", {})
+    monkeypatch.setattr(litellm, "completion", lambda **kw: fake_response("ok"))
+
+    llm.complete([{"role": "user", "content": "a"}], model="gemini/x")
+    llm.complete([{"role": "user", "content": "b"}], model="gemini/x")  # même seconde : doit attendre
+    assert sleeps == [pytest.approx(llm.MIN_INTERVAL_S["gemini/"])]

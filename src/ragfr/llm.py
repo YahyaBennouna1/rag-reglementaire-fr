@@ -102,9 +102,26 @@ def api_keys_for(model: str) -> list[str | None]:
     return [None]
 
 
+# Intervalle minimal entre deux appels à un même fournisseur (offres gratuites).
+# Ralentir AVANT d'être bloqué vaut mieux que réessayer APRÈS : Gemini gratuit ≈ 15 appels par minute.
+MIN_INTERVAL_S = {"gemini/": 4.5, "groq/": 2.0}
+_last_call: dict[str, float] = {}
+
+
+def _throttle(model: str) -> None:
+    for prefix, interval in MIN_INTERVAL_S.items():
+        if model.startswith(prefix):
+            wait = _last_call.get(prefix, 0.0) + interval - time.monotonic()
+            if wait > 0:
+                time.sleep(wait)
+            _last_call[prefix] = time.monotonic()
+            return
+
+
 def _call_with_retries(payload: dict, api_key: str | None, max_retries: int):
     for attempt in range(max_retries + 1):
         try:
+            _throttle(payload["model"])
             return litellm.completion(**payload, api_key=api_key, timeout=120)
         except RETRYABLE as error:
             if attempt == max_retries or is_quota_exhausted(error):
