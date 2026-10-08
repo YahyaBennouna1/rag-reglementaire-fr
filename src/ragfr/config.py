@@ -37,8 +37,13 @@ class RetrievalConfig(StrictModel):
 
 
 class LLMConfig(StrictModel):
-    model: str = "gemini/gemini-2.5-flash"
+    # Génère les réponses. Les noms suivent LiteLLM : "fournisseur/modèle".
+    model: str = "gemini/gemini-3.5-flash-lite"
     temperature: float = Field(0.0, ge=0.0, le=2.0)
+    # Note les réponses : une autre famille que le générateur, pour qu'un modèle ne se juge pas lui-même.
+    judge_model: str = "groq/openai/gpt-oss-120b"
+    # Petites tâches rapides et fréquentes (routeur, reformulation).
+    fast_model: str = "groq/qwen/qwen3.8-27b"
 
 
 class Config(StrictModel):
