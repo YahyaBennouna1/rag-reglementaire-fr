@@ -17,7 +17,7 @@ data/qdrant/
 
 #Secrets 
 .env
-# Journaux d'ex�cution
+# Journaux d'exécution
 logs/
 
 # Modèles d'IA téléchargés (Hugging Face)
