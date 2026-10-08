@@ -65,5 +65,6 @@ class RerankingRetriever:
         self.reranker = reranker
         self.candidates = candidates
 
-    def search(self, query: str, k: int) -> list[Passage]:
-        return self.reranker.rerank(query, self.base.search(query, self.candidates), top_n=k)
+    def search(self, query: str, k: int, dense_query: str | None = None) -> list[Passage]:
+        candidates = self.base.search(query, self.candidates, dense_query=dense_query)
+        return self.reranker.rerank(query, candidates, top_n=k)  # toujours jugé avec la vraie question

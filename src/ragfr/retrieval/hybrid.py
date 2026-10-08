@@ -13,7 +13,7 @@ class HybridRetriever:
         self.candidates = candidates  # nombre de résultats demandés à chaque moteur avant la fusion
         self.rrf_k = rrf_k
 
-    def search(self, query: str, k: int) -> list[Passage]:
+    def search(self, query: str, k: int, dense_query: str | None = None) -> list[Passage]:
         lexical = self.bm25.search(query, self.candidates)
-        semantic = self.dense.search(query, self.candidates)
+        semantic = self.dense.search(query, self.candidates, dense_query=dense_query)
         return reciprocal_rank_fusion([lexical, semantic], k=self.rrf_k)[:k]

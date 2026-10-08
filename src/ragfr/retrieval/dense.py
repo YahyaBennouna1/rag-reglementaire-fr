@@ -12,8 +12,8 @@ class DenseRetriever:
         self.collection = collection
         self.embedder = embedder
 
-    def search(self, query: str, k: int) -> list[Passage]:
-        vector = self.embedder.encode([query])[0]
+    def search(self, query: str, k: int, dense_query: str | None = None) -> list[Passage]:
+        vector = self.embedder.encode([dense_query or query])[0]
         hits = self.client.query_points(
             self.collection, query=vector.tolist(), using="dense", limit=k, with_payload=True
         )
