@@ -13,6 +13,7 @@ dependencies = [
     "httpx>=0.28.1",
     "langgraph>=1.2.14",
     "litellm>=1.104.2",
+    "mcp[cli]>=2.3.0",
     "pydantic>=2.13.5",
     "pymupdf>=1.28.2",
     "python-dotenv>=1.2.4",
