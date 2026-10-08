@@ -16,6 +16,7 @@ from mcp.server.mcpserver import MCPServer
 from ragfr.config import Config, load_config
 from ragfr.ingestion.corpus import load_corpus
 from ragfr.ingestion.models import CorpusEntry, ParsedDocument
+from ragfr.ingestion.sections import ANNEX, heading_depth
 from ragfr.pipeline import answer_question, make_search
 
 ROOT = Path(__file__).resolve().parents[3]
@@ -83,8 +84,13 @@ def get_document(doc_ref: str) -> dict:
         return {"erreur": f"guide inconnu : {doc_ref}", "guides_disponibles": sorted(corpus())}
     entry = corpus()[doc_ref]
     parsed = ParsedDocument.model_validate_json((PARSED_DIR / f"{doc_ref}.json").read_text(encoding="utf-8"))
-    # Sommaire : les titres numérotés de premier et deuxième niveau (« 2 … », « 2.1 … »).
-    sommaire = [e.text for e in parsed.elements if e.kind == "heading" and 1 <= len(e.section_path) <= 2]
+    # Sommaire : seulement les titres NUMÉROTÉS de niveau 1 et 2 (« 2 … », « 2.1 … »). On écarte le titre
+    # du guide, les références internes et « Table des matières », qui ne sont pas des sections.
+    sommaire = [
+        e.text
+        for e in parsed.elements
+        if e.kind == "heading" and (heading_depth(e.text) or 0) in (1, 2) and not ANNEX.match(e.text)
+    ]
     return {**entry.model_dump(), "pages": parsed.n_pages, "sommaire": sommaire[:60]}
 
 

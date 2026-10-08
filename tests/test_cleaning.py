@@ -50,3 +50,14 @@ def test_sommaire_detecte():
     assert is_table_of_contents(sommaire)
     vrai_tableau = "| Code TLS | Suite |\n|---|---|\n| 0x1302 | TLS_AES_256_GCM_SHA384 |"
     assert not is_table_of_contents(vrai_tableau)
+
+
+def test_legende_de_tableau_une_seule_fois():
+    from ragfr.ingestion.docling_parser import table_text
+
+    tableau = "| a | b |\n|---|---|\n| 1 | 2 |"
+    assert table_text("TABLE 3 - Longueurs", tableau) == "TABLE 3 - Longueurs\n\n" + tableau
+    # Docling a déjà mis la légende : on ne la répète pas
+    deja = "TABLE 3 - Longueurs\n\n" + tableau
+    assert table_text("TABLE 3 - Longueurs", deja) == deja
+    assert table_text("", tableau) == tableau

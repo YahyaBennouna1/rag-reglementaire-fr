@@ -42,6 +42,13 @@ def _is_table_caption(item) -> bool:
     return item.parent is not None and item.parent.cref.startswith("#/tables/")
 
 
+def table_text(caption: str, table_md: str) -> str:
+    """Légende au-dessus du tableau, une seule fois (certaines versions de Docling l'incluent déjà)."""
+    if caption and not table_md.lstrip().startswith(caption):
+        return f"{caption}\n\n{table_md}"
+    return table_md
+
+
 def to_elements(doc: DoclingDocument) -> list[Element]:
     elements = []
     for item, _level in doc.iterate_items():
@@ -52,9 +59,7 @@ def to_elements(doc: DoclingDocument) -> list[Element]:
             continue
 
         if isinstance(item, TableItem):
-            caption = item.caption_text(doc)
-            table_md = item.export_to_markdown(doc=doc)
-            raw = f"{caption}\n\n{table_md}" if caption else table_md
+            raw = table_text(item.caption_text(doc), item.export_to_markdown(doc=doc))
         else:
             raw = item.text
 
