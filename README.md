@@ -43,8 +43,8 @@ corpus.csv → PDF → Docling → éléments nettoyés         question → gar
 
 **Le jeu de questions.** Les questions sont générées à partir de passages tirés au hasard, en 5 types : factuelles, réponse dans un tableau, multi-documents, vagues et sans réponse dans le corpus. Chaque question garde la référence de sa source (guide, page, extrait exact), indépendante du découpage. Elles sont ensuite :
 - **filtrées automatiquement** : extrait vérifié mot pour mot dans le guide, question qui ne recopie pas le texte, pas de doublon ;
-- **validées selon une grille de 4 critères fondée sur le document source** : l'extrait prouve la réponse, la réponse est complète, la question se comprend seule, et une seule bonne réponse est possible. Pour les questions sans réponse, on vérifie que les passages les plus proches ne répondent pas ;
-- **auditées sur un échantillon** tiré au hasard, pour mesurer le taux d'erreur restant.
+- **validées selon une grille de 4 critères fondée sur le document source** : l'extrait prouve la réponse, la réponse est complète, la question se comprend seule, une seule bonne réponse possible. Pour les questions sans réponse, on vérifie que les passages les plus proches ne répondent pas.
+- **Validation semi-automatique** : j'ai d'abord audité manuellement un échantillon tiré au hasard. Cet audit a montré qu'une relecture rapide laissait passer beaucoup d'erreurs (questions qui parlent du document au lieu du sujet, réponses incomplètes). J'ai donc mis en place un LLM juge appliquant la même grille, et mesuré son accord avec mes jugements (kappa de Cohen) avant de l'appliquer à toutes les questions.
 
 Le jeu final (200 questions) est découpé en 150 questions de développement et 50 questions de test ; le jeu de test est figé et son empreinte SHA-256 est publiée.
 
