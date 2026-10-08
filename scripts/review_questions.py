@@ -13,51 +13,15 @@ on juge si elle est FIDÈLE AU GUIDE, qui est affiché à l'écran.
 import argparse
 import json
 import random
-import re
 import textwrap
 from pathlib import Path
 
 from ragfr.eval.dataset import QUOTAS, EvalQuestion, load_questions, save_questions
-from ragfr.eval.retrieval_metrics import normalize
-from ragfr.ingestion.models import ParsedDocument
+from ragfr.eval.review import CRITERIA, UNANSWERABLE_CRITERIA, source_context
 
 ROOT = Path(__file__).resolve().parent.parent
 CANDIDATES = ROOT / "data" / "eval" / "candidates.jsonl"
 AUDIT_FILE = ROOT / "data" / "eval" / "audit.jsonl"
-PARSED_DIR = ROOT / "data" / "parsed"
-
-CRITERIA = [
-    ("extrait_prouve", "1. L'extrait (ou sa ligne de tableau) PROUVE-t-il la réponse ?"),
-    ("reponse_complete", "2. La réponse est-elle COMPLÈTE (le passage ne dit pas plus) ?"),
-    ("question_claire", "3. La question se comprend-elle SEULE, sans le guide sous les yeux ?"),
-    ("une_seule_reponse", "4. N'y a-t-il qu'UNE bonne réponse (pas d'autre passage contradictoire) ?"),
-]
-UNANSWERABLE_CRITERIA = [
-    ("hors_corpus", "1. Les guides ne répondent-ils VRAIMENT pas (cherche dans data/parsed/*.md) ?"),
-    ("question_claire", "2. La question se comprend-elle seule et reste-t-elle proche des thèmes ?"),
-]
-
-_docs: dict[str, ParsedDocument] = {}
-
-
-def source_context(doc_ref: str, extrait: str, width: int = 1500) -> str:
-    """Le texte du guide autour de l'extrait : c'est la référence pour juger."""
-    if doc_ref not in _docs:
-        _docs[doc_ref] = ParsedDocument.model_validate_json(
-            (PARSED_DIR / f"{doc_ref}.json").read_text(encoding="utf-8")
-        )
-    elements = _docs[doc_ref].elements
-    target = normalize(extrait)
-    for i, el in enumerate(elements):
-        if target and target in normalize(el.text):
-            around = elements[max(0, i - 2) : i + 3]
-            # Les tableaux Markdown ont de très longues lignes de tirets et d'espaces : on les raccourcit.
-            text = "\n".join(e.text for e in around)
-            text = re.sub(r"-{4,}", "---", text)
-            text = re.sub(r" {2,}", " ", text)
-            section = " > ".join(el.section_path)
-            return f"[{section}]\n{text[:width]}{'…' if len(text) > width else ''}"
-    return "(passage source introuvable)"
 
 
 def show(q: EvalQuestion, index: int, total: int) -> None:
