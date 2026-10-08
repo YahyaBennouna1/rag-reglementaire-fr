@@ -8,3 +8,10 @@ wheels/
 
 # Virtual environments
 .venv
+
+#Données générées 
+data/raw/
+data/parsed/
+
+#Secrets 
+.env
