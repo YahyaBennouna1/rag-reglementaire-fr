@@ -24,6 +24,8 @@ class ChunkingConfig(StrictModel):
 
 class RetrievalConfig(StrictModel):
     mode: Literal["dense", "bm25", "hybrid"] = "dense"
+    # Modèle d'embedding. bge-m3 (meilleur, 2,2 Go) ne tient pas dans 8 Go de RAM avec le reste du système.
+    embedding_model: str = "intfloat/multilingual-e5-base"
     top_k: int = Field(10, gt=0)
     # Hybride : nombre de résultats demandés à BM25 et au dense avant la fusion RRF.
     candidates: int = Field(50, gt=0)

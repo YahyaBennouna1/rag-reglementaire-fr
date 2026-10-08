@@ -17,8 +17,8 @@ from ragfr.retrieval.reranker import Reranker, RerankingRetriever
 
 
 @cache
-def get_embedder() -> Embedder:
-    return Embedder()
+def get_embedder(model_name: str) -> Embedder:
+    return Embedder(model_name)
 
 
 @cache
@@ -27,17 +27,17 @@ def get_reranker() -> Reranker:
 
 
 def make_retriever(cfg: Config) -> Retriever:
-    client, collection = get_client(), collection_name(cfg.chunking)
+    client, collection = get_client(), collection_name(cfg)
     r = cfg.retrieval
 
     if r.mode == "dense":
-        retriever = DenseRetriever(client, collection, get_embedder())
+        retriever = DenseRetriever(client, collection, get_embedder(r.embedding_model))
     elif r.mode == "bm25":
         retriever = BM25Retriever(client, collection)
     else:
         retriever = HybridRetriever(
             BM25Retriever(client, collection),
-            DenseRetriever(client, collection, get_embedder()),
+            DenseRetriever(client, collection, get_embedder(r.embedding_model)),
             candidates=r.candidates,
             rrf_k=r.rrf_k,
         )

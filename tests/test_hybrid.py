@@ -56,7 +56,7 @@ class FakeEmbedder:
     dim = 4
     TOPICS = ["mot de passe", "conteneur", "journal", "chiffrement"]
 
-    def encode(self, texts, show_progress=False):
+    def encode(self, texts, kind="passage", show_progress=False):
         rows = []
         for text in texts:
             vec = np.array([1.0 if topic in text.lower() else 0.0 for topic in self.TOPICS]) + 0.01
@@ -90,3 +90,25 @@ def test_hybride_combine_les_deux_moteurs(corpus):
     results = hybrid.search("longueur minimale d'un mot de passe", k=4)
     assert results[0].id == "auth:1"
     assert len({p.id for p in results}) == len(results)  # pas de doublon après fusion
+
+
+def test_integration_hyde_sur_les_vrais_moteurs(corpus, monkeypatch):
+    """Assemble les VRAIS moteurs : un paramètre oublié entre deux briques ferait planter ce test."""
+    from ragfr.query import transforms
+    from ragfr.retrieval.reranker import RerankingRetriever
+
+    class FakeReranker:
+        def rerank(self, query, passages, top_n):
+            return passages[:top_n]
+
+    monkeypatch.setattr(
+        transforms, "hypothetical_answer", lambda q, m: "Un mot de passe robuste est recommandé."
+    )
+    hybrid = HybridRetriever(
+        BM25Retriever(corpus, "test"), DenseRetriever(corpus, "test", FakeEmbedder()), candidates=4
+    )
+    search = transforms.TransformingRetriever(
+        RerankingRetriever(hybrid, FakeReranker(), candidates=4), router=False, hyde=True, model="faux"
+    )
+    results = search.search("longueur minimale d'un mot de passe", k=2)
+    assert results[0].id == "auth:1"

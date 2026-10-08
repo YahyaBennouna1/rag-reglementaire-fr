@@ -7,6 +7,7 @@ Filtres automatiques avant relecture :
 - pas de doublons.
 """
 
+import argparse
 import random
 import re
 from pathlib import Path
@@ -22,7 +23,9 @@ from ragfr.llm import complete_json
 ROOT = Path(__file__).resolve().parent.parent
 OUT = ROOT / "data" / "eval" / "candidates.jsonl"
 
-MODEL = "gemini/gemini-3.5-flash"  # la qualité des questions compte plus que leur coût (≈ 300 appels)
+# Une autre famille que le générateur des réponses (Gemini) : un modèle qui répondrait à ses propres
+# questions serait avantagé. (gemini-3.5-flash, essayé d'abord, atteignait vite son quota gratuit : 429.)
+MODEL = "groq/qwen/qwen3.8-27b"
 SEED = 42
 TARGETS = {"factuelle": 120, "tableau": 60, "multi_documents": 60, "vague": 30, "sans_reponse": 30}
 
@@ -172,6 +175,11 @@ def ask_single(doc: ParsedDocument, block: list[Element], consigne: str) -> tupl
 
 
 def main() -> None:
+    global MODEL
+    parser = argparse.ArgumentParser(description=__doc__.splitlines()[0])
+    parser.add_argument("--model", default=MODEL, help="modèle LiteLLM utilisé pour générer les questions")
+    MODEL = parser.parse_args().model
+
     rng = random.Random(SEED)
     docs = load_parsed_documents()
     blocks = [(doc, b) for doc in docs for b in section_blocks(doc)]
