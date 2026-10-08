@@ -105,8 +105,10 @@ def audit(questions: list[EvalQuestion], n: int, seed: int = 7) -> None:
         done = {
             json.loads(line)["id"] for line in AUDIT_FILE.read_text(encoding="utf-8").splitlines() if line
         }
-    accepted = [q for q in questions if q.statut in ("valide", "corrige")]
-    sample = random.Random(seed).sample(accepted, min(n, len(accepted)))
+    # Les questions déjà auditées restent dans le tirage même si l'audit les a rejetées :
+    # sinon l'échantillon changerait à chaque reprise.
+    pool = [q for q in questions if q.statut in ("valide", "corrige") or q.id in done]
+    sample = random.Random(seed).sample(pool, min(n, len(pool)))
     todo = [q for q in sample if q.id not in done]
     print(f"Audit : {len(sample)} questions tirées au hasard, {len(todo)} restantes.")
     print("Réponds o (oui) ou n (non) à chaque critère, en t'appuyant sur le PASSAGE SOURCE.")

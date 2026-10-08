@@ -1,0 +1,7 @@
+{"id": "q0167", "type": "tableau", "ok": true, "extrait_prouve": true, "reponse_complete": true, "question_claire": true, "une_seule_reponse": true}
+{"id": "q0078", "type": "factuelle", "ok": false, "extrait_prouve": false, "reponse_complete": false, "question_claire": false, "une_seule_reponse": false}
+{"id": "q0204", "type": "multi_documents", "ok": true, "extrait_prouve": true, "reponse_complete": true, "question_claire": true, "une_seule_reponse": true}
+{"id": "q0025", "type": "factuelle", "ok": false, "extrait_prouve": true, "reponse_complete": true, "question_claire": false, "une_seule_reponse": true}
+{"id": "q0038", "type": "factuelle", "ok": false, "extrait_prouve": true, "reponse_complete": false, "question_claire": false, "une_seule_reponse": false}
+{"id": "q0276", "type": "sans_reponse", "ok": false, "hors_corpus": true, "question_claire": false}
+{"id": "q0049", "type": "factuelle", "ok": true, "extrait_prouve": true, "reponse_complete": true, "question_claire": true, "une_seule_reponse": true}
