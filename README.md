@@ -51,7 +51,7 @@ corpus.csv → PDF → Docling → éléments nettoyés         question → gar
 | RAG de référence : découpage fixe, embeddings, Qdrant | ✅ |
 | Recherche hybride BM25 français + dense, RRF (pondéré), reranker | ✅ mesuré |
 | Routeur, multi-query, décomposition, HyDE | ✅ routeur mesuré (multi-query utile sur les questions vagues ; décomposition corrigée par une fusion par alternance) |
-| Agent correctif LangGraph, citations vérifiées par un juge | ✅ (à mesurer) |
+| Agent correctif LangGraph, citations vérifiées par un juge | ✅ mesuré sur un premier échantillon (validation du juge à faire) |
 | Chunking sémantique et contextual retrieval | ⬜ |
 | Serveur MCP (recherche, réponse citée, description d'un guide) | ✅ |
 | GraphRAG, garde-fous | ⬜ |
@@ -72,6 +72,8 @@ Le jeu final (200 questions) est découpé en 150 questions de développement et
 **Les mesures.** Recherche : recall@5, recall@10, MRR et nDCG@10, comptés par référence (et non par chunk). Réponses : fidélité, exactitude et pertinence notées par un LLM juge d'une autre famille que le générateur ; abstention correcte ; coût pour 1 000 requêtes au tarif public.
 
 **Premier résultat (parsing des tableaux, 20 tableaux tirés au hasard).** Docling 15/20 contre PyMuPDF 13/20, et 14/16 contre 10/16 sur les vrais tableaux de données ([détail](results/parsing_tableaux.md)).
+
+**Premières mesures des réponses (20 questions de développement, 4 par type, juge qwen3.8-27b).** Abstention correcte sur 4/4 questions hors corpus ; les 2 fausses abstentions sur 16 viennent de la recherche (source absente des 10 premiers passages). L'agent correctif fait passer l'exactitude de 86 % à 93 % pour un coût multiplié par 1,8 (1,96 $ → 3,57 $ pour 1 000 questions au tarif public). Échantillon réduit et juge pas encore validé contre des annotations humaines : ces chiffres sont indicatifs.
 
 ## Choix techniques notables
 
