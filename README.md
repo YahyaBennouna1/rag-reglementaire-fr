@@ -20,7 +20,7 @@ Un RAG naïf se code en 50 lignes. Ce projet s'intéresse à ce qui fait la diff
 | Domaine | Mots-clés |
 |---|---|
 | RAG et recherche | RAG, **agentic RAG**, **Corrective RAG (CRAG)**, **recherche hybride**, **BM25** (analyseur français, racinisation Snowball), **embeddings denses** (multilingual-e5, bge-m3), **Reciprocal Rank Fusion (RRF)**, **reranking cross-encoder**, chunking à taille fixe avec chevauchement |
-| Requêtes et agent | **LangGraph**, query routing, **multi-query**, **query decomposition**, **HyDE**, reformulation guidée, abstention (« je ne sais pas ») |
+| Requêtes et agent | **LangGraph**, **query routing** (routage logique par LLM), **query translation** : **multi-query**, **query decomposition** (fusion par alternance), **HyDE** ; reformulation guidée, abstention (« je ne sais pas ») |
 | LLM | **LiteLLM** (Gemini, Groq, OpenAI), sorties JSON structurées validées par Pydantic, cache disque des appels, retry avec backoff exponentiel, gestion des quotas, **citations vérifiées** phrase par phrase |
 | Évaluation | **LLM-as-a-judge**, jeu d'évaluation synthétique validé, **recall@k, MRR, nDCG**, fidélité / exactitude / pertinence, **kappa de Cohen**, intervalles de confiance, **ablation**, découpage dev / test figé, coût pour 1 000 requêtes |
 | Données | **Docling** (parsing PDF, tableaux), PyMuPDF, web scraping (httpx, BeautifulSoup), nettoyage par regex, normalisation Unicode, hiérarchie des sections |
@@ -50,7 +50,7 @@ corpus.csv → PDF → Docling → éléments nettoyés         question → gar
 | Jeu d'évaluation : 194 questions validées (145 dev, 49 test figé) | ✅ |
 | RAG de référence : découpage fixe, embeddings, Qdrant | ✅ |
 | Recherche hybride BM25 français + dense, RRF (pondéré), reranker | ✅ mesuré |
-| Routeur, multi-query, décomposition, HyDE | ✅ routeur mesuré (multi-query utile sur les questions vagues, décomposition à corriger) |
+| Routeur, multi-query, décomposition, HyDE | ✅ routeur mesuré (multi-query utile sur les questions vagues ; décomposition corrigée par une fusion par alternance) |
 | Agent correctif LangGraph, citations vérifiées par un juge | ✅ (à mesurer) |
 | Chunking sémantique et contextual retrieval | ⬜ |
 | Serveur MCP (recherche, réponse citée, description d'un guide) | ✅ |
