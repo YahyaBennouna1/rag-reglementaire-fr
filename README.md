@@ -29,13 +29,28 @@ corpus.csv → PDF → Docling → éléments nettoyés         question → gar
 |---|---|
 | Collecte du corpus (scraping du catalogue ANSSI, 45 guides sur 4 thèmes) | ✅ |
 | Ingestion : parsing Docling, nettoyage, hiérarchie des sections, cache | ✅ |
-| Mesure du parsing des tableaux (Docling contre PyMuPDF) | ⏳ |
-| Jeu d'évaluation (200 questions vérifiées) et RAG de référence | ⬜ |
-| Chunking (taille fixe, sémantique, contextual retrieval) | ⬜ |
-| Recherche hybride BM25 + dense, RRF, reranker | ⬜ |
-| Transformation des requêtes, agent correctif LangGraph | ⬜ |
-| GraphRAG, citations vérifiées, serveur MCP, garde-fous | ⬜ |
+| Mesure du parsing des tableaux (Docling contre PyMuPDF) | ✅ |
+| Jeu d'évaluation (questions générées, filtrées et validées) | ⏳ |
+| RAG de référence : découpage fixe, embeddings, Qdrant | ✅ |
+| Recherche hybride BM25 français + dense, RRF, reranker | ✅ (mesures en cours) |
+| Routeur, multi-query, décomposition, HyDE | ✅ (à mesurer) |
+| Agent correctif LangGraph, citations vérifiées par un juge | ✅ (à mesurer) |
+| Chunking sémantique et contextual retrieval | ⬜ |
+| GraphRAG, serveur MCP, garde-fous | ⬜ |
 | API FastAPI, Docker, Kubernetes (kind) + Terraform, CI qui bloque les régressions | ⬜ |
+
+## Évaluation
+
+**Le jeu de questions.** Les questions sont générées à partir de passages tirés au hasard, en 5 types : factuelles, réponse dans un tableau, multi-documents, vagues et sans réponse dans le corpus. Chaque question garde la référence de sa source (guide, page, extrait exact), indépendante du découpage. Elles sont ensuite :
+- **filtrées automatiquement** : extrait vérifié mot pour mot dans le guide, question qui ne recopie pas le texte, pas de doublon ;
+- **validées selon une grille de 4 critères fondée sur le document source** : l'extrait prouve la réponse, la réponse est complète, la question se comprend seule, et une seule bonne réponse est possible. Pour les questions sans réponse, on vérifie que les passages les plus proches ne répondent pas ;
+- **auditées sur un échantillon** tiré au hasard, pour mesurer le taux d'erreur restant.
+
+Le jeu final (200 questions) est découpé en 150 questions de développement et 50 questions de test ; le jeu de test est figé et son empreinte SHA-256 est publiée.
+
+**Les mesures.** Recherche : recall@5, recall@10, MRR et nDCG@10, comptés par référence (et non par chunk). Réponses : fidélité, exactitude et pertinence notées par un LLM juge d'une autre famille que le générateur ; abstention correcte ; coût pour 1 000 requêtes au tarif public.
+
+**Premier résultat (parsing des tableaux, 20 tableaux tirés au hasard).** Docling 15/20 contre PyMuPDF 13/20, et 14/16 contre 10/16 sur les vrais tableaux de données ([détail](results/parsing_tableaux.md)).
 
 ## Choix techniques notables
 
