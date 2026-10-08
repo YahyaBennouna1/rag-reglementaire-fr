@@ -1,0 +1,78 @@
+# RAG agentique sur les guides de cybersécurité de l'ANSSI
+
+Assistant de questions-réponses sur un corpus de **45 guides de l'ANSSI** (1 951 pages). Il cite la source de chaque phrase, répond « je ne sais pas » quand le corpus ne contient pas la réponse, et **mesure** l'apport de chaque technique sur un jeu d'évaluation vérifié à la main.
+
+> 🚧 **Projet en cours.** Cette page décrit l'état actuel ; les résultats chiffrés seront publiés au fil des étapes dans [`results/`](results/).
+
+## Pourquoi ce projet
+
+Un RAG naïf se code en 50 lignes. Ce projet s'intéresse à ce qui fait la différence en production :
+
+- **Des données propres** : parsing structurel des PDF (tableaux, sections, pages) plutôt qu'une extraction de texte brute.
+- **Une évaluation d'abord** : 200 questions vérifiées, construites *avant* toute optimisation, et une **ablation** qui chiffre chaque technique.
+- **Un système qui sait s'abstenir** : un agent juge la qualité des passages trouvés, relance la recherche ou refuse de répondre.
+- **Des citations vérifiées** : chaque phrase de la réponse renvoie à un passage, et un juge vérifie que le passage dit bien ce que la phrase affirme.
+
+## Architecture
+
+```
+INDEXATION (hors ligne)                                RÉPONSE (à chaque question)
+corpus.csv → PDF → Docling → éléments nettoyés         question → garde-fous → routeur
+          → chunks (+ contexte) → embeddings + BM25             → recherche hybride (BM25 + dense, RRF)
+          → Qdrant  (+ graphe Neo4j)                            → reranker → agent correctif (LangGraph)
+                                                                → génération citée → vérification
+```
+
+## Avancement
+
+| Étape | État |
+|---|---|
+| Collecte du corpus (scraping du catalogue ANSSI, 45 guides sur 4 thèmes) | ✅ |
+| Ingestion : parsing Docling, nettoyage, hiérarchie des sections, cache | ✅ |
+| Mesure du parsing des tableaux (Docling contre PyMuPDF) | ⏳ |
+| Jeu d'évaluation (200 questions vérifiées) et RAG de référence | ⬜ |
+| Chunking (taille fixe, sémantique, contextual retrieval) | ⬜ |
+| Recherche hybride BM25 + dense, RRF, reranker | ⬜ |
+| Transformation des requêtes, agent correctif LangGraph | ⬜ |
+| GraphRAG, citations vérifiées, serveur MCP, garde-fous | ⬜ |
+| API FastAPI, Docker, Kubernetes (kind) + Terraform, CI qui bloque les régressions | ⬜ |
+
+## Choix techniques notables
+
+- **Docling plutôt qu'une extraction de texte simple** : les guides sont riches en tableaux, qu'une extraction ligne à ligne détruit. L'OCR est désactivé (PDF natifs).
+- **Hiérarchie reconstruite à partir de la numérotation** : Docling place tous les titres au même niveau ; la numérotation (`2`, `2.1`, `2.1.3`) et une pile reconstruisent le chemin de section de chaque passage.
+- **Pages physiques** pour les citations, et non les numéros imprimés (décalés par les pages de garde).
+- **Étiquettes de recommandation (R1, R2…) écartées au parsing** : Docling les place hors de leur ordre de lecture ; une citation fausse est pire qu'une citation absente. Elles sont reconstruites à partir de la liste des recommandations de chaque guide.
+- **Cache de l'étape coûteuse** : la sortie brute de Docling est indexée par l'empreinte SHA-256 du PDF ; le nettoyage est rejoué en moins d'une seconde au lieu de plusieurs minutes de parsing par guide.
+
+## Lancer le projet
+
+Prérequis : [uv](https://docs.astral.sh/uv/) (installe Python 3.12 et les dépendances).
+
+```bash
+uv sync
+uv run python scripts/download_corpus.py   # télécharge les 45 PDF dans data/raw/
+uv run python scripts/ingest.py            # parsing Docling + nettoyage -> data/parsed/
+uv run pytest                              # tests rapides
+uv run pytest -m slow                      # test de non-régression du parsing
+```
+
+Le corpus est reconstruit à partir de [`data/corpus.csv`](data/corpus.csv) ; les PDF ne sont pas versionnés. Pour régénérer la liste depuis le catalogue : `scripts/scrape_catalogue.py` puis `scripts/build_corpus.py`.
+
+## Structure
+
+```
+configs/          configurations YAML (une par ligne du tableau d'ablation)
+data/             corpus.csv, candidats.csv ; raw/ et parsed/ sont générés
+scripts/          points d'entrée : collecte, téléchargement, ingestion
+src/ragfr/        le package : ingestion/, puis chunking/, retrieval/, agent/...
+tests/            tests pytest
+```
+
+## Source des données
+
+Guides publiés par l'**Agence nationale de la sécurité des systèmes d'information (ANSSI)** sur [messervices.cyber.gouv.fr](https://messervices.cyber.gouv.fr/catalogue), réutilisés sous [Licence Ouverte 2.0](https://www.etalab.gouv.fr/licence-ouverte-open-licence/). La date de mise à jour de chaque guide figure dans [`data/corpus.csv`](data/corpus.csv). Ce projet n'est ni affilié à l'ANSSI ni approuvé par elle.
+
+## Auteur
+
+Yahya Bennouna
