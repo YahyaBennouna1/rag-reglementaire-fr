@@ -25,6 +25,9 @@ class ChunkingConfig(StrictModel):
 class RetrievalConfig(StrictModel):
     mode: Literal["dense", "bm25", "hybrid"] = "dense"
     top_k: int = Field(10, gt=0)
+    # Hybride : nombre de résultats demandés à BM25 et au dense avant la fusion RRF.
+    candidates: int = Field(50, gt=0)
+    rrf_k: int = Field(60, gt=0)
     reranker: bool = False
     # Le reranker renote N candidats pour en garder top_k : il en faut au moins top_k.
     rerank_candidates: int = Field(30, gt=0)

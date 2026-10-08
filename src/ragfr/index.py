@@ -13,6 +13,7 @@ from ragfr.config import ChunkingConfig
 from ragfr.embeddings import Embedder
 from ragfr.ingestion.models import ParsedDocument
 from ragfr.models import Passage
+from ragfr.retrieval.bm25 import average_length, document_vector
 
 ROOT = Path(__file__).resolve().parents[2]
 PARSED_DIR = ROOT / "data" / "parsed"
@@ -41,18 +42,27 @@ def get_client() -> QdrantClient:
     return QdrantClient(path=str(QDRANT_DIR))
 
 
-def build_dense_index(client: QdrantClient, name: str, passages: list[Passage], embedder: Embedder) -> None:
+def build_index(client: QdrantClient, name: str, passages: list[Passage], embedder: Embedder) -> None:
+    """Une collection, deux vecteurs par passage : « dense » (sens) et « bm25 » (mots exacts)."""
     if client.collection_exists(name):
         client.delete_collection(name)
     client.create_collection(
         name,
-        vectors_config=models.VectorParams(size=embedder.dim, distance=models.Distance.COSINE),
+        vectors_config={"dense": models.VectorParams(size=embedder.dim, distance=models.Distance.COSINE)},
+        # modifier=IDF : Qdrant calcule lui-même la rareté de chaque terme dans la collection.
+        sparse_vectors_config={"bm25": models.SparseVectorParams(modifier=models.Modifier.IDF)},
     )
-    vectors = embedder.encode([p.index_text for p in passages], show_progress=True)
+    texts = [p.index_text for p in passages]
+    dense_vectors = embedder.encode(texts, show_progress=True)
+    avg_len = average_length(texts)
     client.upload_points(
         name,
         points=[
-            models.PointStruct(id=i, vector=vec.tolist(), payload=p.model_dump(exclude={"score"}))
-            for i, (p, vec) in enumerate(zip(passages, vectors, strict=True))
+            models.PointStruct(
+                id=i,
+                vector={"dense": vec.tolist(), "bm25": document_vector(text, avg_len)},
+                payload=p.model_dump(exclude={"score"}),
+            )
+            for i, (p, text, vec) in enumerate(zip(passages, texts, dense_vectors, strict=True))
         ],
     )

@@ -14,5 +14,7 @@ class DenseRetriever:
 
     def search(self, query: str, k: int) -> list[Passage]:
         vector = self.embedder.encode([query])[0]
-        hits = self.client.query_points(self.collection, query=vector.tolist(), limit=k, with_payload=True)
+        hits = self.client.query_points(
+            self.collection, query=vector.tolist(), using="dense", limit=k, with_payload=True
+        )
         return [Passage(**hit.payload, score=hit.score) for hit in hits.points]

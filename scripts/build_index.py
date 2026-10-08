@@ -7,7 +7,7 @@ import argparse
 import time
 
 from ragfr.config import load_config
-from ragfr.index import build_dense_index, chunk_corpus, collection_name, get_client
+from ragfr.index import build_index, chunk_corpus, collection_name, get_client
 from ragfr.pipeline import get_embedder
 
 
@@ -21,7 +21,7 @@ def main() -> None:
     name = collection_name(cfg.chunking)
     print(f"{len(passages)} passages ({sum(p.is_table for p in passages)} tableaux) -> collection {name}")
 
-    build_dense_index(get_client(), name, passages, get_embedder())
+    build_index(get_client(), name, passages, get_embedder())
     print(f"Index construit en {time.perf_counter() - start:.0f} s")
 
 
