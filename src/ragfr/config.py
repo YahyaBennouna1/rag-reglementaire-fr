@@ -30,6 +30,8 @@ class RetrievalConfig(StrictModel):
     # Hybride : nombre de résultats demandés à BM25 et au dense avant la fusion RRF.
     candidates: int = Field(50, gt=0)
     rrf_k: int = Field(60, gt=0)
+    # Poids de BM25 dans la fusion (le dense garde 1) : > 1 = plus de confiance aux mots exacts.
+    bm25_weight: float = Field(1.0, gt=0)
     reranker: bool = False
     # Reranker léger par défaut : bge-reranker-v2-m3 (2,2 Go) ferait swapper un PC à 8 Go de RAM.
     reranker_model: str = "cross-encoder/mmarco-mMiniLMv2-L12-H384-v1"

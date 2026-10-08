@@ -47,6 +47,15 @@ def test_rrf_calcule_a_la_main():
     assert fused[3].score == pytest.approx(1 / 63)
 
 
+def test_rrf_pondere_calcule_a_la_main():
+    bm25 = [passage("a:1"), passage("b:1")]
+    dense = [passage("b:1"), passage("c:1")]
+    fused = reciprocal_rank_fusion([bm25, dense], k=60, weights=[2.0, 1.0])
+    # a : 2/61 = 0,03279 ; b : 2/62 + 1/61 = 0,04865 ; c : 1/62 = 0,01613
+    assert [p.id for p in fused] == ["b:1", "a:1", "c:1"]
+    assert fused[1].score == pytest.approx(2 / 61)
+
+
 # --- BM25 et hybride de bout en bout, dans un Qdrant en mémoire --------------------
 
 

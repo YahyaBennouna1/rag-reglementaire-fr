@@ -40,6 +40,7 @@ def make_retriever(cfg: Config) -> Retriever:
             DenseRetriever(client, collection, get_embedder(r.embedding_model)),
             candidates=r.candidates,
             rrf_k=r.rrf_k,
+            bm25_weight=r.bm25_weight,
         )
 
     if r.reranker:
