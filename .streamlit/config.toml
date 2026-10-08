@@ -1,0 +1,8 @@
+# Réglages de l'interface Streamlit (lus automatiquement au lancement depuis ce dossier).
+
+[server]
+address = "localhost"   # n'écouter que ce PC, pas tout le réseau local
+headless = true         # ne pas ouvrir de navigateur ni poser de question au démarrage
+
+[browser]
+gatherUsageStats = false   # ne pas envoyer de statistiques d'utilisation à Streamlit

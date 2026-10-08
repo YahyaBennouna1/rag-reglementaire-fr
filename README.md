@@ -25,10 +25,10 @@ Un RAG naïf se code en 50 lignes. Ce projet s'intéresse à ce qui fait la diff
 | Évaluation | **LLM-as-a-judge**, jeu d'évaluation synthétique validé, **recall@k, MRR, nDCG**, fidélité / exactitude / pertinence, **kappa de Cohen**, intervalles de confiance, **ablation**, découpage dev / test figé, coût pour 1 000 requêtes |
 | Données | **Docling** (parsing PDF, tableaux), PyMuPDF, web scraping (httpx, BeautifulSoup), nettoyage par regex, normalisation Unicode, hiérarchie des sections |
 | Stockage | **Qdrant** (vecteurs denses et creux), SQLite (cache d'embeddings et de reranking), empreintes SHA-256 |
-| Service | **FastAPI** (validation Pydantic, sondes health / ready, clé d'API, limite de débit), serveur **MCP** (Model Context Protocol : outils et ressource pour Claude Desktop ou un IDE) |
-| Ingénierie | **Python 3.12**, **uv**, **Pydantic**, **pytest** (tests unitaires, d'intégration, mocks), **ruff**, configuration YAML, Git (Conventional Commits, pull requests) |
+| Service | **Streamlit** (interface avec sources citées), **FastAPI** (validation Pydantic, sondes health / ready, clé d'API, limite de débit), serveur **MCP** (Model Context Protocol : outils et ressource pour Claude Desktop ou un IDE) |
+| Ingénierie | **Python 3.12**, **uv**, **Pydantic**, **pytest** (tests unitaires, d'intégration, mocks), **ruff**, configuration YAML, Git (Conventional Commits, pull requests), **GitHub Actions** (CI) |
 
-**Prévu** : GraphRAG (Neo4j), contextual retrieval, garde-fous (injection de prompt, **Presidio**), **Docker**, **Kubernetes** (kind), **Terraform**, **GitHub Actions** (CI avec seuil de régression), **Langfuse**, démo Hugging Face Spaces.
+**Prévu** : GraphRAG (Neo4j), contextual retrieval, garde-fous (injection de prompt, **Presidio**), **Docker**, **Kubernetes** (kind), **Terraform**, porte de qualité en CI (seuil de régression), **Langfuse**, démo Hugging Face Spaces.
 
 ## Architecture
 
@@ -56,7 +56,9 @@ corpus.csv → PDF → Docling → éléments nettoyés         question → gar
 | Serveur MCP (recherche, réponse citée, description d'un guide) | ✅ |
 | GraphRAG, garde-fous | ⬜ |
 | API FastAPI (ask, search, health, ready) | ✅ |
-| Docker, Kubernetes (kind) + Terraform, CI qui bloque les régressions | ⬜ |
+| Interface web Streamlit (réponse, sources citées, abstention) | ✅ |
+| CI GitHub Actions (ruff, tests) | ✅ |
+| Docker, Kubernetes (kind) + Terraform, porte de qualité sur le recall en CI | ⬜ |
 
 ## Évaluation
 
@@ -90,6 +92,16 @@ uv run python scripts/ingest.py            # parsing Docling + nettoyage -> data
 uv run pytest                              # tests rapides
 uv run pytest -m slow                      # test de non-régression du parsing
 ```
+
+Une fois l'index construit (`scripts/build_index.py`) et les clés d'API dans `.env` (voir `.env.example`) :
+
+```bash
+uv run streamlit run src/ragfr/ui/streamlit_app.py   # interface web : http://localhost:8501
+uv run uvicorn ragfr.api.app:app --port 8000          # API : documentation sur http://localhost:8000/docs
+uv run python -m ragfr.mcp_server.server              # serveur MCP (Claude Desktop, IDE)
+```
+
+Qdrant est utilisé en mode local : un seul de ces programmes à la fois peut ouvrir l'index.
 
 Le corpus est reconstruit à partir de [`data/corpus.csv`](data/corpus.csv) ; les PDF ne sont pas versionnés. Pour régénérer la liste depuis le catalogue : `scripts/scrape_catalogue.py` puis `scripts/build_corpus.py`.
 
