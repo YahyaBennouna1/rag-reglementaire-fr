@@ -82,7 +82,7 @@ Critères (true ou false) :
 Réponds en JSON : {{"hors_corpus": true, "question_claire": true, "explication": "une phrase"}}"""
 
 
-def review_one(q: EvalQuestion, retriever) -> Verdict:
+def review_one(q: EvalQuestion, retriever, model: str = MODEL) -> Verdict:
     if q.type == "sans_reponse":
         passages = retriever.search(q.question, 5)
         text = "\n\n".join(f"[{p.titre}, p. {p.page}]\n{p.text[:800]}" for p in passages)
@@ -96,7 +96,7 @@ def review_one(q: EvalQuestion, retriever) -> Verdict:
         prompt = PROMPT_ANSWERABLE.format(
             rules=RULES, question=q.question, reponse=q.reponse_reference, sources=sources
         )
-    return complete_json([{"role": "user", "content": prompt}], model=MODEL, schema=Verdict)
+    return complete_json([{"role": "user", "content": prompt}], model=model, schema=Verdict)
 
 
 def load_audit() -> dict[str, dict]:
@@ -112,6 +112,7 @@ def main() -> None:
     parser.add_argument(
         "--apply", action="store_true", help="toutes les questions, puis mise à jour des statuts"
     )
+    parser.add_argument("--model", default=MODEL, help="juge LiteLLM (par défaut : le juge du projet)")
     args = parser.parse_args()
 
     questions = load_questions(CANDIDATES)
@@ -119,23 +120,39 @@ def main() -> None:
     retriever = make_retriever(load_config(ROOT / "configs" / "ablation" / "recherche_1_bm25.yaml"))
     targets = [q for q in questions if q.id in audit] if args.calibrate else questions
 
+    # Reprise : les verdicts déjà obtenus sont gardés, on ne relit que le reste (idempotence).
     verdicts: dict[str, Verdict] = {}
-    with open(OUT, "w", encoding="utf-8", newline="\n") as f:
-        for i, q in enumerate(targets, start=1):
+    if OUT.exists() and not args.calibrate:
+        for line in OUT.read_text(encoding="utf-8").splitlines():
+            if line:
+                row = json.loads(line)
+                verdicts[row["id"]] = Verdict.model_validate(row)
+    todo = [q for q in targets if q.id not in verdicts]
+    print(f"{len(verdicts)} verdicts déjà obtenus, {len(todo)} questions à relire avec {args.model}.")
+
+    mode = "w" if args.calibrate else "a"
+    with open(OUT, mode, encoding="utf-8", newline="\n") as f:
+        for i, q in enumerate(todo, start=1):
             try:
-                verdicts[q.id] = review_one(q, retriever)
+                verdicts[q.id] = review_one(q, retriever, args.model)
             except Exception as e:  # un appel raté ne doit pas arrêter la relecture
                 print(f"  [erreur] {q.id} : {type(e).__name__}")
                 continue
             f.write(
                 json.dumps(
-                    {"id": q.id, "type": q.type, "ok": verdicts[q.id].ok, **verdicts[q.id].model_dump()},
+                    {
+                        "id": q.id,
+                        "type": q.type,
+                        "ok": verdicts[q.id].ok,
+                        "juge": args.model,
+                        **verdicts[q.id].model_dump(),
+                    },
                     ensure_ascii=False,
                 )
                 + "\n"
             )
             if i % 25 == 0:
-                print(f"  {i}/{len(targets)}", flush=True)
+                print(f"  {i}/{len(todo)}", flush=True)
 
     # Calibration : accord avec l'humain sur les questions auditées
     common = [qid for qid in audit if qid in verdicts]
@@ -157,6 +174,8 @@ def main() -> None:
                 continue  # le verdict humain reste prioritaire
             if q.id in verdicts:
                 q.statut = "valide" if verdicts[q.id].ok else "rejete"
+            elif q.statut == "valide":
+                q.statut = "genere"  # jamais relue par le juge : on ne la garde pas sans vérification
         save_questions(questions, CANDIDATES)
         kept = {
             t: sum(q.type == t and q.statut in ("valide", "corrige") for q in questions)
