@@ -17,3 +17,5 @@ data/qdrant/
 
 #Secrets 
 .env
+# Journaux d'exécution
+logs/

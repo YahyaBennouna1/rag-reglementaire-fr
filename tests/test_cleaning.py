@@ -1,4 +1,4 @@
-from ragfr.ingestion.cleaning import clean_text, fix_hyphenation, is_noise
+from ragfr.ingestion.cleaning import clean_text, fix_hyphenation, is_noise, is_table_of_contents
 
 
 def test_cesure_recollee():
@@ -37,3 +37,16 @@ def test_bruit_detecte():
     assert is_noise("R5 +")
     assert not is_noise("R2 impose un bastion")
     assert not is_noise("2.1")
+
+
+def test_sommaire_detecte():
+    sommaire = "\n".join(
+        [
+            "| 3.5.1 | Périmètre des groupes . . . . . . . . | 25 |",
+            "| 3.5.2 | Bouclage . . . . . . . . . | 26 |",
+            "| 3.6 | Comptes . . . . . . . | 27 |",
+        ]
+    )
+    assert is_table_of_contents(sommaire)
+    vrai_tableau = "| Code TLS | Suite |\n|---|---|\n| 0x1302 | TLS_AES_256_GCM_SHA384 |"
+    assert not is_table_of_contents(vrai_tableau)
