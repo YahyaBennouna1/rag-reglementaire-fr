@@ -121,6 +121,16 @@ tests/            tests pytest
 
 Guides publiés par l'**Agence nationale de la sécurité des systèmes d'information (ANSSI)** sur [messervices.cyber.gouv.fr](https://messervices.cyber.gouv.fr/catalogue), réutilisés sous [Licence Ouverte 2.0](https://www.etalab.gouv.fr/licence-ouverte-open-licence/). La date de mise à jour de chaque guide figure dans [`data/corpus.csv`](data/corpus.csv). Ce projet n'est ni affilié à l'ANSSI ni approuvé par elle.
 
+## Répartition du travail
+
+| Tâche | Réalisation |
+|---|---|
+| Écriture du code et des tests | RÉALISÉ PAR LLM (QUI DEVAIT ÊTRE RÉALISÉ PAR MOI) |
+| Audit manuel des questions (18 questions tirées au hasard) | Réalisé par moi |
+| Validation des autres questions du jeu d'évaluation (grille de 4 critères) | RÉALISÉ PAR LLM (QUI DEVAIT ÊTRE RÉALISÉ PAR MOI), calibré sur mon audit (kappa de Cohen) |
+| Annotation des cas de validation du juge des citations | RÉALISÉ PAR LLM (QUI DEVAIT ÊTRE RÉALISÉ PAR MOI) |
+| Lancement des mesures et analyse des résultats (ablations) | RÉALISÉ PAR LLM (QUI DEVAIT ÊTRE RÉALISÉ PAR MOI) |
+
 ## Auteur
 
 Yahya Bennouna
