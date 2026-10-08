@@ -76,3 +76,8 @@ def test_limite_de_debit(client, monkeypatch):
     monkeypatch.setattr(api_module, "RATE_LIMIT", 2)
     codes = [client.post("/search", json={"question": "TLS 1.0"}).status_code for _ in range(3)]
     assert codes == [200, 200, 429]
+
+
+def test_racine_redirige_vers_la_documentation(client):
+    r = client.get("/", follow_redirects=False)
+    assert r.status_code in (302, 307) and r.headers["location"] == "/docs"

@@ -17,6 +17,7 @@ from functools import cache
 from typing import Literal
 
 from fastapi import Depends, FastAPI, Header, HTTPException, Request
+from fastapi.responses import RedirectResponse
 from pydantic import BaseModel, Field
 
 from ragfr.index import collection_name, get_client
@@ -95,6 +96,12 @@ def rate_limit(request: Request) -> None:
 protected = [Depends(check_api_key), Depends(rate_limit)]
 
 # --- Routes ---------------------------------------------------------------------------------------
+
+
+@app.get("/", include_in_schema=False)
+def root() -> RedirectResponse:
+    # Ouvrir l'adresse de l'API dans un navigateur mène directement à sa documentation interactive.
+    return RedirectResponse(url="/docs")
 
 
 @app.get("/health")
