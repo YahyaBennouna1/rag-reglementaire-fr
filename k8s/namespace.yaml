@@ -1,0 +1,5 @@
+# Un espace de noms : toutes les ressources du projet sont rangées ensemble, à part du reste.
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: ragfr

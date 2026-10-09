@@ -1,0 +1,12 @@
+# Le cluster Kubernetes local (kind : Kubernetes dans des conteneurs Docker).
+#   kind create cluster --name ragfr --config k8s/kind.yaml
+apiVersion: kind.x-k8s.io/v1alpha4
+kind: Cluster
+kubeadmConfigPatches:
+  # Le noyau Linux de WSL sous Windows 10 utilise encore les cgroups v1, que le kubelet refuse
+  # par défaut depuis Kubernetes 1.35. On l'autorise explicitement (leçon 22).
+  - |
+    kind: KubeletConfiguration
+    failCgroupV1: false
+nodes:
+  - role: control-plane
