@@ -18,7 +18,7 @@ from ragfr.retrieval.bm25 import average_length, document_vector
 
 ROOT = Path(__file__).resolve().parents[2]
 PARSED_DIR = ROOT / "data" / "parsed"
-# RAGFR_QDRANT_PATH : un autre dossier d'index (la démo Streamlit Cloud embarque le sien, leçon 25).
+# RAGFR_QDRANT_PATH : un autre dossier d'index (la porte de qualité de la CI utilise data/index_reference).
 QDRANT_DIR = Path(os.environ.get("RAGFR_QDRANT_PATH", ROOT / "data" / "qdrant"))
 
 
@@ -39,8 +39,6 @@ def chunk_corpus(chunking: ChunkingConfig) -> list[Passage]:
     # inutile pour répondre aux questions (API, interface), qui importent aussi ce module.
     from ragfr.chunking.fixed import chunk_fixed
 
-    if chunking.method != "fixed":
-        raise NotImplementedError(f"méthode de chunking pas encore implémentée : {chunking.method}")
     passages = []
     for doc in load_parsed_documents():
         passages.extend(chunk_fixed(doc, chunking.size, chunking.overlap))

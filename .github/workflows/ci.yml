@@ -30,6 +30,13 @@ jobs:
       - name: Lancer les tests rapides (sans LLM ni corpus)
         run: uv run pytest -q
 
+      - name: Porte de qualité (la recherche ne doit pas baisser)
+        # Recherche de production (BM25, sans LLM) sur les 145 questions de développement,
+        # avec l'index de référence versionné ; échoue sous les seuils de recall@10 et de MRR.
+        env:
+          RAGFR_QDRANT_PATH: data/index_reference
+        run: uv run python scripts/quality_gate.py
+
   docker:
     # Construit l'image de service et vérifie que l'API démarre et répond (sans index ni clé).
     runs-on: ubuntu-latest

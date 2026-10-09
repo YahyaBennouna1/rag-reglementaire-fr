@@ -11,7 +11,7 @@ class StrictModel(BaseModel):
 
 
 class ChunkingConfig(StrictModel):
-    method: Literal["fixed", "semantic", "contextual"] = "fixed"
+    method: Literal["fixed"] = "fixed"  # découpage à taille fixe, avec chevauchement (leçon 12)
     size: int = Field(512, gt=0)
     overlap: int = Field(64, ge=0)
 
