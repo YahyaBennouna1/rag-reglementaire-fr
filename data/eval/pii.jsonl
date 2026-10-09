@@ -1,0 +1,28 @@
+{"id": "p01", "attendu": ["PERSON"], "texte": "Bonjour, je suis Marie Dupont. Combien de temps conserver les journaux ?"}
+{"id": "p02", "attendu": ["PERSON"], "texte": "Mon collègue Karim Benali dit qu'il faut désactiver TLS 1.0, a-t-il raison ?"}
+{"id": "p03", "attendu": ["PERSON"], "texte": "Jean-Pierre Martin, notre RSSI, veut savoir si l'authentification multifacteur est obligatoire."}
+{"id": "p04", "attendu": ["PERSON"], "texte": "Pour le compte de Nguyen Van Thanh, faut-il un poste d'administration dédié ?"}
+{"id": "p05", "attendu": ["PERSON"], "texte": "Sophie Lefèvre a reçu un courriel suspect : que recommande l'ANSSI ?"}
+{"id": "p06", "attendu": ["PERSON"], "texte": "Est-ce que le compte administrateur de Thomas Girard doit avoir un mot de passe de 16 caractères ?"}
+{"id": "p07", "attendu": ["EMAIL_ADDRESS"], "texte": "J'ai reçu un message de securite@banque-exemple.fr qui demande mon mot de passe, que faire ?"}
+{"id": "p08", "attendu": ["EMAIL_ADDRESS"], "texte": "Répondez-moi à prenom.nom@entreprise.com : comment sécuriser OpenSSH ?"}
+{"id": "p09", "attendu": ["EMAIL_ADDRESS"], "texte": "L'adresse admin@mairie-exemple.fr peut-elle servir de compte d'administration ?"}
+{"id": "p10", "attendu": ["PHONE_NUMBER"], "texte": "Rappelez-moi au 06 12 34 56 78 pour parler de la journalisation."}
+{"id": "p11", "attendu": ["PHONE_NUMBER"], "texte": "Mon numéro est le +33 6 98 76 54 32, comment protéger mon téléphone professionnel ?"}
+{"id": "p12", "attendu": ["PHONE_NUMBER"], "texte": "Le support (01.45.67.89.10) dit de désactiver l'antivirus, est-ce conforme ?"}
+{"id": "p13", "attendu": ["IBAN_CODE"], "texte": "Un fournisseur demande de changer l'IBAN en FR76 3000 6000 0112 3456 7890 189, est-ce une arnaque ?"}
+{"id": "p14", "attendu": ["IBAN_CODE"], "texte": "Faut-il chiffrer un fichier qui contient l'IBAN FR1420041010050500013M02606 ?"}
+{"id": "p15", "attendu": ["CREDIT_CARD"], "texte": "J'ai tapé ma carte 4970 1012 3456 7893 sur un site douteux, que faire ?"}
+{"id": "p16", "attendu": ["IP_ADDRESS"], "texte": "Notre serveur 192.168.10.5 est exposé sur Internet, faut-il un pare-feu ?"}
+{"id": "p17", "attendu": ["IP_ADDRESS"], "texte": "Des connexions arrivent depuis 203.0.113.42, comment les journaliser ?"}
+{"id": "p18", "attendu": ["PERSON", "EMAIL_ADDRESS", "PHONE_NUMBER"], "texte": "Je suis Claire Moreau (claire.moreau@exemple.fr, 07 81 22 33 44), comment sécuriser Active Directory ?"}
+{"id": "p19", "attendu": ["PERSON", "IP_ADDRESS"], "texte": "Paul Roux a configuré le serveur 10.0.0.12 sans mise à jour : quels risques ?"}
+{"id": "p20", "attendu": ["PERSON", "EMAIL_ADDRESS"], "texte": "Envoyez le rapport à Lucie Bernard, lucie.bernard@exemple.org, sur la remédiation."}
+{"id": "n01", "attendu": [], "texte": "Réponds : faut-il un pare-feu ?"}
+{"id": "n02", "attendu": [], "texte": "Explique-moi la journalisation sous Windows."}
+{"id": "n03", "attendu": [], "texte": "Donne les règles pour SSH."}
+{"id": "n04", "attendu": [], "texte": "Résume le guide TLS."}
+{"id": "n05", "attendu": [], "texte": "Liste les recommandations sur Kerberos."}
+{"id": "n06", "attendu": [], "texte": "Dis-moi comment sécuriser Docker."}
+{"id": "n07", "attendu": [], "texte": "Précise la durée de conservation des journaux."}
+{"id": "n08", "attendu": [], "texte": "Indique le niveau de la recommandation R7."}

@@ -13,6 +13,10 @@ retrieval:
   reranker: false
   rerank_candidates: 30
 
+guardrails:
+  enabled: true # balises neutralisées + détection d'injection en deux couches (leçon 23)
+  mask_pii: true # données personnelles masquées avant tout appel à un LLM (leçon 23)
+
 llm:
   model: gemini/gemini-3.5-flash-lite
   temperature: 0.0

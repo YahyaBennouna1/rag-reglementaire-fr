@@ -149,9 +149,16 @@ def complete(
     max_tokens: int | None = None,
     use_cache: bool = True,
     max_retries: int = 6,
+    reasoning_effort: str | None = None,
 ) -> LLMResponse:
-    """Envoie une conversation à un LLM et renvoie sa réponse (depuis le cache si possible)."""
+    """Envoie une conversation à un LLM et renvoie sa réponse (depuis le cache si possible).
+
+    reasoning_effort ("low", "medium", "high") : pour les modèles qui raisonnent avant de répondre.
+    """
     payload = {"model": model, "messages": messages, "temperature": temperature, "max_tokens": max_tokens}
+    if reasoning_effort:
+        # Ajouté seulement s'il est utilisé : sinon la clé de cache de TOUS les appels passés changerait.
+        payload["reasoning_effort"] = reasoning_effort
     path = _cache_path(_cache_key(payload))
     if use_cache and path.exists():
         saved = json.loads(path.read_text(encoding="utf-8"))

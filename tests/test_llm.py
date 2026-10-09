@@ -139,3 +139,13 @@ def test_les_appels_sont_espaces(isolated_cache, monkeypatch):
     llm.complete([{"role": "user", "content": "a"}], model="gemini/x")
     llm.complete([{"role": "user", "content": "b"}], model="gemini/x")  # même seconde : doit attendre
     assert sleeps == [pytest.approx(llm.MIN_INTERVAL_S["gemini/"])]
+
+
+def test_reasoning_effort_absent_de_la_requete_s_il_n_est_pas_demande(isolated_cache, monkeypatch):
+    # Sinon la clé de cache de tous les appels passés changerait, et le cache deviendrait inutile.
+    calls = []
+    monkeypatch.setattr(litellm, "completion", lambda **kw: calls.append(kw) or fake_response("ok"))
+    llm.complete([{"role": "user", "content": "a"}], model="fake/model")
+    llm.complete([{"role": "user", "content": "b"}], model="fake/model", reasoning_effort="low")
+    assert "reasoning_effort" not in calls[0]
+    assert calls[1]["reasoning_effort"] == "low"

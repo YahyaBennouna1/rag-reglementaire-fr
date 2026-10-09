@@ -9,6 +9,8 @@ from ragfr.citations.verify import verify_answer
 from ragfr.config import Config, load_config
 from ragfr.embeddings import Embedder
 from ragfr.generation import Answer, generate_answer
+from ragfr.guardrails.injection import is_injection, neutralize_tags
+from ragfr.guardrails.pii import mask_pii
 from ragfr.index import collection_name, get_client
 from ragfr.query.transforms import TransformingRetriever
 from ragfr.retrieval.base import Retriever
@@ -18,6 +20,12 @@ from ragfr.retrieval.hybrid import HybridRetriever
 from ragfr.retrieval.reranker import Reranker, RerankingRetriever
 
 ROOT = Path(__file__).resolve().parents[2]
+
+
+REFUSAL = (
+    "Question refusée : elle ressemble à une tentative de détourner l'assistant. "
+    "Posez une question sur les recommandations de l'ANSSI."
+)
 
 
 @cache
@@ -76,6 +84,15 @@ def make_search(cfg: Config) -> Retriever:
 
 def answer_question(cfg: Config, question: str) -> Answer:
     """Point d'entrée unique pour répondre (utilisé par l'évaluation, l'API et le serveur MCP)."""
+    if cfg.guardrails.enabled:
+        if cfg.guardrails.mask_pii:
+            # En premier : aucune donnée personnelle ne part vers un LLM, ni ne finit dans le cache.
+            question, _ = mask_pii(question)
+        question = neutralize_tags(question)
+        g = cfg.guardrails
+        if is_injection(question, g.injection_model, g.injection_threshold, g.injection_classifier):
+            # Ni recherche ni génération : on ne donne aucune prise à l'attaque.
+            return Answer(text=REFUSAL, sentences=[], citations=[], abstained=True, passages=[], blocked=True)
     if cfg.agent.enabled:
         state = build_agent(cfg, make_retriever(cfg)).invoke({"question": question})
         return state["answer"]

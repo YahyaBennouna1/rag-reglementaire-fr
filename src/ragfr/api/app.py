@@ -49,6 +49,7 @@ class CitationOut(BaseModel):
 class AskResponse(BaseModel):
     reponse: str
     abstention: bool
+    bloquee: bool = False  # refusée par les garde-fous (tentative d'injection)
     citations: list[CitationOut]
     duree_s: float
 
@@ -128,6 +129,7 @@ def ask(body: AskRequest) -> AskResponse:
     return AskResponse(
         reponse=answer.text,
         abstention=answer.abstained,
+        bloquee=answer.blocked,
         citations=[
             CitationOut(phrase=c.phrase, doc_ref=c.doc_ref, page=c.page, verdict=c.verdict)
             for c in answer.citations

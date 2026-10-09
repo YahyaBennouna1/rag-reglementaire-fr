@@ -20,6 +20,7 @@ Un RAG naïf se code en 50 lignes. Ce projet s'intéresse à ce qui fait la diff
 | Domaine | Mots-clés |
 |---|---|
 | RAG et recherche | RAG, **agentic RAG**, **Corrective RAG (CRAG)**, **recherche hybride**, **BM25** (analyseur français, racinisation Snowball), **embeddings denses** (multilingual-e5, bge-m3), **Reciprocal Rank Fusion (RRF)**, **reranking cross-encoder**, chunking à taille fixe avec chevauchement |
+| Sécurité | **Garde-fous contre l'injection de prompt** : neutralisation des balises, **Llama Prompt Guard 2** puis un LLM classifieur (défense en profondeur), jeu d'attaques par famille ; **masquage des données personnelles** avec **Presidio** (spaCy français) avant tout appel à un LLM |
 | Requêtes et agent | **LangGraph**, **query routing** (routage logique par LLM), **query translation** : **multi-query**, **query decomposition** (fusion par alternance), **HyDE** ; reformulation guidée, abstention (« je ne sais pas ») |
 | LLM | **LiteLLM** (Gemini, Groq, OpenAI), sorties JSON structurées validées par Pydantic, cache disque des appels, retry avec backoff exponentiel, gestion des quotas, **citations vérifiées** phrase par phrase |
 | Évaluation | **LLM-as-a-judge**, jeu d'évaluation synthétique validé, **recall@k, MRR, nDCG**, fidélité / exactitude / pertinence, **kappa de Cohen**, intervalles de confiance, **ablation**, découpage dev / test figé, coût pour 1 000 requêtes |
@@ -28,7 +29,7 @@ Un RAG naïf se code en 50 lignes. Ce projet s'intéresse à ce qui fait la diff
 | Service | **Streamlit** (interface avec sources citées), **FastAPI** (validation Pydantic, sondes health / ready, clé d'API, limite de débit), serveur **MCP** (Model Context Protocol : outils et ressource pour Claude Desktop ou un IDE) |
 | Ingénierie | **Python 3.12**, **uv**, **Pydantic**, **pytest** (tests unitaires, d'intégration, mocks), **ruff**, configuration YAML, Git (Conventional Commits, pull requests), **GitHub Actions** (CI), **Docker** (image multi-étapes, non root), Docker Compose, **Kubernetes** (kind : Deployment, StatefulSet, Service, Secret, sondes readiness / liveness) |
 
-**Prévu** : GraphRAG (Neo4j), contextual retrieval, garde-fous (injection de prompt, **Presidio**), **Terraform**, porte de qualité en CI (seuil de régression), **Langfuse**, démo Hugging Face Spaces.
+**Prévu** : GraphRAG (Neo4j), contextual retrieval, **Terraform**, porte de qualité en CI (seuil de régression), **Langfuse**, démo Hugging Face Spaces.
 
 ## Architecture
 
@@ -54,7 +55,9 @@ corpus.csv → PDF → Docling → éléments nettoyés         question → gar
 | Agent correctif LangGraph, citations vérifiées par un juge | ✅ mesuré sur un premier échantillon (validation du juge à faire) |
 | Chunking sémantique et contextual retrieval | ⬜ |
 | Serveur MCP (recherche, réponse citée, description d'un guide) | ✅ |
-| GraphRAG, garde-fous | ⬜ |
+| Garde-fous : détection d'injection de prompt en deux couches, mesurée | ✅ |
+| Masquage des données personnelles (Presidio), mesuré | ✅ |
+| GraphRAG | ⬜ |
 | API FastAPI (ask, search, health, ready) | ✅ |
 | Interface web Streamlit (réponse, sources citées, abstention) | ✅ |
 | CI GitHub Actions (ruff, tests) | ✅ |
@@ -78,6 +81,10 @@ Le jeu final (200 questions) est découpé en 150 questions de développement et
 **Premières mesures des réponses (20 questions de développement, 4 par type, juge qwen3.8-27b).** Abstention correcte sur 4/4 questions hors corpus ; les 2 fausses abstentions sur 16 viennent de la recherche (source absente des 10 premiers passages). L'agent correctif fait passer l'exactitude de 86 % à 93 % pour un coût multiplié par 1,8 (1,96 $ → 3,57 $ pour 1 000 questions au tarif public). Échantillon réduit et juge pas encore validé contre des annotations humaines : ces chiffres sont indicatifs.
 
 **Validation du juge des citations (65 cas).** 45 phrases réelles du système et 20 phrases faussées exprès (chiffre changé, négation, inversion, ajout inventé). Annotations RÉALISÉES PAR LLM (QUI DEVAIENT ÊTRE RÉALISÉES PAR MOI). Accord juge / annotations sur la décision « retirer la phrase » : kappa de Cohen 0,86 ; 18/18 phrases fausses détectées ; 2 fausses alertes sur 45, toutes deux sur une phrase tirée d'un tableau à cellules fusionnées (faiblesse identifiée du juge sur les tableaux).
+
+**Garde-fous contre l'injection de prompt (40 attaques en 6 familles, 15 questions pièges, 145 questions réelles).** Le classifieur spécialisé Llama Prompt Guard 2 seul détecte 35 % des attaques ; avec un LLM classifieur en deuxième couche, 95 %, pour 0 fausse alerte sur les questions pièges et 2,1 % sur les questions réelles. Les attaques non détectées restent sans effet de bout en bout : le système ne répond qu'à partir des guides et s'abstient. Jeu d'attaques RÉALISÉ PAR LLM (QUI DEVAIT ÊTRE RÉALISÉ PAR MOI). Sur les mêmes attaques, un RAG naïf (passages collés sans règles) écrit le texte demandé par l'attaquant et recopie une fausse recommandation attribuée à l'ANSSI ; ce RAG, même sans garde-fous, s'abstient (`scripts/demo_injection.py`).
+
+**Données personnelles.** Masquées par Presidio avant tout appel à un LLM : 24 données sur 24 trouvées (noms, e-mails, téléphones, IBAN, carte, IP), 0 question réelle modifiée sur 145.
 
 ## Choix techniques notables
 
@@ -153,6 +160,7 @@ Guides publiés par l'**Agence nationale de la sécurité des systèmes d'inform
 | Validation des autres questions du jeu d'évaluation (grille de 4 critères) | RÉALISÉ PAR LLM (QUI DEVAIT ÊTRE RÉALISÉ PAR MOI), calibré sur mon audit (kappa de Cohen) |
 | Annotation des cas de validation du juge des citations | RÉALISÉ PAR LLM (QUI DEVAIT ÊTRE RÉALISÉ PAR MOI) |
 | Lancement des mesures et analyse des résultats (ablations) | RÉALISÉ PAR LLM (QUI DEVAIT ÊTRE RÉALISÉ PAR MOI) |
+| Écriture du jeu d'attaques (injection de prompt) et du jeu de données personnelles | RÉALISÉ PAR LLM (QUI DEVAIT ÊTRE RÉALISÉ PAR MOI) |
 
 ## Auteur
 

@@ -43,6 +43,7 @@ class Answer(BaseModel):
     citations: list[Citation]
     abstained: bool
     passages: list[Passage]
+    blocked: bool = False  # question refusée par les garde-fous (tentative d'injection)
 
 
 def format_passages(passages: list[Passage], numbers: list[int] | None = None) -> str:
