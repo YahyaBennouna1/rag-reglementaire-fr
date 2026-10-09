@@ -14,6 +14,8 @@ from ragfr.eval.dataset import EvalQuestion
 from ragfr.generation import Answer, format_passages
 from ragfr.llm import complete_json
 
+JUDGE_MAX_TOKENS = 500  # un verdict JSON court ; voir judge_answer
+
 
 class AnswerJudgement(BaseModel):
     fidele: bool  # tout ce que dit la réponse est dans les passages
@@ -50,4 +52,7 @@ def judge_answer(question: EvalQuestion, answer: Answer, model: str) -> AnswerJu
         reference=question.reponse_reference,
         answer=answer.text,
     )
-    return complete_json([{"role": "user", "content": prompt}], model=model, schema=AnswerJudgement)
+    # max_tokens explicite : sans lui, Groq réserve une sortie par défaut qui dépasse la limite
+    # de tokens de sortie par minute de certains comptes (OTPM 1 000), et refuse la requête.
+    messages = [{"role": "user", "content": prompt}]
+    return complete_json(messages, model=model, schema=AnswerJudgement, max_tokens=JUDGE_MAX_TOKENS)

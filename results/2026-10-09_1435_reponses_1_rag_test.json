@@ -1,0 +1,1015 @@
+{
+  "date": "2026-10-09T14:31:04",
+  "config": {
+    "name": "reponses_1_rag",
+    "chunking": {
+      "method": "fixed",
+      "size": 512,
+      "overlap": 64
+    },
+    "retrieval": {
+      "mode": "bm25",
+      "embedding_model": "intfloat/multilingual-e5-base",
+      "top_k": 10,
+      "candidates": 50,
+      "rrf_k": 60,
+      "bm25_weight": 1.0,
+      "reranker": false,
+      "reranker_model": "cross-encoder/mmarco-mMiniLMv2-L12-H384-v1",
+      "rerank_candidates": 30
+    },
+    "query": {
+      "router": false,
+      "hyde": false,
+      "original_weight": 1.0,
+      "decomposition_fusion": "rrf"
+    },
+    "agent": {
+      "enabled": false,
+      "max_rewrites": 2
+    },
+    "citations": {
+      "verify": false
+    },
+    "guardrails": {
+      "enabled": false,
+      "injection_model": "groq/meta-llama/llama-prompt-guard-2-86m",
+      "injection_threshold": 0.5,
+      "injection_classifier": "groq/openai/gpt-oss-20b",
+      "mask_pii": false
+    },
+    "llm": {
+      "model": "gemini/gemini-3.5-flash-lite",
+      "temperature": 0.0,
+      "judge_model": "groq/qwen/qwen3.8-27b",
+      "fast_model": "gemini/gemini-3.5-flash-lite"
+    }
+  },
+  "commit": "6ea6466",
+  "questions": "questions.jsonl",
+  "split": "test",
+  "n_questions": 49,
+  "recherche": {
+    "resume": {
+      "recall@5": 0.7614,
+      "recall@10": 0.8068,
+      "mrr": 0.7394,
+      "ndcg@10": 0.7251,
+      "latence_p50_ms": 142.1,
+      "latence_p95_ms": 297.7
+    },
+    "par_type": {
+      "factuelle": {
+        "recall@5": 1.0,
+        "recall@10": 1.0,
+        "mrr": 0.9267,
+        "ndcg@10": 0.9443,
+        "n": 20
+      },
+      "multi_documents": {
+        "recall@5": 0.5,
+        "recall@10": 0.6111,
+        "mrr": 0.7037,
+        "ndcg@10": 0.5332,
+        "n": 9
+      },
+      "tableau": {
+        "recall@5": 0.7,
+        "recall@10": 0.8,
+        "mrr": 0.5667,
+        "ndcg@10": 0.6218,
+        "n": 10
+      },
+      "vague": {
+        "recall@5": 0.4,
+        "recall@10": 0.4,
+        "mrr": 0.4,
+        "ndcg@10": 0.4,
+        "n": 5
+      }
+    },
+    "details": [
+      {
+        "id": "q0004",
+        "type": "factuelle",
+        "recall@5": 1.0,
+        "recall@10": 1.0,
+        "mrr": 1.0,
+        "ndcg@10": 1.0
+      },
+      {
+        "id": "q0005",
+        "type": "factuelle",
+        "recall@5": 1.0,
+        "recall@10": 1.0,
+        "mrr": 1.0,
+        "ndcg@10": 1.0
+      },
+      {
+        "id": "q0013",
+        "type": "factuelle",
+        "recall@5": 1.0,
+        "recall@10": 1.0,
+        "mrr": 0.2,
+        "ndcg@10": 0.38685280723454163
+      },
+      {
+        "id": "q0015",
+        "type": "factuelle",
+        "recall@5": 1.0,
+        "recall@10": 1.0,
+        "mrr": 0.3333333333333333,
+        "ndcg@10": 0.5
+      },
+      {
+        "id": "q0016",
+        "type": "factuelle",
+        "recall@5": 1.0,
+        "recall@10": 1.0,
+        "mrr": 1.0,
+        "ndcg@10": 1.0
+      },
+      {
+        "id": "q0019",
+        "type": "factuelle",
+        "recall@5": 1.0,
+        "recall@10": 1.0,
+        "mrr": 1.0,
+        "ndcg@10": 1.0
+      },
+      {
+        "id": "q0030",
+        "type": "factuelle",
+        "recall@5": 1.0,
+        "recall@10": 1.0,
+        "mrr": 1.0,
+        "ndcg@10": 1.0
+      },
+      {
+        "id": "q0031",
+        "type": "factuelle",
+        "recall@5": 1.0,
+        "recall@10": 1.0,
+        "mrr": 1.0,
+        "ndcg@10": 1.0
+      },
+      {
+        "id": "q0034",
+        "type": "factuelle",
+        "recall@5": 1.0,
+        "recall@10": 1.0,
+        "mrr": 1.0,
+        "ndcg@10": 1.0
+      },
+      {
+        "id": "q0039",
+        "type": "factuelle",
+        "recall@5": 1.0,
+        "recall@10": 1.0,
+        "mrr": 1.0,
+        "ndcg@10": 1.0
+      },
+      {
+        "id": "q0060",
+        "type": "factuelle",
+        "recall@5": 1.0,
+        "recall@10": 1.0,
+        "mrr": 1.0,
+        "ndcg@10": 1.0
+      },
+      {
+        "id": "q0077",
+        "type": "factuelle",
+        "recall@5": 1.0,
+        "recall@10": 1.0,
+        "mrr": 1.0,
+        "ndcg@10": 1.0
+      },
+      {
+        "id": "q0084",
+        "type": "factuelle",
+        "recall@5": 1.0,
+        "recall@10": 1.0,
+        "mrr": 1.0,
+        "ndcg@10": 1.0
+      },
+      {
+        "id": "q0090",
+        "type": "factuelle",
+        "recall@5": 1.0,
+        "recall@10": 1.0,
+        "mrr": 1.0,
+        "ndcg@10": 1.0
+      },
+      {
+        "id": "q0095",
+        "type": "factuelle",
+        "recall@5": 1.0,
+        "recall@10": 1.0,
+        "mrr": 1.0,
+        "ndcg@10": 1.0
+      },
+      {
+        "id": "q0105",
+        "type": "factuelle",
+        "recall@5": 1.0,
+        "recall@10": 1.0,
+        "mrr": 1.0,
+        "ndcg@10": 1.0
+      },
+      {
+        "id": "q0107",
+        "type": "factuelle",
+        "recall@5": 1.0,
+        "recall@10": 1.0,
+        "mrr": 1.0,
+        "ndcg@10": 1.0
+      },
+      {
+        "id": "q0110",
+        "type": "factuelle",
+        "recall@5": 1.0,
+        "recall@10": 1.0,
+        "mrr": 1.0,
+        "ndcg@10": 1.0
+      },
+      {
+        "id": "q0117",
+        "type": "factuelle",
+        "recall@5": 1.0,
+        "recall@10": 1.0,
+        "mrr": 1.0,
+        "ndcg@10": 1.0
+      },
+      {
+        "id": "q0118",
+        "type": "factuelle",
+        "recall@5": 1.0,
+        "recall@10": 1.0,
+        "mrr": 1.0,
+        "ndcg@10": 1.0
+      },
+      {
+        "id": "q0125",
+        "type": "tableau",
+        "recall@5": 1.0,
+        "recall@10": 1.0,
+        "mrr": 1.0,
+        "ndcg@10": 1.0
+      },
+      {
+        "id": "q0132",
+        "type": "tableau",
+        "recall@5": 0.0,
+        "recall@10": 0.0,
+        "mrr": 0.0,
+        "ndcg@10": 0.0
+      },
+      {
+        "id": "q0139",
+        "type": "tableau",
+        "recall@5": 0.0,
+        "recall@10": 0.0,
+        "mrr": 0.0,
+        "ndcg@10": 0.0
+      },
+      {
+        "id": "q0158",
+        "type": "tableau",
+        "recall@5": 1.0,
+        "recall@10": 1.0,
+        "mrr": 1.0,
+        "ndcg@10": 1.0
+      },
+      {
+        "id": "q0162",
+        "type": "tableau",
+        "recall@5": 1.0,
+        "recall@10": 1.0,
+        "mrr": 1.0,
+        "ndcg@10": 1.0
+      },
+      {
+        "id": "q0164",
+        "type": "tableau",
+        "recall@5": 1.0,
+        "recall@10": 1.0,
+        "mrr": 0.25,
+        "ndcg@10": 0.43067655807339306
+      },
+      {
+        "id": "q0165",
+        "type": "tableau",
+        "recall@5": 1.0,
+        "recall@10": 1.0,
+        "mrr": 0.25,
+        "ndcg@10": 0.43067655807339306
+      },
+      {
+        "id": "q0167",
+        "type": "tableau",
+        "recall@5": 0.0,
+        "recall@10": 1.0,
+        "mrr": 0.16666666666666666,
+        "ndcg@10": 0.3562071871080222
+      },
+      {
+        "id": "q0169",
+        "type": "tableau",
+        "recall@5": 1.0,
+        "recall@10": 1.0,
+        "mrr": 1.0,
+        "ndcg@10": 1.0
+      },
+      {
+        "id": "q0171",
+        "type": "tableau",
+        "recall@5": 1.0,
+        "recall@10": 1.0,
+        "mrr": 1.0,
+        "ndcg@10": 1.0
+      },
+      {
+        "id": "q0186",
+        "type": "multi_documents",
+        "recall@5": 0.0,
+        "recall@10": 0.0,
+        "mrr": 0.0,
+        "ndcg@10": 0.0
+      },
+      {
+        "id": "q0189",
+        "type": "multi_documents",
+        "recall@5": 1.0,
+        "recall@10": 1.0,
+        "mrr": 1.0,
+        "ndcg@10": 0.8772153153380493
+      },
+      {
+        "id": "q0195",
+        "type": "multi_documents",
+        "recall@5": 0.5,
+        "recall@10": 0.5,
+        "mrr": 0.5,
+        "ndcg@10": 0.38685280723454163
+      },
+      {
+        "id": "q0199",
+        "type": "multi_documents",
+        "recall@5": 0.5,
+        "recall@10": 0.5,
+        "mrr": 1.0,
+        "ndcg@10": 0.6131471927654584
+      },
+      {
+        "id": "q0200",
+        "type": "multi_documents",
+        "recall@5": 0.5,
+        "recall@10": 1.0,
+        "mrr": 1.0,
+        "ndcg@10": 0.7977228895450266
+      },
+      {
+        "id": "q0216",
+        "type": "multi_documents",
+        "recall@5": 0.5,
+        "recall@10": 1.0,
+        "mrr": 1.0,
+        "ndcg@10": 0.8175295903539445
+      },
+      {
+        "id": "q0225",
+        "type": "multi_documents",
+        "recall@5": 0.5,
+        "recall@10": 0.5,
+        "mrr": 0.3333333333333333,
+        "ndcg@10": 0.3065735963827292
+      },
+      {
+        "id": "q0238",
+        "type": "multi_documents",
+        "recall@5": 0.5,
+        "recall@10": 0.5,
+        "mrr": 1.0,
+        "ndcg@10": 0.6131471927654584
+      },
+      {
+        "id": "q0239",
+        "type": "multi_documents",
+        "recall@5": 0.5,
+        "recall@10": 0.5,
+        "mrr": 0.5,
+        "ndcg@10": 0.38685280723454163
+      },
+      {
+        "id": "q0241",
+        "type": "vague",
+        "recall@5": 0.0,
+        "recall@10": 0.0,
+        "mrr": 0.0,
+        "ndcg@10": 0.0
+      },
+      {
+        "id": "q0249",
+        "type": "vague",
+        "recall@5": 0.0,
+        "recall@10": 0.0,
+        "mrr": 0.0,
+        "ndcg@10": 0.0
+      },
+      {
+        "id": "q0253",
+        "type": "vague",
+        "recall@5": 0.0,
+        "recall@10": 0.0,
+        "mrr": 0.0,
+        "ndcg@10": 0.0
+      },
+      {
+        "id": "q0262",
+        "type": "vague",
+        "recall@5": 1.0,
+        "recall@10": 1.0,
+        "mrr": 1.0,
+        "ndcg@10": 1.0
+      },
+      {
+        "id": "q0265",
+        "type": "vague",
+        "recall@5": 1.0,
+        "recall@10": 1.0,
+        "mrr": 1.0,
+        "ndcg@10": 1.0
+      }
+    ]
+  },
+  "reponses": {
+    "resume": {
+      "fidelite": 1.0,
+      "exactitude": 0.875,
+      "pertinence": 0.875,
+      "precision_citations": null,
+      "couverture_citations": 1.0,
+      "abstention_correcte": 0.8,
+      "fausses_abstentions": 0.0909,
+      "latence_p50_s": 0.14,
+      "latence_p95_s": 0.27,
+      "cout_1000_requetes_usd": 1.937,
+      "modeles_sans_prix_connu": [],
+      "tokens_par_modele": {
+        "gemini/gemini-3.5-flash-lite": {
+          "calls": 49,
+          "input_tokens": 273334,
+          "output_tokens": 5161
+        }
+      }
+    },
+    "par_type": {
+      "factuelle": {
+        "fidelite": 1.0,
+        "exactitude": 1.0,
+        "pertinence": 1.0,
+        "fausse_abstention": 0.0,
+        "abstention_correcte": null,
+        "n": 20
+      },
+      "multi_documents": {
+        "fidelite": 1.0,
+        "exactitude": 0.5,
+        "pertinence": 0.5,
+        "fausse_abstention": 0.1111,
+        "abstention_correcte": null,
+        "n": 9
+      },
+      "sans_reponse": {
+        "fidelite": null,
+        "exactitude": null,
+        "pertinence": null,
+        "fausse_abstention": null,
+        "abstention_correcte": 0.8,
+        "n": 5
+      },
+      "tableau": {
+        "fidelite": 1.0,
+        "exactitude": 1.0,
+        "pertinence": 1.0,
+        "fausse_abstention": 0.2,
+        "abstention_correcte": null,
+        "n": 10
+      },
+      "vague": {
+        "fidelite": 1.0,
+        "exactitude": 0.75,
+        "pertinence": 0.75,
+        "fausse_abstention": 0.2,
+        "abstention_correcte": null,
+        "n": 5
+      }
+    },
+    "details": [
+      {
+        "id": "q0004",
+        "type": "factuelle",
+        "abstention": false,
+        "reponse": "Le document rédigé par l'ANSSI sur la supervision de sécurité est placé sous le régime de la « Licence Ouverte v2.0 » publiée par la mission Etalab. [P1] La réutilisation libre de ce document est soumise à la condition de mentionner sa paternité, ce qui inclut la source et la date de la dernière mise à jour. [P1]",
+        "fausse_abstention": 0.0,
+        "fidelite": 1.0,
+        "exactitude": 1.0,
+        "pertinence": 1.0,
+        "couverture_citations": 1.0
+      },
+      {
+        "id": "q0005",
+        "type": "factuelle",
+        "abstention": false,
+        "reponse": "La version doit impérativement être précisée dans son format complet (« 11.0.0.0 » dans le cas présent) et non dans un format raccourci (« 11 »). [P1]",
+        "fausse_abstention": 0.0,
+        "fidelite": 1.0,
+        "exactitude": 1.0,
+        "pertinence": 1.0,
+        "couverture_citations": 1.0
+      },
+      {
+        "id": "q0013",
+        "type": "factuelle",
+        "abstention": false,
+        "reponse": "La détection des incidents est d'autant plus efficace que le périmètre de collecte des journaux tend vers l'exhaustivité, incluant les journaux de tous les systèmes d'exploitation, des équipements réseau (proxy, pare-feux, etc.), des postes de travail (générés par exemple par une solution de type EDR) et des applications. [P5] La priorisation de cette collecte doit s'appliquer en premier lieu aux équipements du SI les plus exposés, aux plus critiques supportant les valeurs métiers les plus importantes, ou disposant d'un chemin d'accès privilégié. [P5]",
+        "fausse_abstention": 0.0,
+        "fidelite": 1.0,
+        "exactitude": 1.0,
+        "pertinence": 1.0,
+        "couverture_citations": 1.0
+      },
+      {
+        "id": "q0015",
+        "type": "factuelle",
+        "abstention": false,
+        "reponse": "Si la remédiation est une activité de nature technique, c'est bien le risque sur le métier qui doit l'orienter. [P3, P6]",
+        "fausse_abstention": 0.0,
+        "fidelite": 1.0,
+        "exactitude": 1.0,
+        "pertinence": 1.0,
+        "couverture_citations": 1.0
+      },
+      {
+        "id": "q0016",
+        "type": "factuelle",
+        "abstention": false,
+        "reponse": "Le champ requestPath permet de comprendre, à l'aide de sa valeur, quelle est l'action demandée par la requête. [P1, P6]",
+        "fausse_abstention": 0.0,
+        "fidelite": 1.0,
+        "exactitude": 1.0,
+        "pertinence": 1.0,
+        "couverture_citations": 1.0
+      },
+      {
+        "id": "q0019",
+        "type": "factuelle",
+        "abstention": false,
+        "reponse": "L'extension key_share est utilisée pour échanger les paramètres cryptographiques lors d'un échange de clé (EC)DHE, et elle est recommandée car elle permet de garantir la propriété de confidentialité persistante (PFS). [P1]",
+        "fausse_abstention": 0.0,
+        "fidelite": 1.0,
+        "exactitude": 1.0,
+        "pertinence": 1.0,
+        "couverture_citations": 1.0
+      },
+      {
+        "id": "q0030",
+        "type": "factuelle",
+        "abstention": false,
+        "reponse": "La taille du mot de passe des comptes d'ordinateur est de 240 bits, ce qui rend les attaques par exhaustivité hors-ligne irréalistes lors de l'activation du blindage Kerberos. [P1]",
+        "fausse_abstention": 0.0,
+        "fidelite": 1.0,
+        "exactitude": 1.0,
+        "pertinence": 1.0,
+        "couverture_citations": 1.0
+      },
+      {
+        "id": "q0031",
+        "type": "factuelle",
+        "abstention": false,
+        "reponse": "Dans le contexte d'une attaque contre un MAC, on caractérise cette attaque avec une quantité supplémentaire, Nforge, qui représente la taille des requêtes liées aux tentatives de contrefaçons. [P1, P2]",
+        "fausse_abstention": 0.0,
+        "fidelite": 1.0,
+        "exactitude": 1.0,
+        "pertinence": 1.0,
+        "couverture_citations": 1.0
+      },
+      {
+        "id": "q0034",
+        "type": "factuelle",
+        "abstention": false,
+        "reponse": "La disparité des risques de compromission provenant de la manière d'interagir avec le reste du système constitue un critère de séparation pour déterminer des usages distincts. [P1]",
+        "fausse_abstention": 0.0,
+        "fidelite": 1.0,
+        "exactitude": 1.0,
+        "pertinence": 1.0,
+        "couverture_citations": 1.0
+      },
+      {
+        "id": "q0039",
+        "type": "factuelle",
+        "abstention": false,
+        "reponse": "Des informations complémentaires sur leur utilisation et leur structure figurent dans la RFC 5280. [P1]",
+        "fausse_abstention": 0.0,
+        "fidelite": 1.0,
+        "exactitude": 1.0,
+        "pertinence": 1.0,
+        "couverture_citations": 1.0
+      },
+      {
+        "id": "q0060",
+        "type": "factuelle",
+        "abstention": false,
+        "reponse": "Dans un second temps, des mises à jour annuelles permettent d'intégrer les évolutions des pratiques et la montée en maturité. [P1] Ce n'est qu'au-delà d'un certain niveau de maturité que les révisions sont plus espacées. [P1]",
+        "fausse_abstention": 0.0,
+        "fidelite": 1.0,
+        "exactitude": 1.0,
+        "pertinence": 1.0,
+        "couverture_citations": 1.0
+      },
+      {
+        "id": "q0077",
+        "type": "factuelle",
+        "abstention": false,
+        "reponse": "Les secrets d'accès à des API d'une zone de confiance donnée ne doivent être accessibles qu'au sein de cette même zone ou d'une zone de plus haut niveau de confiance. [P1]",
+        "fausse_abstention": 0.0,
+        "fidelite": 1.0,
+        "exactitude": 1.0,
+        "pertinence": 1.0,
+        "couverture_citations": 1.0
+      },
+      {
+        "id": "q0084",
+        "type": "factuelle",
+        "abstention": false,
+        "reponse": "L'objectif principal du découpage d'un SI en zones de confiance est de cloisonner logiquement ces zones les unes des autres afin de contenir une potentielle compromission au sein d'une zone et de préserver la sécurité des autres. [P1] L'enjeu est de faire en sorte que les zones les plus sensibles soient les moins exposées aux menaces, tandis que les zones les moins sensibles sont les seules à y être directement exposées. [P2] Cela permet d'éviter, par exemple, qu'une compromission de poste de travail ne débouche de facto sur un contrôle total de l'AD par des attaquants. [P1]",
+        "fausse_abstention": 0.0,
+        "fidelite": 1.0,
+        "exactitude": 1.0,
+        "pertinence": 1.0,
+        "couverture_citations": 1.0
+      },
+      {
+        "id": "q0090",
+        "type": "factuelle",
+        "abstention": false,
+        "reponse": "Une attaque par recherche exhaustive classique consiste à choisir un ensemble de caractères et à tester automatiquement toutes les combinaisons possibles de ces caractères. [P1] Le password spraying est une variante qui consiste à effectuer des tests automatisés d'un nombre réduit de mots de passe pour un grand nombre d'identifiants possibles. [P1]",
+        "fausse_abstention": 0.0,
+        "fidelite": 1.0,
+        "exactitude": 1.0,
+        "pertinence": 1.0,
+        "couverture_citations": 1.0
+      },
+      {
+        "id": "q0095",
+        "type": "factuelle",
+        "abstention": false,
+        "reponse": "Les primitives de chiffrement par bloc Triple-DES deux clés et Triple-DES trois clés ne respectent pas la règle RègleTailleBlocSym puisqu'elles opèrent sur une taille de bloc de 64 bits. [P1, P2] La primitive Triple-DES trois clés est également non conforme à la règle RèglePrimChiffBloc car elle est vulnérable à une attaque en 2^112 opérations. [P3]",
+        "fausse_abstention": 0.0,
+        "fidelite": 1.0,
+        "exactitude": 1.0,
+        "pertinence": 1.0,
+        "couverture_citations": 1.0
+      },
+      {
+        "id": "q0105",
+        "type": "factuelle",
+        "abstention": false,
+        "reponse": "L'Origin de rattachement considérée pour la base de données sera l'Origin ayant instanciée le Web Worker. [P1]",
+        "fausse_abstention": 0.0,
+        "fidelite": 1.0,
+        "exactitude": 1.0,
+        "pertinence": 1.0,
+        "couverture_citations": 1.0
+      },
+      {
+        "id": "q0107",
+        "type": "factuelle",
+        "abstention": false,
+        "reponse": "L'autorité de certification en charge de la délivrance des certificats pour les postes nomades doit être dédiée aux usages du nomadisme et maîtrisée par l'entité. [P1, P2] Elle est ainsi isolée des autres autorités de certification, ce qui assure un cloisonnement fort en cas de compromission d'une des autorités de certification. [P1]",
+        "fausse_abstention": 0.0,
+        "fidelite": 1.0,
+        "exactitude": 1.0,
+        "pertinence": 1.0,
+        "couverture_citations": 1.0
+      },
+      {
+        "id": "q0110",
+        "type": "factuelle",
+        "abstention": false,
+        "reponse": "Le module PAM pam_wheel permet de restreindre un accès aux utilisateurs membres d'un groupe particulier (wheel par défaut). [P1]",
+        "fausse_abstention": 0.0,
+        "fidelite": 1.0,
+        "exactitude": 1.0,
+        "pertinence": 1.0,
+        "couverture_citations": 1.0
+      },
+      {
+        "id": "q0117",
+        "type": "factuelle",
+        "abstention": false,
+        "reponse": "Le prédécesseur du protocole TLS est Secure Sockets Layer (SSL 2), qui est apparu en 1995. [P1]",
+        "fausse_abstention": 0.0,
+        "fidelite": 1.0,
+        "exactitude": 1.0,
+        "pertinence": 1.0,
+        "couverture_citations": 1.0
+      },
+      {
+        "id": "q0118",
+        "type": "factuelle",
+        "abstention": false,
+        "reponse": "L'utilisation de Windows Defender Remote Credential Guard n'est pas recommandée pour les connexions RDP entre hôtes de différentes zones de confiance, car ce mécanisme impose un single sign-on Kerberos et ne permet pas de spécifier un compte de connexion appartenant à la zone de confiance de l'hôte de destination. [P1] Il est préférable d'utiliser des méthodes alternatives telles que RDP avec l'option RestrictedAdmin ou RDP sans cette option mais en spécifiant un compte de connexion appartenant à la zone de l'hôte de destination. [P1]",
+        "fausse_abstention": 0.0,
+        "fidelite": 1.0,
+        "exactitude": 1.0,
+        "pertinence": 1.0,
+        "couverture_citations": 1.0
+      },
+      {
+        "id": "q0125",
+        "type": "tableau",
+        "abstention": false,
+        "reponse": "Le code TLS associé à la suite cryptographique TLS_ECDHE_RSA_WITH_CAMELLIA_128_GCM_SHA256 est 0xC08A. [P1]",
+        "fausse_abstention": 0.0,
+        "fidelite": 1.0,
+        "exactitude": 1.0,
+        "pertinence": 1.0,
+        "couverture_citations": 1.0
+      },
+      {
+        "id": "q0132",
+        "type": "tableau",
+        "abstention": true,
+        "reponse": "Je ne sais pas : les guides fournis ne permettent pas de répondre.",
+        "fausse_abstention": 1.0
+      },
+      {
+        "id": "q0139",
+        "type": "tableau",
+        "abstention": true,
+        "reponse": "Je ne sais pas : les guides fournis ne permettent pas de répondre.",
+        "fausse_abstention": 1.0
+      },
+      {
+        "id": "q0158",
+        "type": "tableau",
+        "abstention": false,
+        "reponse": "Les privilèges d'administration afférents au Tier 2 permettent le contrôle de tout ou d'un ensemble des moyens d'accès des utilisateurs du SI, et sont généralement accordés à des téléadministrateurs des postes bureautiques, des administrateurs de services de déploiement des postes bureautiques, des déployeurs de consoles industrielles, etc. [P1]",
+        "fausse_abstention": 0.0,
+        "fidelite": 1.0,
+        "exactitude": 1.0,
+        "pertinence": 1.0,
+        "couverture_citations": 1.0
+      },
+      {
+        "id": "q0162",
+        "type": "tableau",
+        "abstention": false,
+        "reponse": "L'extension TLS dont le code hexadécimal est 0x002B (supported_versions) est utilisée si la version TLS 1.3 est active. [P1] L'extension TLS dont le code hexadécimal est 0x0032 (key_share) est également utilisée si la version TLS 1.3 est active. [P1]",
+        "fausse_abstention": 0.0,
+        "fidelite": 1.0,
+        "exactitude": 1.0,
+        "pertinence": 1.0,
+        "couverture_citations": 1.0
+      },
+      {
+        "id": "q0164",
+        "type": "tableau",
+        "abstention": false,
+        "reponse": "Le mode Pull (Collector Initiated Subscription) concerne les cas où ce sont les serveurs de collecte qui vont chercher les évènements sur les systèmes clients, les flux réseau étant initiés par les serveurs de collecte à destination des systèmes clients. [P2] Le paramètre <Delivery Mode=\"Pull\"> indique que les évènements transférés sont « tirés » par le service de collecte lui-même, c'est-à-dire que c'est ce dernier qui initialise régulièrement des connexions vers les systèmes abonnés. [P4]",
+        "fausse_abstention": 0.0,
+        "fidelite": 1.0,
+        "exactitude": 1.0,
+        "pertinence": 1.0,
+        "couverture_citations": 1.0
+      },
+      {
+        "id": "q0165",
+        "type": "tableau",
+        "abstention": false,
+        "reponse": "La version 3.0 du guide, datée du 11/05/2021, a apporté l'ajout d'un chapitre sur l'administration par des tiers et l'assistance à distance, ainsi que des mises à jour détaillées en annexe A. [P4]",
+        "fausse_abstention": 0.0,
+        "fidelite": 1.0,
+        "exactitude": 1.0,
+        "pertinence": 1.0,
+        "couverture_citations": 1.0
+      },
+      {
+        "id": "q0167",
+        "type": "tableau",
+        "abstention": false,
+        "reponse": "La recommandation est motivée par la protection de l'intégrité des données contenues dans l'AD et leur non-divulgation. [P6]",
+        "fausse_abstention": 0.0,
+        "fidelite": 1.0,
+        "exactitude": 1.0,
+        "pertinence": 1.0,
+        "couverture_citations": 1.0
+      },
+      {
+        "id": "q0169",
+        "type": "tableau",
+        "abstention": false,
+        "reponse": "La modification majeure associée à la version 3.00 du guide sur les mécanismes cryptographiques est la prise en compte de la menace quantique. [P1]",
+        "fausse_abstention": 0.0,
+        "fidelite": 1.0,
+        "exactitude": 1.0,
+        "pertinence": 1.0,
+        "couverture_citations": 1.0
+      },
+      {
+        "id": "q0171",
+        "type": "tableau",
+        "abstention": false,
+        "reponse": "Le code d'erreur associé au refus d'authentification pour la raison 'Could not find user : adm.' est 404. [P1]",
+        "fausse_abstention": 0.0,
+        "fidelite": 1.0,
+        "exactitude": 1.0,
+        "pertinence": 1.0,
+        "couverture_citations": 1.0
+      },
+      {
+        "id": "q0186",
+        "type": "multi_documents",
+        "abstention": false,
+        "reponse": "Les contrôleurs de domaine sont automatiquement inclus dans le Tier 0 puisque portant l'annuaire Active Directory. [P7]",
+        "fausse_abstention": 0.0,
+        "fidelite": 1.0,
+        "exactitude": 0.0,
+        "pertinence": 0.0,
+        "couverture_citations": 1.0
+      },
+      {
+        "id": "q0189",
+        "type": "multi_documents",
+        "abstention": false,
+        "reponse": "Sur les systèmes Windows, la stratégie de rétention ne permet pas directement de spécifier une durée de rétention des évènements, mais consiste à configurer une taille maximale pour chacun des fichiers de journaux avec trois paramètres de comportement : ne plus journaliser (déconseillé), remplacer les évènements les plus anciens par les nouveaux (rotation automatique à privilégier), ou archiver le journal et le vider (nécessitant de la maintenance). [P1] Pour l'architecture générale, lorsqu'un équipement génère des journaux sans taille maximale fixée, il est recommandé de créer une partition dédiée aux journaux disposant de droits d'accès restreints pour éviter la défaillance du système ou des services par manque d'espace disque. [P2] Dans le cas d'une politique de rotation des journaux générale, les traitements réalisés peuvent inclure la séparation des fichiers, la compression, ou l'effacement automatique des fichiers les plus anciens lors de la rotation pour éviter la saturation de l'espace disque local. [P3] Spécifiquement dans l'environnement Microsoft Active Directory, il est recommandé de configurer une rotation automatique des journaux par effacement des évènements les plus anciens (qui constitue la configuration par défaut), sauf exception découlant d'un besoin spécifique. [P8]",
+        "fausse_abstention": 0.0,
+        "fidelite": 1.0,
+        "exactitude": 1.0,
+        "pertinence": 1.0,
+        "couverture_citations": 1.0
+      },
+      {
+        "id": "q0195",
+        "type": "multi_documents",
+        "abstention": false,
+        "reponse": "L'accès à des interfaces IPMI ou à des équipements KVM réseau IP pour l'administration distante de serveurs doit être considéré à l'identique d'un accès physique, car ces interfaces et équipements permettent des interactions bas niveau très similaires à celles d'un accès physique direct. [P2, P8]",
+        "fausse_abstention": 0.0,
+        "fidelite": 1.0,
+        "exactitude": 0.0,
+        "pertinence": 0.0,
+        "couverture_citations": 1.0
+      },
+      {
+        "id": "q0199",
+        "type": "multi_documents",
+        "abstention": false,
+        "reponse": "Les recommandations du chapitre 2 du guide sur l'administration sécurisée des SI reposant sur AD sont des recommandations qui sont volontairement générales, au contraire des recommandations des autres chapitres qui sont plus techniques. [P1]",
+        "fausse_abstention": 0.0,
+        "fidelite": 1.0,
+        "exactitude": 0.0,
+        "pertinence": 0.0,
+        "couverture_citations": 1.0
+      },
+      {
+        "id": "q0200",
+        "type": "multi_documents",
+        "abstention": false,
+        "reponse": "Pour répondre à la dualité des besoins des administrateurs (réalisation des actions d'administration depuis un environnement sécurisé et accès à un SI bureautique en tant qu'utilisateur), trois solutions d'architecture sont envisageables par niveau de sécurité décroissant : un poste d'administration dédié, un poste d'administration multi-niveaux et un poste d'administration avec accès distant à un SI bureautique. [P2] La solution offrant la meilleure garantie de sécurité est l'utilisation de deux postes physiquement distincts, l'un dédié aux actions d'administration et l'autre aux autres usages. [P2] Le poste multi-niveaux permet de disposer de plusieurs environnements logiciels sur un même poste physique grâce à la virtualisation ou à la conteneurisation, en utilisant des mécanismes de durcissement du noyau et de cloisonnement pour isoler les environnements. [P2] Cependant, les architectures alternatives telles que le poste multi-niveaux présentent un moindre niveau de sécurité et des risques de compromission ou de fuite d'information en raison de leur surface d'attaque et des vulnérabilités potentielles des mécanismes de cloisonnement. [P1, P2]",
+        "fausse_abstention": 0.0,
+        "fidelite": 1.0,
+        "exactitude": 1.0,
+        "pertinence": 1.0,
+        "couverture_citations": 1.0
+      },
+      {
+        "id": "q0216",
+        "type": "multi_documents",
+        "abstention": false,
+        "reponse": "L'entité doit s'assurer de disposer d'un système d'analyse antivirus en amont des boîtes aux lettres des utilisateurs pour prévenir la réception de fichiers infectés. [P1] Une ressource de Tier 0 ne doit pas être amenée à traiter du contenu potentiellement malveillant et tout contenu traité par ces ressources doit avoir fait l'objet d'une analyse de sécurité préalable. [P6] Lorsqu'une organisation déploie des agents de gestion centralisée ou de protection contre les menaces (comme un antivirus) sur des ressources de Tier 0, les composants logiciels et les serveurs de gestion centralisée afférents doivent être impérativement catégorisés en Tier 0. [P3, P6] À défaut d'être gérés par un serveur de Tier 0, les agents antivirus sur ces ressources doivent être déployés de manière autonome. [P6]",
+        "fausse_abstention": 0.0,
+        "fidelite": 1.0,
+        "exactitude": 1.0,
+        "pertinence": 1.0,
+        "couverture_citations": 1.0
+      },
+      {
+        "id": "q0225",
+        "type": "multi_documents",
+        "abstention": false,
+        "reponse": "Le split-tunneling peut engendrer des dérives dans les autorisations de flux directs sur le pare-feu local des postes nomades et un manque de contrôle du niveau de sécurité de ces flux directs, ce qui peut se traduire par l'utilisation de suites cryptographiques dégradées. [P3]",
+        "fausse_abstention": 0.0,
+        "fidelite": 1.0,
+        "exactitude": 1.0,
+        "pertinence": 1.0,
+        "couverture_citations": 1.0
+      },
+      {
+        "id": "q0238",
+        "type": "multi_documents",
+        "abstention": false,
+        "reponse": "Pour implémenter le cloisonnement, il faut identifier les privilèges nécessaires à un composant (une liste d'actions qu'il doit pouvoir mener à bien) et créer un environnement d'exécution réduit à cette liste d'actions en s'appuyant sur des mécanismes de cloisonnement. [P2] Il faut ensuite itérer cette pratique sur chaque composant afin de scinder l'environnement d'exécution global en une série de sous-environnements appauvris. [P2]",
+        "fausse_abstention": 0.0,
+        "fidelite": 1.0,
+        "exactitude": 0.0,
+        "pertinence": 0.0,
+        "couverture_citations": 1.0
+      },
+      {
+        "id": "q0239",
+        "type": "multi_documents",
+        "abstention": true,
+        "reponse": "Je ne sais pas : les guides fournis ne permettent pas de répondre.",
+        "fausse_abstention": 1.0
+      },
+      {
+        "id": "q0241",
+        "type": "vague",
+        "abstention": true,
+        "reponse": "Je ne sais pas : les guides fournis ne permettent pas de répondre.",
+        "fausse_abstention": 1.0
+      },
+      {
+        "id": "q0249",
+        "type": "vague",
+        "abstention": false,
+        "reponse": "La référence pour la sécurisation d'un commutateur de desserte est la note technique DAT-NT-025/ANSSI/SDE/NP v1.0 publiée en juin 2016. [P6]",
+        "fausse_abstention": 0.0,
+        "fidelite": 1.0,
+        "exactitude": 1.0,
+        "pertinence": 1.0,
+        "couverture_citations": 1.0
+      },
+      {
+        "id": "q0253",
+        "type": "vague",
+        "abstention": false,
+        "reponse": "Un prouveur est un utilisateur du système d'information cherchant à s'authentifier. [P1] Le prouveur va ainsi prouver son identité au vérifieur grâce à un moyen d'authentification, élément qui est généralement connu ou possédé uniquement par le prouveur et qui permet de l'authentifier de manière unique. [P1] Ce moyen d'authentification peut prendre par exemple la forme d'un mot de passe, d'une donnée biométrique ou bien de la clé privée associée à un certificat électronique contenu dans une carte à puce. [P1]",
+        "fausse_abstention": 0.0,
+        "fidelite": 1.0,
+        "exactitude": 0.0,
+        "pertinence": 0.0,
+        "couverture_citations": 1.0
+      },
+      {
+        "id": "q0262",
+        "type": "vague",
+        "abstention": false,
+        "reponse": "L'authentification 3 peut, par exemple, être réalisée au moyen d'un serveur Active Directory, ou bien en installant un royaume Kerberos sur Linux, ou encore avec un serveur OpenLDAP. [P1]",
+        "fausse_abstention": 0.0,
+        "fidelite": 1.0,
+        "exactitude": 1.0,
+        "pertinence": 1.0,
+        "couverture_citations": 1.0
+      },
+      {
+        "id": "q0265",
+        "type": "vague",
+        "abstention": false,
+        "reponse": "En cas de centralisation partielle ou inexistante d'un journal, sa taille idéale dépend du volume d'évènements inscrits dans ce dernier et de la réglementation en termes de durée de conservation. [P1]",
+        "fausse_abstention": 0.0,
+        "fidelite": 1.0,
+        "exactitude": 1.0,
+        "pertinence": 1.0,
+        "couverture_citations": 1.0
+      },
+      {
+        "id": "q0271",
+        "type": "sans_reponse",
+        "abstention": false,
+        "reponse": "Les sanctions prononcées par les autorités de contrôle pourront s'élever désormais jusqu'à 20 millions d'euros ou 4 % du chiffre d'affaires, le montant le plus élevé des deux étant retenu, selon l'article 83 du règlement général sur la protection des données. [P4]",
+        "abstention_correcte": 0.0
+      },
+      {
+        "id": "q0275",
+        "type": "sans_reponse",
+        "abstention": true,
+        "reponse": "Je ne sais pas : les guides fournis ne permettent pas de répondre.",
+        "abstention_correcte": 1.0
+      },
+      {
+        "id": "q0281",
+        "type": "sans_reponse",
+        "abstention": true,
+        "reponse": "Je ne sais pas : les guides fournis ne permettent pas de répondre.",
+        "abstention_correcte": 1.0
+      },
+      {
+        "id": "q0284",
+        "type": "sans_reponse",
+        "abstention": true,
+        "reponse": "Je ne sais pas : les guides fournis ne permettent pas de répondre.",
+        "abstention_correcte": 1.0
+      },
+      {
+        "id": "q0286",
+        "type": "sans_reponse",
+        "abstention": true,
+        "reponse": "Je ne sais pas : les guides fournis ne permettent pas de répondre.",
+        "abstention_correcte": 1.0
+      }
+    ]
+  }
+}

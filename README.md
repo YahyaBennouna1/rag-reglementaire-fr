@@ -49,6 +49,7 @@ corpus.csv → PDF → Docling → éléments nettoyés         question → gar
 | Ingestion : parsing Docling, nettoyage, hiérarchie des sections, cache | ✅ |
 | Mesure du parsing des tableaux (Docling contre PyMuPDF) | ✅ |
 | Jeu d'évaluation : 194 questions validées (145 dev, 49 test figé) | ✅ |
+| Évaluation finale sur le jeu de test figé, intervalles de confiance | ✅ |
 | RAG de référence : découpage fixe, embeddings, Qdrant | ✅ |
 | Recherche hybride BM25 français + dense, RRF (pondéré), reranker | ✅ mesuré |
 | Routeur, multi-query, décomposition, HyDE | ✅ routeur mesuré (multi-query utile sur les questions vagues ; décomposition corrigée par une fusion par alternance) |
@@ -72,19 +73,47 @@ corpus.csv → PDF → Docling → éléments nettoyés         question → gar
 - **validées selon une grille de 4 critères fondée sur le document source** : l'extrait prouve la réponse, la réponse est complète, la question se comprend seule, une seule bonne réponse possible. Pour les questions sans réponse, on vérifie que les passages les plus proches ne répondent pas.
 - **Validation semi-automatique** : j'ai d'abord audité manuellement un échantillon tiré au hasard. Cet audit a montré qu'une relecture rapide laissait passer beaucoup d'erreurs (questions qui parlent du document au lieu du sujet, réponses incomplètes). J'ai donc mis en place un LLM juge appliquant la même grille, et mesuré son accord avec mes jugements (kappa de Cohen) avant de l'appliquer à toutes les questions.
 
-Le jeu final (200 questions) est découpé en 150 questions de développement et 50 questions de test ; le jeu de test est figé et son empreinte SHA-256 est publiée.
+Le jeu final (194 questions) est découpé, par type, en 145 questions de développement et 49 questions de test. Le jeu de test a été figé avant toute optimisation et n'a servi qu'une fois, pour les résultats ci-dessous. Empreinte SHA-256 de `data/eval/questions_test.jsonl` : `16584fbb91b915c11a53c249b9dc0bfadbdb2106be935f4fbc739e3612530117`.
 
 **Les mesures.** Recherche : recall@5, recall@10, MRR et nDCG@10, comptés par référence (et non par chunk). Réponses : fidélité, exactitude et pertinence notées par un LLM juge d'une autre famille que le générateur ; abstention correcte ; coût pour 1 000 requêtes au tarif public.
 
-**Premier résultat (parsing des tableaux, 20 tableaux tirés au hasard).** Docling 15/20 contre PyMuPDF 13/20, et 14/16 contre 10/16 sur les vrais tableaux de données ([détail](results/parsing_tableaux.md)).
+### Résultats sur le jeu de test figé (49 questions jamais utilisées)
 
-**Premières mesures des réponses (20 questions de développement, 4 par type, juge qwen3.8-27b).** Abstention correcte sur 4/4 questions hors corpus ; les 2 fausses abstentions sur 16 viennent de la recherche (source absente des 10 premiers passages). L'agent correctif fait passer l'exactitude de 86 % à 93 % pour un coût multiplié par 1,8 (1,96 $ → 3,57 $ pour 1 000 questions au tarif public). Échantillon réduit et juge pas encore validé contre des annotations humaines : ces chiffres sont indicatifs.
+**Recherche.** Intervalles de confiance à 95 % par bootstrap (10 000 tirages, `scripts/intervalles.py`).
+
+| Recherche | recall@10 | MRR | Latence médiane |
+|---|---|---|---|
+| **BM25, analyseur français (production)** | **0,807** [0,693 – 0,909] | **0,739** [0,616 – 0,851] | 141 ms |
+| Dense (multilingual-e5-base) | 0,693 [0,568 – 0,818] | 0,542 [0,413 – 0,670] | — |
+| Hybride (RRF) | 0,795 [0,693 – 0,886] | 0,658 [0,536 – 0,772] | 138 ms |
+| Hybride, RRF pondérée | 0,773 [0,659 – 0,875] | 0,701 [0,578 – 0,812] | 156 ms |
+| Hybride + routeur (multi-query, décomposition) | 0,807 [0,705 – 0,898] | 0,662 [0,542 – 0,777] | 4,5 s |
+
+Même classement que sur le jeu de développement. Différences appariées : BM25 est significativement meilleure que la recherche dense (MRR +0,197, IC [0,070 ; 0,327]) ; aucune différence n'est démontrée entre BM25 et l'hybride pondéré ou le routeur. BM25 est retenue car aussi bonne, plus simple et plus rapide.
+
+**Réponses** (juge qwen3.8-27b, d'une autre famille que le générateur Gemini).
+
+| Configuration | Réponses exactes (44 questions avec réponse) | Abstentions à tort | Abstention correcte (5 sans réponse) | Coût / 1 000 questions |
+|---|---|---|---|---|
+| **RAG simple (production)** | **35 (79,5 %)** | 4 | 4/5 | **1,94 $** |
+| + agent correctif | 30 (68,2 %) | 10 | 4/5 | 3,41 $ |
+| + agent + vérification des citations | 30 (68,2 %) | 10 | 4/5 | 4,24 $ |
+
+Fidélité aux passages cités : 100 % ; phrases soutenues par leur citation : 100 %. L'agent s'abstient à tort sur des questions multi-documents et vagues (sa note « passages insuffisants » est trop stricte) : différence -0,114 [IC 95 % -0,227 ; 0,000], à la limite de la significativité. Le résultat contredit la première mesure sur 20 questions de développement (agent : 86 % → 93 % d'exactitude, calculée sur les seules questions répondues) ; la production reste le RAG simple. Le jeu de test n'a pas servi à corriger l'agent.
+
+**Garde-fous.** 0 question de test sur 49 bloquée à tort. Le masquage des données personnelles modifiait 2 questions sur 49 (« Sysmon », « password spraying » pris pour des noms de personne) ; correction conçue et mesurée sans le jeu de test (vocabulaire des guides, voir plus bas).
+
+### Mesures sur le jeu de développement et validations
+
+**Parsing des tableaux (20 tableaux tirés au hasard).** Docling 15/20 contre PyMuPDF 13/20, et 14/16 contre 10/16 sur les vrais tableaux de données ([détail](results/parsing_tableaux.md)).
+
+**Premières mesures des réponses (20 questions de développement, 4 par type).** Abstention correcte sur 4/4 questions hors corpus ; les 2 fausses abstentions sur 16 viennent de la recherche (source absente des 10 premiers passages). L'agent semblait améliorer l'exactitude (86 % → 93 %) : non confirmé sur le jeu de test (voir ci-dessus).
 
 **Validation du juge des citations (65 cas).** 45 phrases réelles du système et 20 phrases faussées exprès (chiffre changé, négation, inversion, ajout inventé). Annotations RÉALISÉES PAR LLM (QUI DEVAIENT ÊTRE RÉALISÉES PAR MOI). Accord juge / annotations sur la décision « retirer la phrase » : kappa de Cohen 0,86 ; 18/18 phrases fausses détectées ; 2 fausses alertes sur 45, toutes deux sur une phrase tirée d'un tableau à cellules fusionnées (faiblesse identifiée du juge sur les tableaux).
 
 **Garde-fous contre l'injection de prompt (40 attaques en 6 familles, 15 questions pièges, 145 questions réelles).** Le classifieur spécialisé Llama Prompt Guard 2 seul détecte 35 % des attaques ; avec un LLM classifieur en deuxième couche, 95 %, pour 0 fausse alerte sur les questions pièges et 2,1 % sur les questions réelles. Les attaques non détectées restent sans effet de bout en bout : le système ne répond qu'à partir des guides et s'abstient. Jeu d'attaques RÉALISÉ PAR LLM (QUI DEVAIT ÊTRE RÉALISÉ PAR MOI). Sur les mêmes attaques, un RAG naïf (passages collés sans règles) écrit le texte demandé par l'attaquant et recopie une fausse recommandation attribuée à l'ANSSI ; ce RAG, même sans garde-fous, s'abstient (`scripts/demo_injection.py`).
 
-**Données personnelles.** Masquées par Presidio avant tout appel à un LLM : 24 données sur 24 trouvées (noms, e-mails, téléphones, IBAN, carte, IP), 0 question réelle modifiée sur 145.
+**Données personnelles.** Masquées par Presidio avant tout appel à un LLM : 24 données sur 24 trouvées (noms, e-mails, téléphones, IBAN, carte, IP), 0 question réelle modifiée sur 145. Un nom dont tous les mots figurent dans les guides et qui ne ressemble pas à un nom complet est traité comme un terme du domaine : 1 question technique sur 18 encore modifiée (« Fail2ban », absent des guides).
 
 ## Choix techniques notables
 

@@ -38,7 +38,9 @@ def judge_sentence(sentence: Sentence, passages_text: str, model: str) -> Verdic
     if not passages_text:
         return "non_soutenu"  # une phrase sans source valide n'est pas prouvée
     prompt = JUDGE_PROMPT.format(passages=passages_text, phrase=sentence.phrase)
-    return complete_json([{"role": "user", "content": prompt}], model=model, schema=Judgement).verdict
+    messages = [{"role": "user", "content": prompt}]
+    # max_tokens explicite : même raison que pour le juge des réponses (eval/answer_metrics.py).
+    return complete_json(messages, model=model, schema=Judgement, max_tokens=500).verdict
 
 
 def verify_answer(answer: Answer, model: str) -> tuple[Answer, bool]:
