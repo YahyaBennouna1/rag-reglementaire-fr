@@ -1,0 +1,491 @@
+{
+  "date": "2026-10-09T14:13:05",
+  "config": {
+    "name": "requetes_3_routeur_alternance",
+    "chunking": {
+      "method": "fixed",
+      "size": 512,
+      "overlap": 64
+    },
+    "retrieval": {
+      "mode": "hybrid",
+      "embedding_model": "intfloat/multilingual-e5-base",
+      "top_k": 10,
+      "candidates": 50,
+      "rrf_k": 60,
+      "bm25_weight": 2.0,
+      "reranker": false,
+      "reranker_model": "cross-encoder/mmarco-mMiniLMv2-L12-H384-v1",
+      "rerank_candidates": 30
+    },
+    "query": {
+      "router": true,
+      "hyde": false,
+      "original_weight": 1.0,
+      "decomposition_fusion": "alternance"
+    },
+    "agent": {
+      "enabled": false,
+      "max_rewrites": 2
+    },
+    "citations": {
+      "verify": false
+    },
+    "guardrails": {
+      "enabled": false,
+      "injection_model": "groq/meta-llama/llama-prompt-guard-2-86m",
+      "injection_threshold": 0.5,
+      "injection_classifier": "groq/openai/gpt-oss-20b",
+      "mask_pii": false
+    },
+    "llm": {
+      "model": "gemini/gemini-3.5-flash-lite",
+      "temperature": 0.0,
+      "judge_model": "groq/openai/gpt-oss-120b",
+      "fast_model": "gemini/gemini-3.5-flash-lite"
+    }
+  },
+  "commit": "00cc1a5",
+  "questions": "questions.jsonl",
+  "split": "test",
+  "n_questions": 49,
+  "recherche": {
+    "resume": {
+      "recall@5": 0.75,
+      "recall@10": 0.8068,
+      "mrr": 0.6616,
+      "ndcg@10": 0.671,
+      "exactitude_routeur": 0.9318,
+      "latence_p50_ms": 4528.6,
+      "latence_p95_ms": 10049.8
+    },
+    "par_type": {
+      "factuelle": {
+        "recall@5": 0.95,
+        "recall@10": 1.0,
+        "mrr": 0.8408,
+        "ndcg@10": 0.878,
+        "n": 20
+      },
+      "multi_documents": {
+        "recall@5": 0.4444,
+        "recall@10": 0.5,
+        "mrr": 0.5315,
+        "ndcg@10": 0.4016,
+        "n": 9
+      },
+      "tableau": {
+        "recall@5": 0.8,
+        "recall@10": 0.8,
+        "mrr": 0.6533,
+        "ndcg@10": 0.6887,
+        "n": 10
+      },
+      "vague": {
+        "recall@5": 0.4,
+        "recall@10": 0.6,
+        "mrr": 0.1952,
+        "ndcg@10": 0.2929,
+        "n": 5
+      }
+    },
+    "details": [
+      {
+        "id": "q0004",
+        "type": "factuelle",
+        "recall@5": 1.0,
+        "recall@10": 1.0,
+        "mrr": 1.0,
+        "ndcg@10": 1.0,
+        "route_ok": 1.0
+      },
+      {
+        "id": "q0005",
+        "type": "factuelle",
+        "recall@5": 0.0,
+        "recall@10": 1.0,
+        "mrr": 0.16666666666666666,
+        "ndcg@10": 0.3562071871080222,
+        "route_ok": 1.0
+      },
+      {
+        "id": "q0013",
+        "type": "factuelle",
+        "recall@5": 1.0,
+        "recall@10": 1.0,
+        "mrr": 0.25,
+        "ndcg@10": 0.43067655807339306,
+        "route_ok": 1.0
+      },
+      {
+        "id": "q0015",
+        "type": "factuelle",
+        "recall@5": 1.0,
+        "recall@10": 1.0,
+        "mrr": 0.2,
+        "ndcg@10": 0.38685280723454163,
+        "route_ok": 1.0
+      },
+      {
+        "id": "q0016",
+        "type": "factuelle",
+        "recall@5": 1.0,
+        "recall@10": 1.0,
+        "mrr": 1.0,
+        "ndcg@10": 1.0,
+        "route_ok": 1.0
+      },
+      {
+        "id": "q0019",
+        "type": "factuelle",
+        "recall@5": 1.0,
+        "recall@10": 1.0,
+        "mrr": 1.0,
+        "ndcg@10": 1.0,
+        "route_ok": 1.0
+      },
+      {
+        "id": "q0030",
+        "type": "factuelle",
+        "recall@5": 1.0,
+        "recall@10": 1.0,
+        "mrr": 1.0,
+        "ndcg@10": 1.0,
+        "route_ok": 1.0
+      },
+      {
+        "id": "q0031",
+        "type": "factuelle",
+        "recall@5": 1.0,
+        "recall@10": 1.0,
+        "mrr": 1.0,
+        "ndcg@10": 1.0,
+        "route_ok": 1.0
+      },
+      {
+        "id": "q0034",
+        "type": "factuelle",
+        "recall@5": 1.0,
+        "recall@10": 1.0,
+        "mrr": 0.2,
+        "ndcg@10": 0.38685280723454163,
+        "route_ok": 1.0
+      },
+      {
+        "id": "q0039",
+        "type": "factuelle",
+        "recall@5": 1.0,
+        "recall@10": 1.0,
+        "mrr": 1.0,
+        "ndcg@10": 1.0,
+        "route_ok": 1.0
+      },
+      {
+        "id": "q0060",
+        "type": "factuelle",
+        "recall@5": 1.0,
+        "recall@10": 1.0,
+        "mrr": 1.0,
+        "ndcg@10": 1.0,
+        "route_ok": 1.0
+      },
+      {
+        "id": "q0077",
+        "type": "factuelle",
+        "recall@5": 1.0,
+        "recall@10": 1.0,
+        "mrr": 1.0,
+        "ndcg@10": 1.0,
+        "route_ok": 1.0
+      },
+      {
+        "id": "q0084",
+        "type": "factuelle",
+        "recall@5": 1.0,
+        "recall@10": 1.0,
+        "mrr": 1.0,
+        "ndcg@10": 1.0,
+        "route_ok": 1.0
+      },
+      {
+        "id": "q0090",
+        "type": "factuelle",
+        "recall@5": 1.0,
+        "recall@10": 1.0,
+        "mrr": 1.0,
+        "ndcg@10": 1.0,
+        "route_ok": 1.0
+      },
+      {
+        "id": "q0095",
+        "type": "factuelle",
+        "recall@5": 1.0,
+        "recall@10": 1.0,
+        "mrr": 1.0,
+        "ndcg@10": 1.0,
+        "route_ok": 1.0
+      },
+      {
+        "id": "q0105",
+        "type": "factuelle",
+        "recall@5": 1.0,
+        "recall@10": 1.0,
+        "mrr": 1.0,
+        "ndcg@10": 1.0,
+        "route_ok": 1.0
+      },
+      {
+        "id": "q0107",
+        "type": "factuelle",
+        "recall@5": 1.0,
+        "recall@10": 1.0,
+        "mrr": 1.0,
+        "ndcg@10": 1.0,
+        "route_ok": 1.0
+      },
+      {
+        "id": "q0110",
+        "type": "factuelle",
+        "recall@5": 1.0,
+        "recall@10": 1.0,
+        "mrr": 1.0,
+        "ndcg@10": 1.0,
+        "route_ok": 1.0
+      },
+      {
+        "id": "q0117",
+        "type": "factuelle",
+        "recall@5": 1.0,
+        "recall@10": 1.0,
+        "mrr": 1.0,
+        "ndcg@10": 1.0,
+        "route_ok": 1.0
+      },
+      {
+        "id": "q0118",
+        "type": "factuelle",
+        "recall@5": 1.0,
+        "recall@10": 1.0,
+        "mrr": 1.0,
+        "ndcg@10": 1.0,
+        "route_ok": 1.0
+      },
+      {
+        "id": "q0125",
+        "type": "tableau",
+        "recall@5": 1.0,
+        "recall@10": 1.0,
+        "mrr": 1.0,
+        "ndcg@10": 1.0,
+        "route_ok": 1.0
+      },
+      {
+        "id": "q0132",
+        "type": "tableau",
+        "recall@5": 0.0,
+        "recall@10": 0.0,
+        "mrr": 0.0,
+        "ndcg@10": 0.0,
+        "route_ok": 1.0
+      },
+      {
+        "id": "q0139",
+        "type": "tableau",
+        "recall@5": 0.0,
+        "recall@10": 0.0,
+        "mrr": 0.0,
+        "ndcg@10": 0.0,
+        "route_ok": 1.0
+      },
+      {
+        "id": "q0158",
+        "type": "tableau",
+        "recall@5": 1.0,
+        "recall@10": 1.0,
+        "mrr": 1.0,
+        "ndcg@10": 1.0,
+        "route_ok": 1.0
+      },
+      {
+        "id": "q0162",
+        "type": "tableau",
+        "recall@5": 1.0,
+        "recall@10": 1.0,
+        "mrr": 1.0,
+        "ndcg@10": 1.0,
+        "route_ok": 1.0
+      },
+      {
+        "id": "q0164",
+        "type": "tableau",
+        "recall@5": 1.0,
+        "recall@10": 1.0,
+        "mrr": 0.2,
+        "ndcg@10": 0.38685280723454163,
+        "route_ok": 1.0
+      },
+      {
+        "id": "q0165",
+        "type": "tableau",
+        "recall@5": 1.0,
+        "recall@10": 1.0,
+        "mrr": 1.0,
+        "ndcg@10": 1.0,
+        "route_ok": 1.0
+      },
+      {
+        "id": "q0167",
+        "type": "tableau",
+        "recall@5": 1.0,
+        "recall@10": 1.0,
+        "mrr": 1.0,
+        "ndcg@10": 1.0,
+        "route_ok": 1.0
+      },
+      {
+        "id": "q0169",
+        "type": "tableau",
+        "recall@5": 1.0,
+        "recall@10": 1.0,
+        "mrr": 0.3333333333333333,
+        "ndcg@10": 0.5,
+        "route_ok": 1.0
+      },
+      {
+        "id": "q0171",
+        "type": "tableau",
+        "recall@5": 1.0,
+        "recall@10": 1.0,
+        "mrr": 1.0,
+        "ndcg@10": 1.0,
+        "route_ok": 1.0
+      },
+      {
+        "id": "q0186",
+        "type": "multi_documents",
+        "recall@5": 0.0,
+        "recall@10": 0.0,
+        "mrr": 0.0,
+        "ndcg@10": 0.0,
+        "route_ok": 0.0
+      },
+      {
+        "id": "q0189",
+        "type": "multi_documents",
+        "recall@5": 0.5,
+        "recall@10": 0.5,
+        "mrr": 1.0,
+        "ndcg@10": 0.6131471927654584,
+        "route_ok": 1.0
+      },
+      {
+        "id": "q0195",
+        "type": "multi_documents",
+        "recall@5": 0.5,
+        "recall@10": 0.5,
+        "mrr": 0.2,
+        "ndcg@10": 0.23719771276929622,
+        "route_ok": 1.0
+      },
+      {
+        "id": "q0199",
+        "type": "multi_documents",
+        "recall@5": 0.5,
+        "recall@10": 0.5,
+        "mrr": 1.0,
+        "ndcg@10": 0.6131471927654584,
+        "route_ok": 1.0
+      },
+      {
+        "id": "q0200",
+        "type": "multi_documents",
+        "recall@5": 0.5,
+        "recall@10": 0.5,
+        "mrr": 1.0,
+        "ndcg@10": 0.6131471927654584,
+        "route_ok": 1.0
+      },
+      {
+        "id": "q0216",
+        "type": "multi_documents",
+        "recall@5": 0.5,
+        "recall@10": 0.5,
+        "mrr": 0.25,
+        "ndcg@10": 0.2640681225725909,
+        "route_ok": 1.0
+      },
+      {
+        "id": "q0225",
+        "type": "multi_documents",
+        "recall@5": 0.5,
+        "recall@10": 1.0,
+        "mrr": 0.5,
+        "ndcg@10": 0.5802792108518124,
+        "route_ok": 1.0
+      },
+      {
+        "id": "q0238",
+        "type": "multi_documents",
+        "recall@5": 0.5,
+        "recall@10": 0.5,
+        "mrr": 0.5,
+        "ndcg@10": 0.38685280723454163,
+        "route_ok": 1.0
+      },
+      {
+        "id": "q0239",
+        "type": "multi_documents",
+        "recall@5": 0.5,
+        "recall@10": 0.5,
+        "mrr": 0.3333333333333333,
+        "ndcg@10": 0.3065735963827292,
+        "route_ok": 1.0
+      },
+      {
+        "id": "q0241",
+        "type": "vague",
+        "recall@5": 0.0,
+        "recall@10": 0.0,
+        "mrr": 0.0,
+        "ndcg@10": 0.0,
+        "route_ok": 0.0
+      },
+      {
+        "id": "q0249",
+        "type": "vague",
+        "recall@5": 0.0,
+        "recall@10": 0.0,
+        "mrr": 0.0,
+        "ndcg@10": 0.0,
+        "route_ok": 0.0
+      },
+      {
+        "id": "q0253",
+        "type": "vague",
+        "recall@5": 1.0,
+        "recall@10": 1.0,
+        "mrr": 0.5,
+        "ndcg@10": 0.6309297535714575,
+        "route_ok": 1.0
+      },
+      {
+        "id": "q0262",
+        "type": "vague",
+        "recall@5": 0.0,
+        "recall@10": 1.0,
+        "mrr": 0.14285714285714285,
+        "ndcg@10": 0.3333333333333333,
+        "route_ok": 1.0
+      },
+      {
+        "id": "q0265",
+        "type": "vague",
+        "recall@5": 1.0,
+        "recall@10": 1.0,
+        "mrr": 0.3333333333333333,
+        "ndcg@10": 0.5,
+        "route_ok": 1.0
+      }
+    ]
+  }
+}
