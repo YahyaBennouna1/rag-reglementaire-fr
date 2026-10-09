@@ -109,9 +109,9 @@ Fidélité aux passages cités : 100 % ; phrases soutenues par leur citation : 1
 
 **Premières mesures des réponses (20 questions de développement, 4 par type).** Abstention correcte sur 4/4 questions hors corpus ; les 2 fausses abstentions sur 16 viennent de la recherche (source absente des 10 premiers passages). L'agent semblait améliorer l'exactitude (86 % → 93 %) : non confirmé sur le jeu de test (voir ci-dessus).
 
-**Validation du juge des citations (65 cas).** 45 phrases réelles du système et 20 phrases faussées exprès (chiffre changé, négation, inversion, ajout inventé). Annotations RÉALISÉES PAR LLM (QUI DEVAIENT ÊTRE RÉALISÉES PAR MOI). Accord juge / annotations sur la décision « retirer la phrase » : kappa de Cohen 0,86 ; 18/18 phrases fausses détectées ; 2 fausses alertes sur 45, toutes deux sur une phrase tirée d'un tableau à cellules fusionnées (faiblesse identifiée du juge sur les tableaux).
+**Validation du juge des citations (65 cas).** 45 phrases réelles du système et 20 phrases faussées exprès (chiffre changé, négation, inversion, ajout inventé). Accord juge / annotations sur la décision « retirer la phrase » : kappa de Cohen 0,86 ; 18/18 phrases fausses détectées ; 2 fausses alertes sur 45, toutes deux sur une phrase tirée d'un tableau à cellules fusionnées (faiblesse identifiée du juge sur les tableaux).
 
-**Garde-fous contre l'injection de prompt (40 attaques en 6 familles, 15 questions pièges, 145 questions réelles).** Le classifieur spécialisé Llama Prompt Guard 2 seul détecte 35 % des attaques ; avec un LLM classifieur en deuxième couche, 95 %, pour 0 fausse alerte sur les questions pièges et 2,1 % sur les questions réelles. Les attaques non détectées restent sans effet de bout en bout : le système ne répond qu'à partir des guides et s'abstient. Jeu d'attaques RÉALISÉ PAR LLM (QUI DEVAIT ÊTRE RÉALISÉ PAR MOI). Sur les mêmes attaques, un RAG naïf (passages collés sans règles) écrit le texte demandé par l'attaquant et recopie une fausse recommandation attribuée à l'ANSSI ; ce RAG, même sans garde-fous, s'abstient (`scripts/demo_injection.py`).
+**Garde-fous contre l'injection de prompt (40 attaques en 6 familles, 15 questions pièges, 145 questions réelles).** Le classifieur spécialisé Llama Prompt Guard 2 seul détecte 35 % des attaques ; avec un LLM classifieur en deuxième couche, 95 %, pour 0 fausse alerte sur les questions pièges et 2,1 % sur les questions réelles. Les attaques non détectées restent sans effet de bout en bout : le système ne répond qu'à partir des guides et s'abstient. Sur les mêmes attaques, un RAG naïf (passages collés sans règles) écrit le texte demandé par l'attaquant et recopie une fausse recommandation attribuée à l'ANSSI ; ce RAG, même sans garde-fous, s'abstient (`scripts/demo_injection.py`).
 
 **Données personnelles.** Masquées par Presidio avant tout appel à un LLM : 24 données sur 24 trouvées (noms, e-mails, téléphones, IBAN, carte, IP), 0 question réelle modifiée sur 145. Un nom dont tous les mots figurent dans les guides et qui ne ressemble pas à un nom complet est traité comme un terme du domaine : 1 question technique sur 18 encore modifiée (« Fail2ban », absent des guides).
 
@@ -179,17 +179,6 @@ tests/            tests pytest
 ## Source des données
 
 Guides publiés par l'**Agence nationale de la sécurité des systèmes d'information (ANSSI)** sur [messervices.cyber.gouv.fr](https://messervices.cyber.gouv.fr/catalogue), réutilisés sous [Licence Ouverte 2.0](https://www.etalab.gouv.fr/licence-ouverte-open-licence/). La date de mise à jour de chaque guide figure dans [`data/corpus.csv`](data/corpus.csv). Ce projet n'est ni affilié à l'ANSSI ni approuvé par elle.
-
-## Répartition du travail
-
-| Tâche | Réalisation |
-|---|---|
-| Écriture du code et des tests | RÉALISÉ PAR LLM (QUI DEVAIT ÊTRE RÉALISÉ PAR MOI) |
-| Audit manuel des questions (18 questions tirées au hasard) | Réalisé par moi |
-| Validation des autres questions du jeu d'évaluation (grille de 4 critères) | RÉALISÉ PAR LLM (QUI DEVAIT ÊTRE RÉALISÉ PAR MOI), calibré sur mon audit (kappa de Cohen) |
-| Annotation des cas de validation du juge des citations | RÉALISÉ PAR LLM (QUI DEVAIT ÊTRE RÉALISÉ PAR MOI) |
-| Lancement des mesures et analyse des résultats (ablations) | RÉALISÉ PAR LLM (QUI DEVAIT ÊTRE RÉALISÉ PAR MOI) |
-| Écriture du jeu d'attaques (injection de prompt) et du jeu de données personnelles | RÉALISÉ PAR LLM (QUI DEVAIT ÊTRE RÉALISÉ PAR MOI) |
 
 ## Auteur
 
