@@ -81,3 +81,17 @@ def test_limite_de_debit(client, monkeypatch):
 def test_racine_redirige_vers_la_documentation(client):
     r = client.get("/", follow_redirects=False)
     assert r.status_code in (302, 307) and r.headers["location"] == "/docs"
+
+
+def test_un_seul_client_qdrant_par_programme(monkeypatch, tmp_path):
+    # En mode local, un 2e client sur le même dossier lève une erreur : get_client doit le partager.
+    # Dossier temporaire : le test ne dépend pas de l'index du projet (ni d'une évaluation en cours).
+    from ragfr import index
+
+    monkeypatch.setattr(index, "QDRANT_DIR", tmp_path)
+    index.get_client.cache_clear()
+    try:
+        assert index.get_client() is index.get_client()
+    finally:
+        index.get_client().close()
+        index.get_client.cache_clear()

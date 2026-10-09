@@ -22,3 +22,6 @@ logs/
 
 # Modèles d'IA téléchargés (Hugging Face)
 .cache/
+
+# Résultats obtenus avec une règle de juge abandonnée (gardés en local pour comparaison)
+results/ancien_juge/

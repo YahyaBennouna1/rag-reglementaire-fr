@@ -45,9 +45,12 @@ class Answer(BaseModel):
     passages: list[Passage]
 
 
-def format_passages(passages: list[Passage]) -> str:
+def format_passages(passages: list[Passage], numbers: list[int] | None = None) -> str:
+    """Les passages entre balises, numérotés P1, P2… (ou avec les numéros donnés, pour garder ceux
+    d'une réponse quand on n'en montre qu'une partie)."""
+    numbers = numbers or list(range(1, len(passages) + 1))
     blocks = []
-    for i, p in enumerate(passages, start=1):
+    for i, p in zip(numbers, passages, strict=True):
         attributes = f'id="P{i}" guide="{p.titre}" page="{p.page}" section="{p.section}"'
         blocks.append(f"<passage {attributes}>\n{p.text}\n</passage>")
     return "<passages>\n" + "\n".join(blocks) + "\n</passages>"

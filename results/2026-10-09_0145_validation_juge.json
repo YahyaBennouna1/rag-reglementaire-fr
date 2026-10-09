@@ -1,0 +1,470 @@
+{
+  "date": "2026-10-09T01:45:17",
+  "modele": "groq/qwen/qwen3.8-27b",
+  "resume": {
+    "n_cas": 65,
+    "n_pieges": 18,
+    "n_relus": 0,
+    "kappa_retrait": 0.856,
+    "accord_3_classes": 0.908,
+    "pieges_detectes": 1.0,
+    "fausses_alertes": 0.044
+  },
+  "details": [
+    {
+      "id": "q0001-s1",
+      "origine": "systeme",
+      "etiquette": "soutenu",
+      "verdict_juge": "soutenu",
+      "relu": false
+    },
+    {
+      "id": "q0003-s1",
+      "origine": "systeme",
+      "etiquette": "soutenu",
+      "verdict_juge": "soutenu",
+      "relu": false
+    },
+    {
+      "id": "q0006-s1",
+      "origine": "systeme",
+      "etiquette": "soutenu",
+      "verdict_juge": "soutenu",
+      "relu": false
+    },
+    {
+      "id": "q0007-s1",
+      "origine": "systeme",
+      "etiquette": "soutenu",
+      "verdict_juge": "soutenu",
+      "relu": false
+    },
+    {
+      "id": "q0007-s2",
+      "origine": "systeme",
+      "etiquette": "soutenu",
+      "verdict_juge": "soutenu",
+      "relu": false
+    },
+    {
+      "id": "q0008-s1",
+      "origine": "systeme",
+      "etiquette": "soutenu",
+      "verdict_juge": "soutenu",
+      "relu": false
+    },
+    {
+      "id": "q0012-s1",
+      "origine": "systeme",
+      "etiquette": "soutenu",
+      "verdict_juge": "soutenu",
+      "relu": false
+    },
+    {
+      "id": "q0014-s1",
+      "origine": "systeme",
+      "etiquette": "soutenu",
+      "verdict_juge": "soutenu",
+      "relu": false
+    },
+    {
+      "id": "q0018-s1",
+      "origine": "systeme",
+      "etiquette": "soutenu",
+      "verdict_juge": "soutenu",
+      "relu": false
+    },
+    {
+      "id": "q0018-s2",
+      "origine": "systeme",
+      "etiquette": "soutenu",
+      "verdict_juge": "soutenu",
+      "relu": false
+    },
+    {
+      "id": "q0123-s1",
+      "origine": "systeme",
+      "etiquette": "soutenu",
+      "verdict_juge": "soutenu",
+      "relu": false
+    },
+    {
+      "id": "q0124-s1",
+      "origine": "systeme",
+      "etiquette": "soutenu",
+      "verdict_juge": "soutenu",
+      "relu": false
+    },
+    {
+      "id": "q0127-s1",
+      "origine": "systeme",
+      "etiquette": "soutenu",
+      "verdict_juge": "soutenu",
+      "relu": false
+    },
+    {
+      "id": "q0128-s1",
+      "origine": "systeme",
+      "etiquette": "soutenu",
+      "verdict_juge": "soutenu",
+      "relu": false
+    },
+    {
+      "id": "q0129-s1",
+      "origine": "systeme",
+      "etiquette": "soutenu",
+      "verdict_juge": "non_soutenu",
+      "relu": false
+    },
+    {
+      "id": "q0129-s2",
+      "origine": "systeme",
+      "etiquette": "soutenu",
+      "verdict_juge": "non_soutenu",
+      "relu": false
+    },
+    {
+      "id": "q0137-s1",
+      "origine": "systeme",
+      "etiquette": "soutenu",
+      "verdict_juge": "soutenu",
+      "relu": false
+    },
+    {
+      "id": "q0182-s1",
+      "origine": "systeme",
+      "etiquette": "soutenu",
+      "verdict_juge": "soutenu",
+      "relu": false
+    },
+    {
+      "id": "q0182-s2",
+      "origine": "systeme",
+      "etiquette": "soutenu",
+      "verdict_juge": "soutenu",
+      "relu": false
+    },
+    {
+      "id": "q0182-s3",
+      "origine": "systeme",
+      "etiquette": "soutenu",
+      "verdict_juge": "soutenu",
+      "relu": false
+    },
+    {
+      "id": "q0182-s4",
+      "origine": "systeme",
+      "etiquette": "soutenu",
+      "verdict_juge": "soutenu",
+      "relu": false
+    },
+    {
+      "id": "q0182-s5",
+      "origine": "systeme",
+      "etiquette": "soutenu",
+      "verdict_juge": "soutenu",
+      "relu": false
+    },
+    {
+      "id": "q0183-s1",
+      "origine": "systeme",
+      "etiquette": "soutenu",
+      "verdict_juge": "soutenu",
+      "relu": false
+    },
+    {
+      "id": "q0183-s2",
+      "origine": "systeme",
+      "etiquette": "soutenu",
+      "verdict_juge": "soutenu",
+      "relu": false
+    },
+    {
+      "id": "q0184-s1",
+      "origine": "systeme",
+      "etiquette": "soutenu",
+      "verdict_juge": "soutenu",
+      "relu": false
+    },
+    {
+      "id": "q0184-s2",
+      "origine": "systeme",
+      "etiquette": "soutenu",
+      "verdict_juge": "soutenu",
+      "relu": false
+    },
+    {
+      "id": "q0184-s3",
+      "origine": "systeme",
+      "etiquette": "soutenu",
+      "verdict_juge": "soutenu",
+      "relu": false
+    },
+    {
+      "id": "q0184-s4",
+      "origine": "systeme",
+      "etiquette": "soutenu",
+      "verdict_juge": "soutenu",
+      "relu": false
+    },
+    {
+      "id": "q0185-s1",
+      "origine": "systeme",
+      "etiquette": "soutenu",
+      "verdict_juge": "soutenu",
+      "relu": false
+    },
+    {
+      "id": "q0187-s1",
+      "origine": "systeme",
+      "etiquette": "soutenu",
+      "verdict_juge": "soutenu",
+      "relu": false
+    },
+    {
+      "id": "q0187-s2",
+      "origine": "systeme",
+      "etiquette": "soutenu",
+      "verdict_juge": "soutenu",
+      "relu": false
+    },
+    {
+      "id": "q0187-s3",
+      "origine": "systeme",
+      "etiquette": "soutenu",
+      "verdict_juge": "soutenu",
+      "relu": false
+    },
+    {
+      "id": "q0187-s4",
+      "origine": "systeme",
+      "etiquette": "soutenu",
+      "verdict_juge": "soutenu",
+      "relu": false
+    },
+    {
+      "id": "q0187-s5",
+      "origine": "systeme",
+      "etiquette": "partiel",
+      "verdict_juge": "soutenu",
+      "relu": false
+    },
+    {
+      "id": "q0192-s1",
+      "origine": "systeme",
+      "etiquette": "partiel",
+      "verdict_juge": "soutenu",
+      "relu": false
+    },
+    {
+      "id": "q0192-s2",
+      "origine": "systeme",
+      "etiquette": "soutenu",
+      "verdict_juge": "soutenu",
+      "relu": false
+    },
+    {
+      "id": "q0243-s1",
+      "origine": "systeme",
+      "etiquette": "soutenu",
+      "verdict_juge": "soutenu",
+      "relu": false
+    },
+    {
+      "id": "q0243-s2",
+      "origine": "systeme",
+      "etiquette": "soutenu",
+      "verdict_juge": "soutenu",
+      "relu": false
+    },
+    {
+      "id": "q0243-s3",
+      "origine": "systeme",
+      "etiquette": "soutenu",
+      "verdict_juge": "soutenu",
+      "relu": false
+    },
+    {
+      "id": "q0244-s1",
+      "origine": "systeme",
+      "etiquette": "soutenu",
+      "verdict_juge": "soutenu",
+      "relu": false
+    },
+    {
+      "id": "q0251-s1",
+      "origine": "systeme",
+      "etiquette": "soutenu",
+      "verdict_juge": "soutenu",
+      "relu": false
+    },
+    {
+      "id": "q0251-s2",
+      "origine": "systeme",
+      "etiquette": "soutenu",
+      "verdict_juge": "soutenu",
+      "relu": false
+    },
+    {
+      "id": "q0252-s1",
+      "origine": "systeme",
+      "etiquette": "soutenu",
+      "verdict_juge": "soutenu",
+      "relu": false
+    },
+    {
+      "id": "q0256-s1",
+      "origine": "systeme",
+      "etiquette": "soutenu",
+      "verdict_juge": "soutenu",
+      "relu": false
+    },
+    {
+      "id": "q0256-s2",
+      "origine": "systeme",
+      "etiquette": "soutenu",
+      "verdict_juge": "soutenu",
+      "relu": false
+    },
+    {
+      "id": "piege-01",
+      "origine": "piege",
+      "etiquette": "non_soutenu",
+      "verdict_juge": "non_soutenu",
+      "relu": false
+    },
+    {
+      "id": "piege-02",
+      "origine": "piege",
+      "etiquette": "non_soutenu",
+      "verdict_juge": "non_soutenu",
+      "relu": false
+    },
+    {
+      "id": "piege-03",
+      "origine": "piege",
+      "etiquette": "non_soutenu",
+      "verdict_juge": "non_soutenu",
+      "relu": false
+    },
+    {
+      "id": "piege-04",
+      "origine": "piege",
+      "etiquette": "non_soutenu",
+      "verdict_juge": "non_soutenu",
+      "relu": false
+    },
+    {
+      "id": "piege-05",
+      "origine": "piege",
+      "etiquette": "non_soutenu",
+      "verdict_juge": "non_soutenu",
+      "relu": false
+    },
+    {
+      "id": "piege-06",
+      "origine": "piege",
+      "etiquette": "non_soutenu",
+      "verdict_juge": "non_soutenu",
+      "relu": false
+    },
+    {
+      "id": "piege-07",
+      "origine": "piege",
+      "etiquette": "non_soutenu",
+      "verdict_juge": "non_soutenu",
+      "relu": false
+    },
+    {
+      "id": "piege-08",
+      "origine": "piege",
+      "etiquette": "non_soutenu",
+      "verdict_juge": "non_soutenu",
+      "relu": false
+    },
+    {
+      "id": "piege-09",
+      "origine": "piege",
+      "etiquette": "non_soutenu",
+      "verdict_juge": "non_soutenu",
+      "relu": false
+    },
+    {
+      "id": "piege-10",
+      "origine": "piege",
+      "etiquette": "non_soutenu",
+      "verdict_juge": "non_soutenu",
+      "relu": false
+    },
+    {
+      "id": "piege-11",
+      "origine": "piege",
+      "etiquette": "non_soutenu",
+      "verdict_juge": "non_soutenu",
+      "relu": false
+    },
+    {
+      "id": "piege-12",
+      "origine": "piege",
+      "etiquette": "non_soutenu",
+      "verdict_juge": "non_soutenu",
+      "relu": false
+    },
+    {
+      "id": "piege-13",
+      "origine": "piege",
+      "etiquette": "non_soutenu",
+      "verdict_juge": "non_soutenu",
+      "relu": false
+    },
+    {
+      "id": "piege-14",
+      "origine": "piege",
+      "etiquette": "non_soutenu",
+      "verdict_juge": "non_soutenu",
+      "relu": false
+    },
+    {
+      "id": "piege-15",
+      "origine": "piege",
+      "etiquette": "non_soutenu",
+      "verdict_juge": "non_soutenu",
+      "relu": false
+    },
+    {
+      "id": "piege-16",
+      "origine": "piege",
+      "etiquette": "non_soutenu",
+      "verdict_juge": "non_soutenu",
+      "relu": false
+    },
+    {
+      "id": "piege-17",
+      "origine": "piege",
+      "etiquette": "non_soutenu",
+      "verdict_juge": "non_soutenu",
+      "relu": false
+    },
+    {
+      "id": "piege-18",
+      "origine": "piege",
+      "etiquette": "non_soutenu",
+      "verdict_juge": "non_soutenu",
+      "relu": false
+    },
+    {
+      "id": "piege-19",
+      "origine": "piege",
+      "etiquette": "partiel",
+      "verdict_juge": "non_soutenu",
+      "relu": false
+    },
+    {
+      "id": "piege-20",
+      "origine": "piege",
+      "etiquette": "partiel",
+      "verdict_juge": "non_soutenu",
+      "relu": false
+    }
+  ]
+}

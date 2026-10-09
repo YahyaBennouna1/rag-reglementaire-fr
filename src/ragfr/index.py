@@ -4,11 +4,11 @@ Une collection Qdrant par méthode de chunking (ex. "fixed-512-64"), pour compar
 sans qu'elles s'écrasent. Qdrant tourne ici en mode local (un dossier), sans serveur.
 """
 
+from functools import cache
 from pathlib import Path
 
 from qdrant_client import QdrantClient, models
 
-from ragfr.chunking.fixed import chunk_fixed
 from ragfr.config import ChunkingConfig, Config
 from ragfr.embeddings import Embedder
 from ragfr.ingestion.models import ParsedDocument
@@ -33,6 +33,10 @@ def load_parsed_documents() -> list[ParsedDocument]:
 
 
 def chunk_corpus(chunking: ChunkingConfig) -> list[Passage]:
+    # Import ici et pas en haut du fichier : le découpage charge `transformers` (30 s d'import),
+    # inutile pour répondre aux questions (API, interface), qui importent aussi ce module.
+    from ragfr.chunking.fixed import chunk_fixed
+
     if chunking.method != "fixed":
         raise NotImplementedError(f"méthode de chunking pas encore implémentée : {chunking.method}")
     passages = []
@@ -41,7 +45,13 @@ def chunk_corpus(chunking: ChunkingConfig) -> list[Passage]:
     return passages
 
 
+@cache
 def get_client() -> QdrantClient:
+    """Le client Qdrant du programme, ouvert une seule fois.
+
+    En mode local, Qdrant verrouille son dossier : un 2e client ouvert dans le même programme
+    lève une erreur. Tous les appels partagent donc le même client.
+    """
     return QdrantClient(path=str(QDRANT_DIR))
 
 

@@ -47,9 +47,14 @@ def percentile(values: list[float], p: float) -> float:
     return statistics.quantiles(values, n=100)[int(p) - 1] if len(values) > 1 else values[0]
 
 
-def average(rows: list[dict], key: str) -> float:
+def average(rows: list[dict], key: str) -> float | None:
+    """Moyenne des lignes qui ont cette mesure ; None (« non mesuré ») si aucune ne l'a.
+
+    Renvoyer 0 ferait croire à un échec total : par exemple une précision des citations à 0
+    alors que la vérification des citations était désactivée.
+    """
     values = [r[key] for r in rows if r.get(key) is not None]
-    return round(sum(values) / len(values), 4) if values else 0.0
+    return round(sum(values) / len(values), 4) if values else None
 
 
 def by_type(rows: list[dict], metrics: list[str]) -> dict:
@@ -138,7 +143,8 @@ def evaluate_answers(cfg: Config, questions: list[EvalQuestion]) -> dict:
     summary["cout_1000_requetes_usd"] = round(cost / max(len(questions), 1) * 1000, 3)
     summary["modeles_sans_prix_connu"] = unknown
     summary["tokens_par_modele"] = system_usage
-    return {"resume": summary, "par_type": by_type(rows, metrics[:3]), "details": rows}
+    per_type = by_type(rows, metrics[:3] + ["fausse_abstention", "abstention_correcte"])
+    return {"resume": summary, "par_type": per_type, "details": rows}
 
 
 def main() -> None:

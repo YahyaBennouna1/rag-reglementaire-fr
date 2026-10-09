@@ -8,20 +8,18 @@ authors = [
 ]
 requires-python = ">=3.12"
 dependencies = [
-    "beautifulsoup4>=4.15.0",
-    "docling>=2.135.0",
     "fastapi>=0.143.0",
     "httpx>=0.28.1",
     "langgraph>=1.2.14",
     "litellm>=1.104.2",
     "mcp[cli]>=2.3.0",
     "pydantic>=2.13.5",
-    "pymupdf>=1.28.2",
     "python-dotenv>=1.2.4",
     "pyyaml>=6.0.3",
     "qdrant-client>=1.19.1",
-    "sentence-transformers>=6.1.0",
     "snowballstemmer>=3.1.1",
+    "streamlit>=1.65.0",
+    "uvicorn>=0.38",
 ]
 
 [build-system]
@@ -33,6 +31,20 @@ dev = [
     "pytest>=9.1.1",
     "ruff>=0.16.10",
 ]
+# Construire le corpus : scraping du catalogue et parsing des PDF (Docling, PyMuPDF).
+ingestion = [
+    "beautifulsoup4>=4.15.0",
+    "docling>=2.135.0",
+    "pymupdf>=1.28.2",
+]
+# Modèles locaux : embeddings denses, reranker, tokenizer du découpage (PyTorch).
+modeles = [
+    "sentence-transformers>=6.1.0",
+]
+
+[tool.uv]
+# En local, tout est installé. L'image Docker de service n'installe que le cœur (voir Dockerfile).
+default-groups = ["dev", "ingestion", "modeles"]
 
 [tool.pytest.ini_options]
 markers = ["slow: tests lents (Docling, modèles) : uv run pytest -m slow"]

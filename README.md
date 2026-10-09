@@ -25,10 +25,10 @@ Un RAG naïf se code en 50 lignes. Ce projet s'intéresse à ce qui fait la diff
 | Évaluation | **LLM-as-a-judge**, jeu d'évaluation synthétique validé, **recall@k, MRR, nDCG**, fidélité / exactitude / pertinence, **kappa de Cohen**, intervalles de confiance, **ablation**, découpage dev / test figé, coût pour 1 000 requêtes |
 | Données | **Docling** (parsing PDF, tableaux), PyMuPDF, web scraping (httpx, BeautifulSoup), nettoyage par regex, normalisation Unicode, hiérarchie des sections |
 | Stockage | **Qdrant** (vecteurs denses et creux), SQLite (cache d'embeddings et de reranking), empreintes SHA-256 |
-| Service | **FastAPI** (validation Pydantic, sondes health / ready, clé d'API, limite de débit), serveur **MCP** (Model Context Protocol : outils et ressource pour Claude Desktop ou un IDE) |
-| Ingénierie | **Python 3.12**, **uv**, **Pydantic**, **pytest** (tests unitaires, d'intégration, mocks), **ruff**, configuration YAML, Git (Conventional Commits, pull requests) |
+| Service | **Streamlit** (interface avec sources citées), **FastAPI** (validation Pydantic, sondes health / ready, clé d'API, limite de débit), serveur **MCP** (Model Context Protocol : outils et ressource pour Claude Desktop ou un IDE) |
+| Ingénierie | **Python 3.12**, **uv**, **Pydantic**, **pytest** (tests unitaires, d'intégration, mocks), **ruff**, configuration YAML, Git (Conventional Commits, pull requests), **GitHub Actions** (CI), **Docker** (image multi-étapes, non root), Docker Compose |
 
-**Prévu** : GraphRAG (Neo4j), contextual retrieval, garde-fous (injection de prompt, **Presidio**), **Docker**, **Kubernetes** (kind), **Terraform**, **GitHub Actions** (CI avec seuil de régression), **Langfuse**, démo Hugging Face Spaces.
+**Prévu** : GraphRAG (Neo4j), contextual retrieval, garde-fous (injection de prompt, **Presidio**), **Kubernetes** (kind), **Terraform**, porte de qualité en CI (seuil de régression), **Langfuse**, démo Hugging Face Spaces.
 
 ## Architecture
 
@@ -51,12 +51,15 @@ corpus.csv → PDF → Docling → éléments nettoyés         question → gar
 | RAG de référence : découpage fixe, embeddings, Qdrant | ✅ |
 | Recherche hybride BM25 français + dense, RRF (pondéré), reranker | ✅ mesuré |
 | Routeur, multi-query, décomposition, HyDE | ✅ routeur mesuré (multi-query utile sur les questions vagues ; décomposition corrigée par une fusion par alternance) |
-| Agent correctif LangGraph, citations vérifiées par un juge | ✅ (à mesurer) |
+| Agent correctif LangGraph, citations vérifiées par un juge | ✅ mesuré sur un premier échantillon (validation du juge à faire) |
 | Chunking sémantique et contextual retrieval | ⬜ |
 | Serveur MCP (recherche, réponse citée, description d'un guide) | ✅ |
 | GraphRAG, garde-fous | ⬜ |
 | API FastAPI (ask, search, health, ready) | ✅ |
-| Docker, Kubernetes (kind) + Terraform, CI qui bloque les régressions | ⬜ |
+| Interface web Streamlit (réponse, sources citées, abstention) | ✅ |
+| CI GitHub Actions (ruff, tests) | ✅ |
+| Image Docker de service, construite et testée par la CI | ✅ |
+| Kubernetes (kind) + Terraform, porte de qualité sur le recall en CI | ⬜ |
 
 ## Évaluation
 
@@ -70,6 +73,10 @@ Le jeu final (200 questions) est découpé en 150 questions de développement et
 **Les mesures.** Recherche : recall@5, recall@10, MRR et nDCG@10, comptés par référence (et non par chunk). Réponses : fidélité, exactitude et pertinence notées par un LLM juge d'une autre famille que le générateur ; abstention correcte ; coût pour 1 000 requêtes au tarif public.
 
 **Premier résultat (parsing des tableaux, 20 tableaux tirés au hasard).** Docling 15/20 contre PyMuPDF 13/20, et 14/16 contre 10/16 sur les vrais tableaux de données ([détail](results/parsing_tableaux.md)).
+
+**Premières mesures des réponses (20 questions de développement, 4 par type, juge qwen3.8-27b).** Abstention correcte sur 4/4 questions hors corpus ; les 2 fausses abstentions sur 16 viennent de la recherche (source absente des 10 premiers passages). L'agent correctif fait passer l'exactitude de 86 % à 93 % pour un coût multiplié par 1,8 (1,96 $ → 3,57 $ pour 1 000 questions au tarif public). Échantillon réduit et juge pas encore validé contre des annotations humaines : ces chiffres sont indicatifs.
+
+**Validation du juge des citations (65 cas).** 45 phrases réelles du système et 20 phrases faussées exprès (chiffre changé, négation, inversion, ajout inventé). Annotations RÉALISÉES PAR LLM (QUI DEVAIENT ÊTRE RÉALISÉES PAR MOI). Accord juge / annotations sur la décision « retirer la phrase » : kappa de Cohen 0,86 ; 18/18 phrases fausses détectées ; 2 fausses alertes sur 45, toutes deux sur une phrase tirée d'un tableau à cellules fusionnées (faiblesse identifiée du juge sur les tableaux).
 
 ## Choix techniques notables
 
@@ -91,6 +98,22 @@ uv run pytest                              # tests rapides
 uv run pytest -m slow                      # test de non-régression du parsing
 ```
 
+Une fois l'index construit (`scripts/build_index.py`) et les clés d'API dans `.env` (voir `.env.example`) :
+
+```bash
+uv run streamlit run src/ragfr/ui/streamlit_app.py   # interface web : http://localhost:8501
+uv run uvicorn ragfr.api.app:app --port 8000          # API : documentation sur http://localhost:8000/docs
+uv run python -m ragfr.mcp_server.server              # serveur MCP (Claude Desktop, IDE)
+```
+
+Qdrant est utilisé en mode local : un seul de ces programmes à la fois peut ouvrir l'index.
+
+Avec Docker (image de service de 907 Mo, sans Docling ni PyTorch, construite et testée par la CI) :
+
+```bash
+docker compose up --build api   # ou : docker compose up --build ui
+```
+
 Le corpus est reconstruit à partir de [`data/corpus.csv`](data/corpus.csv) ; les PDF ne sont pas versionnés. Pour régénérer la liste depuis le catalogue : `scripts/scrape_catalogue.py` puis `scripts/build_corpus.py`.
 
 ## Structure
@@ -106,6 +129,16 @@ tests/            tests pytest
 ## Source des données
 
 Guides publiés par l'**Agence nationale de la sécurité des systèmes d'information (ANSSI)** sur [messervices.cyber.gouv.fr](https://messervices.cyber.gouv.fr/catalogue), réutilisés sous [Licence Ouverte 2.0](https://www.etalab.gouv.fr/licence-ouverte-open-licence/). La date de mise à jour de chaque guide figure dans [`data/corpus.csv`](data/corpus.csv). Ce projet n'est ni affilié à l'ANSSI ni approuvé par elle.
+
+## Répartition du travail
+
+| Tâche | Réalisation |
+|---|---|
+| Écriture du code et des tests | RÉALISÉ PAR LLM (QUI DEVAIT ÊTRE RÉALISÉ PAR MOI) |
+| Audit manuel des questions (18 questions tirées au hasard) | Réalisé par moi |
+| Validation des autres questions du jeu d'évaluation (grille de 4 critères) | RÉALISÉ PAR LLM (QUI DEVAIT ÊTRE RÉALISÉ PAR MOI), calibré sur mon audit (kappa de Cohen) |
+| Annotation des cas de validation du juge des citations | RÉALISÉ PAR LLM (QUI DEVAIT ÊTRE RÉALISÉ PAR MOI) |
+| Lancement des mesures et analyse des résultats (ablations) | RÉALISÉ PAR LLM (QUI DEVAIT ÊTRE RÉALISÉ PAR MOI) |
 
 ## Auteur
 

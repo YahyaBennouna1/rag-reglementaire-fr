@@ -82,6 +82,23 @@ def test_quota_journalier_pas_reessaye(isolated_cache, monkeypatch):
     assert len(attempts) == 1  # un quota du jour ne se libère pas en quelques secondes
 
 
+def test_requete_trop_grosse_pas_reessayee(isolated_cache, monkeypatch):
+    attempts = []
+
+    def too_large(**kw):
+        attempts.append(1)
+        raise litellm.RateLimitError(
+            "Request too large on input tokens per minute (ITPM): Limit 7000, Requested 9013",
+            llm_provider="fake",
+            model="fake/model",
+        )
+
+    monkeypatch.setattr(litellm, "completion", too_large)
+    with pytest.raises(litellm.RateLimitError):
+        llm.complete([{"role": "user", "content": "x"}], model="fake/model")
+    assert len(attempts) == 1  # plus grosse que la limite : elle ne passera jamais
+
+
 def test_credits_epuises_pas_reessayes(isolated_cache, monkeypatch):
     attempts = []
 
