@@ -90,7 +90,7 @@ Le jeu final (194 questions) est découpé, par type, en 145 questions de dével
 
 Même classement que sur le jeu de développement. Différences appariées : BM25 est significativement meilleure que la recherche dense (MRR +0,197, IC [0,070 ; 0,327]) ; aucune différence n'est démontrée entre BM25 et l'hybride pondéré ou le routeur. BM25 est retenue car aussi bonne, plus simple et plus rapide.
 
-**Limite connue de la recherche dense.** multilingual-e5-base lit au plus 512 tokens ; avec le préfixe `passage:` et le chemin de section, 1 849 passages sur 2 122 (87 %) dépassent cette longueur (jusqu'à 632 tokens) et sont tronqués pour l'embedding dense. BM25 lit le texte entier. Cette troncature explique peut-être une partie de l'écart entre dense et BM25 ; l'hypothèse (réindexer avec des passages d'environ 448 tokens) n'a pas été testée.
+**Troncature de la recherche dense, testée.** multilingual-e5-base lit au plus 512 tokens ; avec le préfixe `passage:` et le chemin de section, 87 % des passages de 512 tokens dépassent cette longueur et sont tronqués pour l'embedding dense (BM25 lit le texte entier). Réindexé avec des passages de 448 tokens (3 % tronqués), sur le jeu de développement : dense recall@10 0,723 → 0,727, MRR 0,533 → 0,567 ; BM25, témoin non tronqué, 0,842 → 0,862 et 0,711 → 0,690. Aucune différence significative (bootstrap apparié) ; l'écart entre dense et BM25 reste entier. La troncature n'explique pas la faiblesse de la recherche dense ; les passages de 512 tokens sont conservés.
 
 **Réponses** (juge qwen3.8-27b, d'une autre famille que le générateur Gemini).
 
