@@ -18,7 +18,8 @@ from ragfr.retrieval.bm25 import average_length, document_vector
 
 ROOT = Path(__file__).resolve().parents[2]
 PARSED_DIR = ROOT / "data" / "parsed"
-QDRANT_DIR = ROOT / "data" / "qdrant"
+# RAGFR_QDRANT_PATH : un autre dossier d'index (la démo Streamlit Cloud embarque le sien, leçon 25).
+QDRANT_DIR = Path(os.environ.get("RAGFR_QDRANT_PATH", ROOT / "data" / "qdrant"))
 
 
 def collection_name(cfg: Config) -> str:

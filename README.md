@@ -1,15 +1,17 @@
 # RAG agentique sur les guides de cybersécurité de l'ANSSI
 
-Assistant de questions-réponses sur un corpus de **45 guides de l'ANSSI** (1 951 pages). Il cite la source de chaque phrase, répond « je ne sais pas » quand le corpus ne contient pas la réponse, et **mesure** l'apport de chaque technique sur un jeu d'évaluation vérifié à la main.
+Assistant de questions-réponses sur un corpus de **45 guides de l'ANSSI** (1 951 pages). Il cite la source de chaque phrase, répond « je ne sais pas » quand le corpus ne contient pas la réponse, et **mesure** l'apport de chaque technique sur un jeu d'évaluation de 194 questions validées, dont 49 mises de côté pour l'évaluation finale.
 
-> 🚧 **Projet en cours.** Cette page décrit l'état actuel ; les résultats chiffrés seront publiés au fil des étapes dans [`results/`](results/).
+![Démonstration : une question, la réponse citée avec sa source, une question hors des guides, une tentative d'injection refusée](docs/demo.gif)
+
+**Résultats sur 49 questions de test jamais utilisées pendant le développement** : recherche BM25 recall@10 0,81 [IC 95 % 0,69 – 0,91] ; 35 réponses exactes sur 44 ; abstention correcte sur 4 questions hors corpus sur 5 ; 0 question bloquée à tort par les garde-fous. Détail plus bas et dans [`results/`](results/).
 
 ## Pourquoi ce projet
 
 Un RAG naïf se code en 50 lignes. Ce projet s'intéresse à ce qui fait la différence en production :
 
 - **Des données propres** : parsing structurel des PDF (tableaux, sections, pages) plutôt qu'une extraction de texte brute.
-- **Une évaluation d'abord** : 200 questions vérifiées, construites *avant* toute optimisation, et une **ablation** qui chiffre chaque technique.
+- **Une évaluation d'abord** : 194 questions validées, construites *avant* toute optimisation, et une **ablation** qui chiffre chaque technique.
 - **Un système qui sait s'abstenir** : un agent juge la qualité des passages trouvés, relance la recherche ou refuse de répondre.
 - **Des citations vérifiées** : chaque phrase de la réponse renvoie à un passage, et un juge vérifie que le passage dit bien ce que la phrase affirme.
 
@@ -53,7 +55,7 @@ corpus.csv → PDF → Docling → éléments nettoyés         question → gar
 | RAG de référence : découpage fixe, embeddings, Qdrant | ✅ |
 | Recherche hybride BM25 français + dense, RRF (pondéré), reranker | ✅ mesuré |
 | Routeur, multi-query, décomposition, HyDE | ✅ routeur mesuré (multi-query utile sur les questions vagues ; décomposition corrigée par une fusion par alternance) |
-| Agent correctif LangGraph, citations vérifiées par un juge | ✅ mesuré sur un premier échantillon (validation du juge à faire) |
+| Agent correctif LangGraph, citations vérifiées par un juge | ✅ mesuré sur le jeu de test ; juge des citations validé (kappa 0,86) |
 | Chunking sémantique et contextual retrieval | ⬜ |
 | Serveur MCP (recherche, réponse citée, description d'un guide) | ✅ |
 | Garde-fous : détection d'injection de prompt en deux couches, mesurée | ✅ |

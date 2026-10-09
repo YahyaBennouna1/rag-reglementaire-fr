@@ -1,0 +1,4 @@
+# Dépendances de la démo sur Streamlit Community Cloud : le projet lui-même, en mode éditable
+# (son code reste dans src/, où il trouve configs/ et data/). Seul le cœur est installé :
+# ni Docling ni PyTorch (groupes facultatifs du pyproject.toml).
+-e .

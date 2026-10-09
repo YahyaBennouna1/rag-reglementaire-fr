@@ -1,2 +1,3 @@
 # Fins de ligne LF dans le depot, quel que soit le systeme
 * text=auto eol=lf
+*.sqlite binary
