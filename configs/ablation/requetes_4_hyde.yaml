@@ -1,5 +1,6 @@
-# Ablation recherche : Hybride, fusion RRF pondérée (BM25 compte double)
-name: recherche_5_hybride_pondere
+# Ablation requêtes : hybride pondéré + HyDE (réponse hypothétique pour la recherche dense ;
+# BM25 garde la vraie question, leçon 14)
+name: requetes_4_hyde
 
 chunking:
   method: fixed # découpage à taille fixe (leçon 12)
@@ -14,6 +15,10 @@ retrieval:
   bm25_weight: 2.0 # BM25 est nettement plus fort sur ce corpus (voir l'analyse d'erreurs)
   reranker: false
   rerank_candidates: 30
+
+query:
+  router: false
+  hyde: true
 
 llm:
   model: gemini/gemini-3.5-flash-lite

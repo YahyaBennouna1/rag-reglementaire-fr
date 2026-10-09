@@ -3,7 +3,7 @@
 name: requetes_2_routeur_poids
 
 chunking:
-  method: fixed # fixed | semantic | contextual
+  method: fixed # découpage à taille fixe (leçon 12)
   size: 512 # en tokens
   overlap: 64
 

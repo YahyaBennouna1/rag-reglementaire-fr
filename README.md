@@ -12,36 +12,35 @@ Un RAG naïf se code en 50 lignes. Ce projet s'intéresse à ce qui fait la diff
 
 - **Des données propres** : parsing structurel des PDF (tableaux, sections, pages) plutôt qu'une extraction de texte brute.
 - **Une évaluation d'abord** : 194 questions validées, construites *avant* toute optimisation, et une **ablation** qui chiffre chaque technique.
-- **Un système qui sait s'abstenir** : un agent juge la qualité des passages trouvés, relance la recherche ou refuse de répondre.
+- **Un système qui sait s'abstenir** : il répond « je ne sais pas » plutôt que d'inventer quand les guides ne contiennent pas la réponse.
 - **Des citations vérifiées** : chaque phrase de la réponse renvoie à un passage, et un juge vérifie que le passage dit bien ce que la phrase affirme.
+- **Une sécurité mesurée** : garde-fous contre l'injection de prompt et masquage des données personnelles, évalués comme le reste.
 
 ## Technologies et techniques
 
-**Implémenté**
-
 | Domaine | Mots-clés |
 |---|---|
-| RAG et recherche | RAG, **agentic RAG**, **Corrective RAG (CRAG)**, **recherche hybride**, **BM25** (analyseur français, racinisation Snowball), **embeddings denses** (multilingual-e5, bge-m3), **Reciprocal Rank Fusion (RRF)**, **reranking cross-encoder**, chunking à taille fixe avec chevauchement |
+| RAG et recherche | RAG, **agentic RAG**, **Corrective RAG (CRAG)**, **recherche hybride**, **BM25** (analyseur français, racinisation Snowball), **embeddings denses** (multilingual-e5), **Reciprocal Rank Fusion (RRF)**, **reranking cross-encoder**, chunking à taille fixe avec chevauchement |
 | Sécurité | **Garde-fous contre l'injection de prompt** : neutralisation des balises, **Llama Prompt Guard 2** puis un LLM classifieur (défense en profondeur), jeu d'attaques par famille ; **masquage des données personnelles** avec **Presidio** (spaCy français) avant tout appel à un LLM |
-| Requêtes et agent | **LangGraph**, **query routing** (routage logique par LLM), **query translation** : **multi-query**, **query decomposition** (fusion par alternance), **HyDE** ; reformulation guidée, abstention (« je ne sais pas ») |
+| Requêtes et agent | **LangGraph**, **query routing** (routage logique par LLM), **query translation** : **multi-query**, **query decomposition** (fusion par alternance), **HyDE** (mesuré, non retenu) ; reformulation guidée, abstention (« je ne sais pas ») |
 | LLM | **LiteLLM** (Gemini, Groq, OpenAI), sorties JSON structurées validées par Pydantic, cache disque des appels, retry avec backoff exponentiel, gestion des quotas, **citations vérifiées** phrase par phrase |
-| Évaluation | **LLM-as-a-judge**, jeu d'évaluation synthétique validé, **recall@k, MRR, nDCG**, fidélité / exactitude / pertinence, **kappa de Cohen**, intervalles de confiance, **ablation**, découpage dev / test figé, coût pour 1 000 requêtes |
+| Évaluation | **LLM-as-a-judge**, jeu d'évaluation synthétique validé, **recall@k, MRR, nDCG**, fidélité / exactitude / pertinence, **kappa de Cohen**, intervalles de confiance (**bootstrap**, différences appariées), **ablation**, découpage dev / test figé, coût pour 1 000 requêtes |
 | Données | **Docling** (parsing PDF, tableaux), PyMuPDF, web scraping (httpx, BeautifulSoup), nettoyage par regex, normalisation Unicode, hiérarchie des sections |
 | Stockage | **Qdrant** (vecteurs denses et creux, mode local ou serveur), SQLite (cache d'embeddings et de reranking), empreintes SHA-256 |
 | Service | **Streamlit** (interface avec sources citées), **FastAPI** (validation Pydantic, sondes health / ready, clé d'API, limite de débit), serveur **MCP** (Model Context Protocol : outils et ressource pour Claude Desktop ou un IDE) |
-| Ingénierie | **Python 3.12**, **uv**, **Pydantic**, **pytest** (tests unitaires, d'intégration, mocks), **ruff**, configuration YAML, Git (Conventional Commits, pull requests), **GitHub Actions** (CI), **Docker** (image multi-étapes, non root), Docker Compose, **Kubernetes** (kind : Deployment, StatefulSet, Service, Secret, sondes readiness / liveness) |
-
-**Prévu** : GraphRAG (Neo4j), contextual retrieval, **Terraform**, porte de qualité en CI (seuil de régression), **Langfuse**, démo Hugging Face Spaces.
+| Ingénierie | **Python 3.12**, **uv**, **Pydantic**, **pytest** (tests unitaires, d'intégration, mocks), **ruff**, configuration YAML, Git (Conventional Commits, pull requests), **GitHub Actions** (CI avec **porte de qualité** sur le recall), **Docker** (image multi-étapes, non root), Docker Compose, **Kubernetes** (kind : Deployment, StatefulSet, Service, Secret, sondes readiness / liveness) |
 
 ## Architecture
 
 ```
-INDEXATION (hors ligne)                                RÉPONSE (à chaque question)
-corpus.csv → PDF → Docling → éléments nettoyés         question → garde-fous → routeur
-          → chunks (+ contexte) → embeddings + BM25             → recherche hybride (BM25 + dense, RRF)
-          → Qdrant  (+ graphe Neo4j)                            → reranker → agent correctif (LangGraph)
-                                                                → génération citée → vérification
+INDEXATION (hors ligne)                               RÉPONSE (à chaque question, configuration de production)
+corpus.csv → PDF → Docling → éléments nettoyés        question → masquage des données personnelles (Presidio)
+          → chunks de 512 tokens (chevauchement 64)           → garde-fous anti-injection (2 couches)
+          → BM25 (analyseur français) + embeddings            → recherche BM25 (10 passages, Qdrant)
+          → Qdrant (vecteurs creux et denses)                 → génération citée (JSON validé) ou abstention
 ```
+
+Autres techniques implémentées et mesurées dans l'ablation, non retenues en production parce qu'elles n'apportent pas de gain démontré : recherche dense et hybride (RRF, RRF pondérée), reranker, routeur (multi-query, décomposition), HyDE, agent correctif LangGraph, vérification des citations par un juge.
 
 ## Avancement
 
@@ -54,19 +53,17 @@ corpus.csv → PDF → Docling → éléments nettoyés         question → gar
 | Évaluation finale sur le jeu de test figé, intervalles de confiance | ✅ |
 | RAG de référence : découpage fixe, embeddings, Qdrant | ✅ |
 | Recherche hybride BM25 français + dense, RRF (pondéré), reranker | ✅ mesuré |
-| Routeur, multi-query, décomposition, HyDE | ✅ routeur mesuré (multi-query utile sur les questions vagues ; décomposition corrigée par une fusion par alternance) |
+| Routeur, multi-query, décomposition, HyDE | ✅ mesurés (multi-query utile sur les questions vagues ; HyDE dégrade la recherche, non retenu) |
 | Agent correctif LangGraph, citations vérifiées par un juge | ✅ mesuré sur le jeu de test ; juge des citations validé (kappa 0,86) |
-| Chunking sémantique et contextual retrieval | ⬜ |
 | Serveur MCP (recherche, réponse citée, description d'un guide) | ✅ |
 | Garde-fous : détection d'injection de prompt en deux couches, mesurée | ✅ |
 | Masquage des données personnelles (Presidio), mesuré | ✅ |
-| GraphRAG | ⬜ |
 | API FastAPI (ask, search, health, ready) | ✅ |
 | Interface web Streamlit (réponse, sources citées, abstention) | ✅ |
-| CI GitHub Actions (ruff, tests) | ✅ |
+| CI GitHub Actions (ruff, tests, porte de qualité sur la recherche) | ✅ |
 | Image Docker de service, construite et testée par la CI | ✅ |
 | Kubernetes en local (kind) : 2 copies de l'API, sondes, auto-réparation testée | ✅ |
-| Terraform, porte de qualité sur le recall en CI | ⬜ |
+| GIF de démonstration | ✅ |
 
 ## Évaluation
 
@@ -109,6 +106,8 @@ Fidélité aux passages cités : 100 % ; phrases soutenues par leur citation : 1
 
 **Parsing des tableaux (20 tableaux tirés au hasard).** Docling 15/20 contre PyMuPDF 13/20, et 14/16 contre 10/16 sur les vrais tableaux de données ([détail](results/parsing_tableaux.md)).
 
+**HyDE (145 questions de développement).** Chercher avec une réponse hypothétique écrite par le LLM dégrade la recherche hybride : recall@10 0,835 → 0,750 (différence -0,085, IC 95 % [-0,138 ; -0,035]), surtout sur les questions à tableau (recall@10 0,87 → 0,70) : la réponse hypothétique invente les valeurs exactes que la question cherche. Non retenu.
+
 **Premières mesures des réponses (20 questions de développement, 4 par type).** Abstention correcte sur 4/4 questions hors corpus ; les 2 fausses abstentions sur 16 viennent de la recherche (source absente des 10 premiers passages). L'agent semblait améliorer l'exactitude (86 % → 93 %) : non confirmé sur le jeu de test (voir ci-dessus).
 
 **Validation du juge des citations (65 cas).** 45 phrases réelles du système et 20 phrases faussées exprès (chiffre changé, négation, inversion, ajout inventé). Accord juge / annotations sur la décision « retirer la phrase » : kappa de Cohen 0,86 ; 18/18 phrases fausses détectées ; 2 fausses alertes sur 45, toutes deux sur une phrase tirée d'un tableau à cellules fusionnées (faiblesse identifiée du juge sur les tableaux).
@@ -135,6 +134,7 @@ uv run python scripts/download_corpus.py   # télécharge les 45 PDF dans data/r
 uv run python scripts/ingest.py            # parsing Docling + nettoyage -> data/parsed/
 uv run pytest                              # tests rapides
 uv run pytest -m slow                      # test de non-régression du parsing
+RAGFR_QDRANT_PATH=data/index_reference uv run python scripts/quality_gate.py   # porte de qualité (comme la CI)
 ```
 
 Une fois l'index construit (`scripts/build_index.py`) et les clés d'API dans `.env` (voir `.env.example`) :
@@ -171,11 +171,17 @@ Le corpus est reconstruit à partir de [`data/corpus.csv`](data/corpus.csv) ; le
 ## Structure
 
 ```
-configs/          configurations YAML (une par ligne du tableau d'ablation)
-data/             corpus.csv, candidats.csv ; raw/ et parsed/ sont générés
-scripts/          points d'entrée : collecte, téléchargement, ingestion
-src/ragfr/        le package : ingestion/, puis chunking/, retrieval/, agent/...
-tests/            tests pytest
+configs/              production.yaml et une configuration par ligne d'ablation (configs/ablation/)
+data/                 corpus.csv, vocabulaire des guides, jeux d'évaluation (eval/), index de référence de la CI
+                      (index_reference/) ; raw/, parsed/, qdrant/ et cache/ sont générés
+docs/                 GIF de démonstration
+k8s/                  déploiement Kubernetes (kind)
+results/              chaque mesure, avec sa configuration et son commit
+scripts/              collecte, ingestion, index, évaluations, porte de qualité
+src/ragfr/            ingestion/, chunking/, retrieval/, query/, agent/, citations/, guardrails/, eval/,
+                      api/ (FastAPI), ui/ (Streamlit), mcp_server/
+tests/                tests pytest (sans réseau)
+Dockerfile, compose.yaml, .github/workflows/ci.yml
 ```
 
 ## Source des données

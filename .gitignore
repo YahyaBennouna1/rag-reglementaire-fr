@@ -28,3 +28,4 @@ results/ancien_juge/
 
 # Verrou créé par Qdrant en mode local quand un programme ouvre l index
 **/qdrant/.lock
+data/index_reference/.lock
