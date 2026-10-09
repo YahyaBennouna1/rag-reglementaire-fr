@@ -25,3 +25,6 @@ logs/
 
 # Résultats obtenus avec une règle de juge abandonnée (gardés en local pour comparaison)
 results/ancien_juge/
+
+# Verrou créé par Qdrant en mode local quand un programme ouvre l index
+**/qdrant/.lock
