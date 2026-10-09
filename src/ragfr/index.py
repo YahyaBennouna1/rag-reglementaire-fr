@@ -4,6 +4,7 @@ Une collection Qdrant par méthode de chunking (ex. "fixed-512-64"), pour compar
 sans qu'elles s'écrasent. Qdrant tourne ici en mode local (un dossier), sans serveur.
 """
 
+import os
 from functools import cache
 from pathlib import Path
 
@@ -49,9 +50,14 @@ def chunk_corpus(chunking: ChunkingConfig) -> list[Passage]:
 def get_client() -> QdrantClient:
     """Le client Qdrant du programme, ouvert une seule fois.
 
-    En mode local, Qdrant verrouille son dossier : un 2e client ouvert dans le même programme
-    lève une erreur. Tous les appels partagent donc le même client.
+    - Si QDRANT_URL est définie (ex. http://qdrant:6333 dans Docker Compose) : Qdrant serveur,
+      que plusieurs programmes peuvent utiliser en même temps.
+    - Sinon : mode local, un dossier sur le disque. Qdrant le verrouille : un seul programme à la
+      fois, et un 2e client dans le même programme lèverait une erreur. D'où le @cache.
     """
+    url = os.environ.get("QDRANT_URL")
+    if url:
+        return QdrantClient(url=url)
     return QdrantClient(path=str(QDRANT_DIR))
 
 
