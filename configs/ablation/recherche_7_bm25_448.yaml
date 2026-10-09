@@ -1,0 +1,21 @@
+# Ablation recherche : BM25 seul (témoin : BM25 n'est pas tronqué), morceaux de 448 tokens (troncature d'e5-base, leçon 12)
+name: recherche_7_bm25_448
+
+chunking:
+  method: fixed # découpage à taille fixe (leçon 12)
+  size: 448 # en tokens : 448 + préfixe + chemin de section tiennent dans les 512 d'e5-base
+  overlap: 64
+
+retrieval:
+  mode: bm25 # dense | bm25 | hybrid
+  top_k: 10
+  candidates: 50 # hybride : résultats de chaque moteur avant fusion
+  rrf_k: 60
+  reranker: false
+  rerank_candidates: 30
+
+llm:
+  model: gemini/gemini-3.5-flash-lite
+  temperature: 0.0
+  judge_model: groq/openai/gpt-oss-120b
+  fast_model: gemini/gemini-3.5-flash-lite
