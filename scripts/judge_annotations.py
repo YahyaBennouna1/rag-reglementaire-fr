@@ -3,8 +3,7 @@
     uv run python scripts/judge_annotations.py
 
 Écrit data/eval/judge_labels.jsonl et ajoute les pièges à data/eval/judge_cases.jsonl.
-Annotations RÉALISÉES PAR LLM (QUI DEVAIENT ÊTRE RÉALISÉES PAR MOI), à relire avec
-scripts/review_judge_cases.py (champ « relu »).
+Les annotations peuvent être relues avec scripts/review_judge_cases.py (champ « relu »).
 
 Pour un piège, l'étiquette est certaine par construction : la phrase a été faussée exprès
 à partir d'une phrase soutenue, avec les mêmes passages.
