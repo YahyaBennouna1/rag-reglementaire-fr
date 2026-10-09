@@ -147,7 +147,7 @@ uv run python -m ragfr.mcp_server.server              # serveur MCP (Claude Desk
 
 Sans Docker, Qdrant est utilisé en mode local : un seul de ces programmes à la fois peut ouvrir l'index.
 
-Avec Docker (image de service de 907 Mo sans Docling ni PyTorch, construite et testée par la CI ; Qdrant en mode serveur) :
+Avec Docker (image de service de 1,2 Go, avec Presidio et le modèle français de spaCy, sans Docling ni PyTorch, construite et testée par la CI ; Qdrant en mode serveur) :
 
 ```bash
 docker compose up -d qdrant
