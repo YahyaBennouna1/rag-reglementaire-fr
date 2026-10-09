@@ -24,6 +24,9 @@ EXAMPLES = [
 
 
 def show_answer(answer: Answer, duration: float) -> None:
+    if answer.blocked:
+        st.error(answer.text)  # refus des garde-fous : ni recherche ni sources à montrer
+        return
     if answer.abstained:
         # L'abstention est un résultat normal : le système préfère ne rien dire plutôt qu'inventer.
         st.warning(answer.text)

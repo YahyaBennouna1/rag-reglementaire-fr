@@ -80,6 +80,14 @@ class CitationsConfig(StrictModel):
     verify: bool = False
 
 
+class GuardrailsConfig(StrictModel):
+    # Garde-fous (leçon 23) : balises neutralisées, puis détection d'injection en deux couches.
+    enabled: bool = False
+    injection_model: str = "groq/meta-llama/llama-prompt-guard-2-86m"  # couche 1 : classifieur
+    injection_threshold: float = Field(0.5, ge=0, le=1)
+    injection_classifier: str | None = "groq/openai/gpt-oss-20b"  # couche 2 : LLM (None = désactivée)
+
+
 class Config(StrictModel):
     name: str
     chunking: ChunkingConfig = Field(default_factory=ChunkingConfig)
@@ -87,6 +95,7 @@ class Config(StrictModel):
     query: QueryConfig = Field(default_factory=QueryConfig)
     agent: AgentConfig = Field(default_factory=AgentConfig)
     citations: CitationsConfig = Field(default_factory=CitationsConfig)
+    guardrails: GuardrailsConfig = Field(default_factory=GuardrailsConfig)
     llm: LLMConfig = Field(default_factory=LLMConfig)
 
 
