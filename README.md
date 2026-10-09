@@ -24,7 +24,7 @@ Un RAG naïf se code en 50 lignes. Ce projet s'intéresse à ce qui fait la diff
 | LLM | **LiteLLM** (Gemini, Groq, OpenAI), sorties JSON structurées validées par Pydantic, cache disque des appels, retry avec backoff exponentiel, gestion des quotas, **citations vérifiées** phrase par phrase |
 | Évaluation | **LLM-as-a-judge**, jeu d'évaluation synthétique validé, **recall@k, MRR, nDCG**, fidélité / exactitude / pertinence, **kappa de Cohen**, intervalles de confiance, **ablation**, découpage dev / test figé, coût pour 1 000 requêtes |
 | Données | **Docling** (parsing PDF, tableaux), PyMuPDF, web scraping (httpx, BeautifulSoup), nettoyage par regex, normalisation Unicode, hiérarchie des sections |
-| Stockage | **Qdrant** (vecteurs denses et creux), SQLite (cache d'embeddings et de reranking), empreintes SHA-256 |
+| Stockage | **Qdrant** (vecteurs denses et creux, mode local ou serveur), SQLite (cache d'embeddings et de reranking), empreintes SHA-256 |
 | Service | **Streamlit** (interface avec sources citées), **FastAPI** (validation Pydantic, sondes health / ready, clé d'API, limite de débit), serveur **MCP** (Model Context Protocol : outils et ressource pour Claude Desktop ou un IDE) |
 | Ingénierie | **Python 3.12**, **uv**, **Pydantic**, **pytest** (tests unitaires, d'intégration, mocks), **ruff**, configuration YAML, Git (Conventional Commits, pull requests), **GitHub Actions** (CI), **Docker** (image multi-étapes, non root), Docker Compose |
 
@@ -106,12 +106,14 @@ uv run uvicorn ragfr.api.app:app --port 8000          # API : documentation sur 
 uv run python -m ragfr.mcp_server.server              # serveur MCP (Claude Desktop, IDE)
 ```
 
-Qdrant est utilisé en mode local : un seul de ces programmes à la fois peut ouvrir l'index.
+Sans Docker, Qdrant est utilisé en mode local : un seul de ces programmes à la fois peut ouvrir l'index.
 
-Avec Docker (image de service de 907 Mo, sans Docling ni PyTorch, construite et testée par la CI) :
+Avec Docker (image de service de 907 Mo sans Docling ni PyTorch, construite et testée par la CI ; Qdrant en mode serveur) :
 
 ```bash
-docker compose up --build api   # ou : docker compose up --build ui
+docker compose up -d qdrant
+uv run python scripts/migrate_qdrant.py      # première fois : copie l'index local dans le serveur
+docker compose up -d --build                 # Qdrant + API (:8000/docs) + interface (:8501)
 ```
 
 Le corpus est reconstruit à partir de [`data/corpus.csv`](data/corpus.csv) ; les PDF ne sont pas versionnés. Pour régénérer la liste depuis le catalogue : `scripts/scrape_catalogue.py` puis `scripts/build_corpus.py`.

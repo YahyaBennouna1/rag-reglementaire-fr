@@ -1,25 +1,39 @@
-# Lancer UN des deux services avec Docker Compose :
-#   docker compose up --build api   -> l'API sur http://localhost:8000/docs
-#   docker compose up --build ui    -> l'interface sur http://localhost:8501
+# Le service complet avec Docker Compose :
+#   docker compose up -d --build            -> Qdrant + l'API (http://localhost:8000/docs)
+#                                              + l'interface (http://localhost:8501)
+#   docker compose down                     -> tout arrêter (les données de Qdrant restent)
 #
-# Qdrant est en mode local (un dossier) : un seul programme à la fois peut ouvrir l'index.
-# On lance donc l'API OU l'interface, pas les deux (passer à Qdrant serveur lèvera cette limite).
+# Qdrant tourne en mode serveur dans son propre conteneur : l'API et l'interface l'utilisent en
+# même temps. Première fois : copier l'index local dans le serveur (scripts/migrate_qdrant.py).
 
 services:
+  qdrant:
+    image: qdrant/qdrant:v1.19.2-unprivileged # version fixée, sans droits root
+    ports:
+      - "127.0.0.1:6333:6333" # seulement depuis ce PC (pour la copie de l'index et le tableau de bord)
+    volumes:
+      - qdrant_data:/qdrant/storage # volume géré par Docker : l'index survit aux redémarrages
+    restart: unless-stopped
+
   api:
     build: .
     image: ragfr
-    ports:
-      - "127.0.0.1:8000:8000" # accessible seulement depuis ce PC
+    depends_on:
+      - qdrant
+    environment:
+      QDRANT_URL: http://qdrant:6333 # « qdrant » = le nom du service, résolu par le réseau de Compose
     env_file: .env # les clés d'API, jamais dans l'image
+    ports:
+      - "127.0.0.1:8000:8000"
     volumes:
-      - ./data/qdrant:/app/data/qdrant # l'index, construit en dehors du conteneur
       - ./data/cache:/app/data/cache # le cache des appels au LLM
     restart: unless-stopped
 
   ui:
-    build: .
     image: ragfr
+    depends_on:
+      - api # l'image est construite par le service api
+      - qdrant
     command:
       - streamlit
       - run
@@ -27,9 +41,20 @@ services:
       - --server.address=0.0.0.0 # dans le conteneur ; le port n'est publié que sur 127.0.0.1
       - --server.port=8501
       - --browser.gatherUsageStats=false
+    # La sonde de l'image vise l'API (port 8000), absente de ce conteneur : on vise Streamlit.
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8501/_stcore/health')"]
+      interval: 30s
+      timeout: 5s
+      start_period: 30s
+    environment:
+      QDRANT_URL: http://qdrant:6333
+    env_file: .env
     ports:
       - "127.0.0.1:8501:8501"
-    env_file: .env
     volumes:
-      - ./data/qdrant:/app/data/qdrant
       - ./data/cache:/app/data/cache
+    restart: unless-stopped
+
+volumes:
+  qdrant_data:

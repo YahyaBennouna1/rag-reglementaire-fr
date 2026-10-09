@@ -95,3 +95,19 @@ def test_un_seul_client_qdrant_par_programme(monkeypatch, tmp_path):
     finally:
         index.get_client().close()
         index.get_client.cache_clear()
+
+
+def test_qdrant_serveur_si_url_definie(monkeypatch):
+    # Avec QDRANT_URL, on se connecte au serveur au lieu d'ouvrir le dossier local.
+    # Faux client : le vrai essaierait de joindre le serveur dès sa création (appel réseau).
+    from ragfr import index
+
+    created = []
+    monkeypatch.setattr(index, "QdrantClient", lambda **kwargs: created.append(kwargs) or object())
+    monkeypatch.setenv("QDRANT_URL", "http://qdrant:6333")
+    index.get_client.cache_clear()
+    try:
+        index.get_client()
+        assert created == [{"url": "http://qdrant:6333"}]
+    finally:
+        index.get_client.cache_clear()
