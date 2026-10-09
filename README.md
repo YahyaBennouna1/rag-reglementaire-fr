@@ -90,6 +90,8 @@ Le jeu final (194 questions) est découpé, par type, en 145 questions de dével
 
 Même classement que sur le jeu de développement. Différences appariées : BM25 est significativement meilleure que la recherche dense (MRR +0,197, IC [0,070 ; 0,327]) ; aucune différence n'est démontrée entre BM25 et l'hybride pondéré ou le routeur. BM25 est retenue car aussi bonne, plus simple et plus rapide.
 
+**Limite connue de la recherche dense.** multilingual-e5-base lit au plus 512 tokens ; avec le préfixe `passage:` et le chemin de section, 1 849 passages sur 2 122 (87 %) dépassent cette longueur (jusqu'à 632 tokens) et sont tronqués pour l'embedding dense. BM25 lit le texte entier. Cette troncature explique peut-être une partie de l'écart entre dense et BM25 ; l'hypothèse (réindexer avec des passages d'environ 448 tokens) n'a pas été testée.
+
 **Réponses** (juge qwen3.8-27b, d'une autre famille que le générateur Gemini).
 
 | Configuration | Réponses exactes (44 questions avec réponse) | Abstentions à tort | Abstention correcte (5 sans réponse) | Coût / 1 000 questions |
@@ -121,7 +123,7 @@ Fidélité aux passages cités : 100 % ; phrases soutenues par leur citation : 1
 - **Docling plutôt qu'une extraction de texte simple** : les guides sont riches en tableaux, qu'une extraction ligne à ligne détruit. L'OCR est désactivé (PDF natifs).
 - **Hiérarchie reconstruite à partir de la numérotation** : Docling place tous les titres au même niveau ; la numérotation (`2`, `2.1`, `2.1.3`) et une pile reconstruisent le chemin de section de chaque passage.
 - **Pages physiques** pour les citations, et non les numéros imprimés (décalés par les pages de garde).
-- **Étiquettes de recommandation (R1, R2…) écartées au parsing** : Docling les place hors de leur ordre de lecture ; une citation fausse est pire qu'une citation absente. Elles sont reconstruites à partir de la liste des recommandations de chaque guide.
+- **Étiquettes de recommandation (R1, R2…) écartées au parsing** : Docling les place hors de leur ordre de lecture ; une citation fausse est pire qu'une citation absente. La recherche retrouve les recommandations par leur texte.
 - **Cache de l'étape coûteuse** : la sortie brute de Docling est indexée par l'empreinte SHA-256 du PDF ; le nettoyage est rejoué en moins d'une seconde au lieu de plusieurs minutes de parsing par guide.
 
 ## Lancer le projet
