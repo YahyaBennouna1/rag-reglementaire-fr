@@ -3399,22 +3399,20 @@ wheels = [
 name = "ragfr"
 version = "0.1.0"
 source = { editable = "." }
+default-groups = ["dev", "ingestion", "modeles"]
 dependencies = [
-    { name = "beautifulsoup4" },
-    { name = "docling" },
     { name = "fastapi" },
     { name = "httpx" },
     { name = "langgraph" },
     { name = "litellm" },
     { name = "mcp", extra = ["cli"] },
     { name = "pydantic" },
-    { name = "pymupdf" },
     { name = "python-dotenv" },
     { name = "pyyaml" },
     { name = "qdrant-client" },
-    { name = "sentence-transformers" },
     { name = "snowballstemmer" },
     { name = "streamlit" },
+    { name = "uvicorn" },
 ]
 
 [package.dev-dependencies]
@@ -3422,24 +3420,29 @@ dev = [
     { name = "pytest" },
     { name = "ruff" },
 ]
+ingestion = [
+    { name = "beautifulsoup4" },
+    { name = "docling" },
+    { name = "pymupdf" },
+]
+modeles = [
+    { name = "sentence-transformers" },
+]
 
 [package.metadata]
 requires-dist = [
-    { name = "beautifulsoup4", specifier = ">=4.15.0" },
-    { name = "docling", specifier = ">=2.135.0" },
     { name = "fastapi", specifier = ">=0.143.0" },
     { name = "httpx", specifier = ">=0.28.1" },
     { name = "langgraph", specifier = ">=1.2.14" },
     { name = "litellm", specifier = ">=1.104.2" },
     { name = "mcp", extras = ["cli"], specifier = ">=2.3.0" },
     { name = "pydantic", specifier = ">=2.13.5" },
-    { name = "pymupdf", specifier = ">=1.28.2" },
     { name = "python-dotenv", specifier = ">=1.2.4" },
     { name = "pyyaml", specifier = ">=6.0.3" },
     { name = "qdrant-client", specifier = ">=1.19.1" },
-    { name = "sentence-transformers", specifier = ">=6.1.0" },
     { name = "snowballstemmer", specifier = ">=3.1.1" },
     { name = "streamlit", specifier = ">=1.65.0" },
+    { name = "uvicorn", specifier = ">=0.38" },
 ]
 
 [package.metadata.requires-dev]
@@ -3447,6 +3450,12 @@ dev = [
     { name = "pytest", specifier = ">=9.1.1" },
     { name = "ruff", specifier = ">=0.16.10" },
 ]
+ingestion = [
+    { name = "beautifulsoup4", specifier = ">=4.15.0" },
+    { name = "docling", specifier = ">=2.135.0" },
+    { name = "pymupdf", specifier = ">=1.28.2" },
+]
+modeles = [{ name = "sentence-transformers", specifier = ">=6.1.0" }]
 
 [[package]]
 name = "rapidocr"

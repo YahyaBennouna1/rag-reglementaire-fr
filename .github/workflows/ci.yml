@@ -29,3 +29,26 @@ jobs:
 
       - name: Lancer les tests rapides (sans LLM ni corpus)
         run: uv run pytest -q
+
+  docker:
+    # Construit l'image de service et vérifie que l'API démarre et répond (sans index ni clé).
+    runs-on: ubuntu-latest
+    steps:
+      - name: Récupérer le code
+        uses: actions/checkout@v4
+
+      - name: Construire l'image
+        run: docker build -t ragfr .
+
+      - name: Démarrer le conteneur et appeler /health
+        run: |
+          docker run -d --name ragfr -p 8000:8000 ragfr
+          for i in $(seq 1 30); do
+            if curl -fsS http://localhost:8000/health; then exit 0; fi
+            sleep 2
+          done
+          docker logs ragfr
+          exit 1
+
+      - name: Taille de l'image
+        run: docker image ls ragfr

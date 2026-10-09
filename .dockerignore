@@ -1,0 +1,16 @@
+# Ce que Docker n'envoie pas à la construction de l'image : plus rapide, et pas de secrets dedans.
+.git
+.venv
+.cache
+.ruff_cache
+.pytest_cache
+**/__pycache__
+.env
+logs
+results
+cours
+data/raw
+data/parsed
+data/cache
+data/qdrant
+data/eval

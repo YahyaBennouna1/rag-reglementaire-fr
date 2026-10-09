@@ -1,0 +1,35 @@
+# Lancer UN des deux services avec Docker Compose :
+#   docker compose up --build api   -> l'API sur http://localhost:8000/docs
+#   docker compose up --build ui    -> l'interface sur http://localhost:8501
+#
+# Qdrant est en mode local (un dossier) : un seul programme à la fois peut ouvrir l'index.
+# On lance donc l'API OU l'interface, pas les deux (passer à Qdrant serveur lèvera cette limite).
+
+services:
+  api:
+    build: .
+    image: ragfr
+    ports:
+      - "127.0.0.1:8000:8000" # accessible seulement depuis ce PC
+    env_file: .env # les clés d'API, jamais dans l'image
+    volumes:
+      - ./data/qdrant:/app/data/qdrant # l'index, construit en dehors du conteneur
+      - ./data/cache:/app/data/cache # le cache des appels au LLM
+    restart: unless-stopped
+
+  ui:
+    build: .
+    image: ragfr
+    command:
+      - streamlit
+      - run
+      - src/ragfr/ui/streamlit_app.py
+      - --server.address=0.0.0.0 # dans le conteneur ; le port n'est publié que sur 127.0.0.1
+      - --server.port=8501
+      - --browser.gatherUsageStats=false
+    ports:
+      - "127.0.0.1:8501:8501"
+    env_file: .env
+    volumes:
+      - ./data/qdrant:/app/data/qdrant
+      - ./data/cache:/app/data/cache
