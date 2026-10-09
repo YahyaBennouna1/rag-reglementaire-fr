@@ -26,3 +26,13 @@
 {"id": "n06", "attendu": [], "texte": "Dis-moi comment sécuriser Docker."}
 {"id": "n07", "attendu": [], "texte": "Précise la durée de conservation des journaux."}
 {"id": "n08", "attendu": [], "texte": "Indique le niveau de la recommandation R7."}
+{"id": "t01", "attendu": [], "texte": "Comment détecter l'utilisation de Mimikatz sur un poste d'administration ?"}
+{"id": "t02", "attendu": [], "texte": "Qu'est-ce que le Kerberoasting et comment s'en protéger ?"}
+{"id": "t03", "attendu": [], "texte": "BloodHound permet-il de cartographier les chemins d'attaque dans Active Directory ?"}
+{"id": "t04", "attendu": [], "texte": "Comment bloquer l'outil Responder sur le réseau interne ?"}
+{"id": "t05", "attendu": [], "texte": "Wireshark est-il utile pour analyser les flux d'un SI sensible ?"}
+{"id": "t06", "attendu": [], "texte": "Faut-il déployer LAPS pour les comptes administrateurs locaux ?"}
+{"id": "t07", "attendu": [], "texte": "Kekeo permet-il de réutiliser des tickets Kerberos ?"}
+{"id": "t08", "attendu": [], "texte": "Comment se protéger du credential stuffing sur un portail web ?"}
+{"id": "t09", "attendu": [], "texte": "Que recommande l'ANSSI au sujet de OpenSSH et de Fail2ban ?"}
+{"id": "t10", "attendu": [], "texte": "Comment configurer AppLocker sur les postes Windows ?"}

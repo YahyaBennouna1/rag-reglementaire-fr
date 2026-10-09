@@ -35,6 +35,7 @@ COPY --from=build --chown=app:app /app/.venv ./.venv
 COPY --from=build --chown=app:app /app/src ./src
 COPY --chown=app:app configs ./configs
 COPY --chown=app:app data/corpus.csv ./data/corpus.csv
+COPY --chown=app:app data/vocabulaire_corpus.txt ./data/vocabulaire_corpus.txt
 RUN mkdir -p data/qdrant data/cache && chown -R app:app data
 
 USER app

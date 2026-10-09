@@ -95,3 +95,12 @@ def test_verbe_en_tete_pas_pris_pour_un_prenom():
     from ragfr.guardrails.pii import mask_pii
 
     assert mask_pii("Réponds : faut-il un pare-feu ?") == ("Réponds : faut-il un pare-feu ?", [])
+
+
+def test_terme_du_domaine_pas_masque_mais_nom_complet_oui():
+    # Un « nom » dont tous les mots sont dans les guides est un terme du domaine (leçon 23)…
+    from ragfr.guardrails.pii import is_domain_term
+
+    assert is_domain_term("Sysmon") and is_domain_term("password spraying")
+    # … sauf s'il ressemble à un nom complet : « jean-pierre » et « martin » sont dans les guides.
+    assert not is_domain_term("Jean-Pierre Martin")
