@@ -26,9 +26,9 @@ Un RAG naïf se code en 50 lignes. Ce projet s'intéresse à ce qui fait la diff
 | Données | **Docling** (parsing PDF, tableaux), PyMuPDF, web scraping (httpx, BeautifulSoup), nettoyage par regex, normalisation Unicode, hiérarchie des sections |
 | Stockage | **Qdrant** (vecteurs denses et creux), SQLite (cache d'embeddings et de reranking), empreintes SHA-256 |
 | Service | **Streamlit** (interface avec sources citées), **FastAPI** (validation Pydantic, sondes health / ready, clé d'API, limite de débit), serveur **MCP** (Model Context Protocol : outils et ressource pour Claude Desktop ou un IDE) |
-| Ingénierie | **Python 3.12**, **uv**, **Pydantic**, **pytest** (tests unitaires, d'intégration, mocks), **ruff**, configuration YAML, Git (Conventional Commits, pull requests), **GitHub Actions** (CI) |
+| Ingénierie | **Python 3.12**, **uv**, **Pydantic**, **pytest** (tests unitaires, d'intégration, mocks), **ruff**, configuration YAML, Git (Conventional Commits, pull requests), **GitHub Actions** (CI), **Docker** (image multi-étapes, non root), Docker Compose |
 
-**Prévu** : GraphRAG (Neo4j), contextual retrieval, garde-fous (injection de prompt, **Presidio**), **Docker**, **Kubernetes** (kind), **Terraform**, porte de qualité en CI (seuil de régression), **Langfuse**, démo Hugging Face Spaces.
+**Prévu** : GraphRAG (Neo4j), contextual retrieval, garde-fous (injection de prompt, **Presidio**), **Kubernetes** (kind), **Terraform**, porte de qualité en CI (seuil de régression), **Langfuse**, démo Hugging Face Spaces.
 
 ## Architecture
 
@@ -58,7 +58,8 @@ corpus.csv → PDF → Docling → éléments nettoyés         question → gar
 | API FastAPI (ask, search, health, ready) | ✅ |
 | Interface web Streamlit (réponse, sources citées, abstention) | ✅ |
 | CI GitHub Actions (ruff, tests) | ✅ |
-| Docker, Kubernetes (kind) + Terraform, porte de qualité sur le recall en CI | ⬜ |
+| Image Docker de service, construite et testée par la CI | ✅ |
+| Kubernetes (kind) + Terraform, porte de qualité sur le recall en CI | ⬜ |
 
 ## Évaluation
 
@@ -106,6 +107,12 @@ uv run python -m ragfr.mcp_server.server              # serveur MCP (Claude Desk
 ```
 
 Qdrant est utilisé en mode local : un seul de ces programmes à la fois peut ouvrir l'index.
+
+Avec Docker (image de service de 907 Mo, sans Docling ni PyTorch, construite et testée par la CI) :
+
+```bash
+docker compose up --build api   # ou : docker compose up --build ui
+```
 
 Le corpus est reconstruit à partir de [`data/corpus.csv`](data/corpus.csv) ; les PDF ne sont pas versionnés. Pour régénérer la liste depuis le catalogue : `scripts/scrape_catalogue.py` puis `scripts/build_corpus.py`.
 
