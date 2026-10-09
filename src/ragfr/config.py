@@ -86,6 +86,8 @@ class GuardrailsConfig(StrictModel):
     injection_model: str = "groq/meta-llama/llama-prompt-guard-2-86m"  # couche 1 : classifieur
     injection_threshold: float = Field(0.5, ge=0, le=1)
     injection_classifier: str | None = "groq/openai/gpt-oss-20b"  # couche 2 : LLM (None = désactivée)
+    # Masquer les données personnelles (Presidio) avant tout appel à un LLM, et donc avant le cache.
+    mask_pii: bool = False
 
 
 class Config(StrictModel):

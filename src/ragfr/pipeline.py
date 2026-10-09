@@ -10,6 +10,7 @@ from ragfr.config import Config, load_config
 from ragfr.embeddings import Embedder
 from ragfr.generation import Answer, generate_answer
 from ragfr.guardrails.injection import is_injection, neutralize_tags
+from ragfr.guardrails.pii import mask_pii
 from ragfr.index import collection_name, get_client
 from ragfr.query.transforms import TransformingRetriever
 from ragfr.retrieval.base import Retriever
@@ -84,6 +85,9 @@ def make_search(cfg: Config) -> Retriever:
 def answer_question(cfg: Config, question: str) -> Answer:
     """Point d'entrée unique pour répondre (utilisé par l'évaluation, l'API et le serveur MCP)."""
     if cfg.guardrails.enabled:
+        if cfg.guardrails.mask_pii:
+            # En premier : aucune donnée personnelle ne part vers un LLM, ni ne finit dans le cache.
+            question, _ = mask_pii(question)
         question = neutralize_tags(question)
         g = cfg.guardrails
         if is_injection(question, g.injection_model, g.injection_threshold, g.injection_classifier):
