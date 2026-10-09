@@ -1,0 +1,61 @@
+# L'interface Streamlit : même image que l'API, autre commande et autre sonde (leçon 21).
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ui
+  namespace: ragfr
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: ui
+  template:
+    metadata:
+      labels:
+        app: ui
+    spec:
+      containers:
+        - name: ui
+          image: ragfr:0.1.0
+          imagePullPolicy: Never
+          command:
+            - streamlit
+            - run
+            - src/ragfr/ui/streamlit_app.py
+            - --server.address=0.0.0.0
+            - --server.port=8501
+            - --browser.gatherUsageStats=false
+          ports:
+            - containerPort: 8501
+          env:
+            - name: QDRANT_URL
+              value: http://qdrant:6333
+          envFrom:
+            - secretRef:
+                name: ragfr-cles
+          readinessProbe:
+            httpGet:
+              path: /_stcore/health
+              port: 8501
+            initialDelaySeconds: 15
+          livenessProbe:
+            httpGet:
+              path: /_stcore/health
+              port: 8501
+            initialDelaySeconds: 60
+            periodSeconds: 20
+          resources:
+            requests: { cpu: 100m, memory: 256Mi }
+            limits: { memory: 1Gi }
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: ui
+  namespace: ragfr
+spec:
+  selector:
+    app: ui
+  ports:
+    - port: 8501
+      targetPort: 8501

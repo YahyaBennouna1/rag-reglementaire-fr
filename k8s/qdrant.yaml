@@ -1,0 +1,58 @@
+# Qdrant serveur dans Kubernetes : un StatefulSet (une base de données a besoin d'un disque stable)
+# et un Service (une adresse fixe, « qdrant », pour les autres programmes du cluster).
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: qdrant
+  namespace: ragfr
+spec:
+  serviceName: qdrant
+  replicas: 1
+  selector:
+    matchLabels:
+      app: qdrant
+  template:
+    metadata:
+      labels:
+        app: qdrant
+    spec:
+      containers:
+        - name: qdrant
+          image: qdrant/qdrant:v1.19.2-unprivileged
+          ports:
+            - containerPort: 6333
+          volumeMounts:
+            - name: storage
+              mountPath: /qdrant/storage
+          readinessProbe: # prêt quand tous les index sont chargés
+            httpGet:
+              path: /readyz
+              port: 6333
+          livenessProbe: # vivant tant que le serveur répond
+            httpGet:
+              path: /livez
+              port: 6333
+          resources:
+            requests: { cpu: 100m, memory: 256Mi }
+            limits: { memory: 1Gi }
+  # Un disque de 2 Go demandé au cluster, qui survit aux redémarrages du pod.
+  volumeClaimTemplates:
+    - metadata:
+        name: storage
+      spec:
+        accessModes: ["ReadWriteOnce"]
+        resources:
+          requests:
+            storage: 2Gi
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: qdrant
+  namespace: ragfr
+spec:
+  selector:
+    app: qdrant
+  ports:
+    - port: 6333
+      targetPort: 6333

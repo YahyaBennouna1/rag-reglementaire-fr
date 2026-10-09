@@ -26,9 +26,9 @@ Un RAG naïf se code en 50 lignes. Ce projet s'intéresse à ce qui fait la diff
 | Données | **Docling** (parsing PDF, tableaux), PyMuPDF, web scraping (httpx, BeautifulSoup), nettoyage par regex, normalisation Unicode, hiérarchie des sections |
 | Stockage | **Qdrant** (vecteurs denses et creux, mode local ou serveur), SQLite (cache d'embeddings et de reranking), empreintes SHA-256 |
 | Service | **Streamlit** (interface avec sources citées), **FastAPI** (validation Pydantic, sondes health / ready, clé d'API, limite de débit), serveur **MCP** (Model Context Protocol : outils et ressource pour Claude Desktop ou un IDE) |
-| Ingénierie | **Python 3.12**, **uv**, **Pydantic**, **pytest** (tests unitaires, d'intégration, mocks), **ruff**, configuration YAML, Git (Conventional Commits, pull requests), **GitHub Actions** (CI), **Docker** (image multi-étapes, non root), Docker Compose |
+| Ingénierie | **Python 3.12**, **uv**, **Pydantic**, **pytest** (tests unitaires, d'intégration, mocks), **ruff**, configuration YAML, Git (Conventional Commits, pull requests), **GitHub Actions** (CI), **Docker** (image multi-étapes, non root), Docker Compose, **Kubernetes** (kind : Deployment, StatefulSet, Service, Secret, sondes readiness / liveness) |
 
-**Prévu** : GraphRAG (Neo4j), contextual retrieval, garde-fous (injection de prompt, **Presidio**), **Kubernetes** (kind), **Terraform**, porte de qualité en CI (seuil de régression), **Langfuse**, démo Hugging Face Spaces.
+**Prévu** : GraphRAG (Neo4j), contextual retrieval, garde-fous (injection de prompt, **Presidio**), **Terraform**, porte de qualité en CI (seuil de régression), **Langfuse**, démo Hugging Face Spaces.
 
 ## Architecture
 
@@ -59,7 +59,8 @@ corpus.csv → PDF → Docling → éléments nettoyés         question → gar
 | Interface web Streamlit (réponse, sources citées, abstention) | ✅ |
 | CI GitHub Actions (ruff, tests) | ✅ |
 | Image Docker de service, construite et testée par la CI | ✅ |
-| Kubernetes (kind) + Terraform, porte de qualité sur le recall en CI | ⬜ |
+| Kubernetes en local (kind) : 2 copies de l'API, sondes, auto-réparation testée | ✅ |
+| Terraform, porte de qualité sur le recall en CI | ⬜ |
 
 ## Évaluation
 
@@ -114,6 +115,17 @@ Avec Docker (image de service de 907 Mo sans Docling ni PyTorch, construite et t
 docker compose up -d qdrant
 uv run python scripts/migrate_qdrant.py      # première fois : copie l'index local dans le serveur
 docker compose up -d --build                 # Qdrant + API (:8000/docs) + interface (:8501)
+```
+
+Avec Kubernetes en local ([kind](https://kind.sigs.k8s.io/)) : Qdrant (StatefulSet), l'API en 2 copies avec sondes `/ready` et `/health`, l'interface, et les clés dans un Secret créé depuis `.env` :
+
+```bash
+kind create cluster --name ragfr --config k8s/kind.yaml
+docker build -t ragfr:0.1.0 . && kind load docker-image ragfr:0.1.0 --name ragfr
+kubectl apply -f k8s/namespace.yaml
+kubectl -n ragfr create secret generic ragfr-cles --from-env-file=.env
+kubectl apply -f k8s/qdrant.yaml -f k8s/api.yaml -f k8s/ui.yaml
+kubectl -n ragfr port-forward svc/qdrant 16333:6333   # puis : uv run python scripts/migrate_qdrant.py --url http://127.0.0.1:16333
 ```
 
 Le corpus est reconstruit à partir de [`data/corpus.csv`](data/corpus.csv) ; les PDF ne sont pas versionnés. Pour régénérer la liste depuis le catalogue : `scripts/scrape_catalogue.py` puis `scripts/build_corpus.py`.
